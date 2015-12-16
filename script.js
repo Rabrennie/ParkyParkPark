@@ -1,27 +1,29 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-var player,cursors;
+var player,cursors, spriteMaterial;
 var speed = 300;
 var once = true;
 
-function Car(x, y, startSpeed, rotation, damping, car, material) {
+function Car(x, y, startSpeed, rotation, friction, car, material) {
     this.car = game.add.sprite(x, y, car);
+    this.car.scale.setTo(2.5,2.5)
     this.startSpeed = startSpeed;
     this.speed= startSpeed;
     game.physics.p2.enable(this.car)
-    this.damping = damping;
-    this.car.body.angularDamping = 0.5;
+    this.friction = friction;
+    this.car.body.angularDamping = 0.9;
     this.car.body.damping = 0.5;
     this.car.body.mass = 0.1;
     this.car.body.rotation = rotation;
     this.car.body.onBeginContact.add(blockHit.bind(this), this.car);
     this.collision = false;
     this.car.body.setMaterial(material)
+    this.car.body.moveForward(this.startSpeed)
 
     this.moveForward = function(){
         if (this.speed >= 25) {
-            this.speed = this.speed * this.damping;
+            this.speed = this.speed * this.friction;
         } else if (this.speed >= 5){
-            this.speed = this.speed * (this.damping-0.005);
+            this.speed = this.speed * (this.friction-0.005);
             
         } else {
             this.speed = 0;
@@ -44,13 +46,15 @@ function Car(x, y, startSpeed, rotation, damping, car, material) {
 function preload() {
   
   game.load.image('car', 'assets/car.png');
+  game.load.image('background', 'assets/background.png');
 
 }
 
 function create() {
     game.physics.startSystem(Phaser.Physics.P2JS);
+    this.car = game.add.sprite(0, 0, 'background');
 
-    var spriteMaterial = game.physics.p2.createMaterial('spriteMaterial');
+    spriteMaterial = game.physics.p2.createMaterial('spriteMaterial');
 
     player = new Car(100,200,300,20,0.997,'car', spriteMaterial);
     cursors = game.input.keyboard.createCursorKeys();
@@ -65,7 +69,7 @@ function create() {
     var contactMaterial = game.physics.p2.createContactMaterial(spriteMaterial, spriteMaterial);
 
     contactMaterial.friction = 0.3;     // Friction to use in the contact of these two materials.
-    contactMaterial.restitution = 1.2;  // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+    contactMaterial.restitution = 1.0;  // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
     contactMaterial.stiffness = 1e7;    // Stiffness of the resulting ContactEquation that this ContactMaterial generate.
     contactMaterial.relaxation = 3;     // Relaxation of the resulting ContactEquation that this ContactMaterial generate.
     contactMaterial.frictionStiffness = 1e7;    // Stiffness of the resulting FrictionEquation that this ContactMaterial generate.
@@ -86,7 +90,16 @@ function update() {
         if (cursors.left.isDown) {player.rotateLeft()} 
         else if (cursors.right.isDown){player.rotateRight()}
         else {player.setZeroRotation()}
+        if(player.speed == 0){
+            player = new Car(100,200,300,20,0.997,'car', spriteMaterial);
+        }
+    } else {
+        if(player.car.body.velocity.x<=0.5&&player.car.body.velocity.y<=0.5){
+            player = new Car(100,200,300,20,0.997,'car', spriteMaterial);
+        }
     }
+
+    
 
     
 }
