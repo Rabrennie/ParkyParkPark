@@ -69,7 +69,7 @@ function create() {
     var contactMaterial = game.physics.p2.createContactMaterial(spriteMaterial, spriteMaterial);
 
     contactMaterial.friction = 0.3;     // Friction to use in the contact of these two materials.
-    contactMaterial.restitution = 1.0;  // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+    contactMaterial.restitution = 0.5;  // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
     contactMaterial.stiffness = 1e7;    // Stiffness of the resulting ContactEquation that this ContactMaterial generate.
     contactMaterial.relaxation = 3;     // Relaxation of the resulting ContactEquation that this ContactMaterial generate.
     contactMaterial.frictionStiffness = 1e7;    // Stiffness of the resulting FrictionEquation that this ContactMaterial generate.
@@ -86,10 +86,7 @@ function create() {
 
 function update() {
     if(!player.collision){
-        player.moveForward();
-        if (cursors.left.isDown) {player.rotateLeft()} 
-        else if (cursors.right.isDown){player.rotateRight()}
-        else {player.setZeroRotation()}
+        
         if(player.speed == 0){
             player = new Car(100,200,300,20,0.997,'car', spriteMaterial);
         }
@@ -97,7 +94,12 @@ function update() {
         if(player.car.body.velocity.x<=0.5&&player.car.body.velocity.y<=0.5){
             player = new Car(100,200,300,20,0.997,'car', spriteMaterial);
         }
+        player.speed = Math.sqrt(player.car.body.velocity.x*player.car.body.velocity.x+player.car.body.velocity.y*player.car.body.velocity.y);
     }
+    player.moveForward();
+    if (cursors.left.isDown) {player.rotateLeft()} 
+    else if (cursors.right.isDown){player.rotateRight()}
+    else {player.setZeroRotation()}
 
     
 
