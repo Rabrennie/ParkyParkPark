@@ -155,7 +155,7 @@ var renderer, stage, container, graphics, zoom,
             // console.log(p2.vec2.length(player.chassisBody.velocity))
             if(p2.vec2.length(player.chassisBody.velocity) <= 0.05){
                 player.chassisBody.backWheel.setBrakeForce(2);
-                player.boxShape.collisionGroup = collisionGroup;
+                player.boxShape.collisionGroup = CAR;
                 cars.push(player);
                 player = new Car(0,0,0.5,1,-1.5,15,0,2,world,container,PLAYER,stage);
                 
