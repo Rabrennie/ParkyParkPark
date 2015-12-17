@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>p2.js and Pixi.js example</title>
+    <title>Parky Park Park</title>
     <meta charset="utf-8">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.8/pixi.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p2.js/0.7.1/p2.min.js"></script>
@@ -10,10 +10,48 @@
 
     <script>
         var renderer, stage, container, graphics, zoom,
-            world, boxShape, boxBody, planeBody, planeShape,chassisBody;
+            world, boxShape, boxBody, planeBody, planeShape,chassisBody,player, cars=[];
 
         init();
         animate();
+
+        function Car(x,y,w,h,angle,velX,velY,mass,world,container){
+            this.chassisBody = new p2.Body({
+                position: [x,y],
+                mass: mass,
+                angle: angle,
+                velocity: [velX, velY],
+            });
+            this.boxShape = new p2.Box({ width: w, height: h });
+            this.chassisBody.addShape(this.boxShape);
+            world.addBody(this.chassisBody);
+            // Create the vehicle
+            this.vehicle = new p2.TopDownVehicle(this.chassisBody);
+            // Add one front wheel and one back wheel - we don't actually need four :)
+            this.frontWheel = this.vehicle.addWheel({
+                localPosition: [0, 0.5] // front
+            });
+            this.frontWheel.setSideFriction(200);
+            // Back wheel
+            this.backWheel = this.vehicle.addWheel({
+                localPosition: [0, -0.5] // back
+            });
+            this.backWheel.setSideFriction(200); // Less side friction on back wheel makes it easier to drift
+            this.vehicle.addToWorld(world);
+
+            this.graphics = new PIXI.Graphics();
+            this.graphics.beginFill(0xff0000);
+            this.graphics.drawRect(-this.boxShape.width/2, -this.boxShape.height/2, this.boxShape.width, this.boxShape.height);
+
+            // Add the box to our container
+            container.addChild(this.graphics);
+
+            this.update = function(){
+                this.graphics.position.x = this.chassisBody.position[0];
+                this.graphics.position.y = this.chassisBody.position[1];
+                this.graphics.rotation =   this.chassisBody.angle;
+            }
+        }
 
         function init(){
 
@@ -22,65 +60,36 @@
 	        world = new p2.World({
                 gravity : [0,0]
             });
-            // Create a dynamic body for the chassis
-            chassisBody = new p2.Body({
-                mass: 1,
-                angle: -1.5708,
-                velocity: [15, 0],
-            });
-            var boxShape = new p2.Box({ width: 0.5, height: 1 });
-            chassisBody.addShape(boxShape);
-            world.addBody(chassisBody);
-            // Create the vehicle
-            vehicle = new p2.TopDownVehicle(chassisBody);
-            // Add one front wheel and one back wheel - we don't actually need four :)
-            frontWheel = vehicle.addWheel({
-                localPosition: [0, 0.5] // front
-            });
-            frontWheel.setSideFriction(200);
-            // Back wheel
-            backWheel = vehicle.addWheel({
-                localPosition: [0, -0.5] // back
-            });
-            backWheel.setSideFriction(200); // Less side friction on back wheel makes it easier to drift
-            vehicle.addToWorld(world);
 
-            // Add a box
-
-            // Add a plane
-            // planeShape = new p2.Plane();
-            // planeBody = new p2.Body({ position:[0,-1] });
-            // planeBody.addShape(planeShape);
-            // world.addBody(planeBody);
-
-            // Pixi.js zoom level
             zoom = 25;
 
             // Initialize the stage
             renderer =  PIXI.autoDetectRenderer(800, 600),
             stage = new PIXI.Stage(0xFFFFFF);
-
-            // We use a container inside the stage for all our content
-            // This enables us to zoom and translate the content
-            container =     new PIXI.DisplayObjectContainer(),
+            container = new PIXI.Container(),
             stage.addChild(container);
-
-            // Add the canvas to the DOM
             document.body.appendChild(renderer.view);
-
             // Add transform to the container
             container.position.x =  renderer.width/10; // center at origin
             container.position.y =  renderer.height/10;
             container.scale.x =  zoom;  // zoom in
             container.scale.y = -zoom; // Note: we flip the y axis to make "up" the physics "up"
+            
 
+            player = new Car(0,0,0.5,1,-1.5,15,0,2,world,container);
+
+            cars.push(new Car(1,-5,0.5,1,-1.5,0,0,1,world,container));
+
+            world.on("impact",function(evt){
+                var bodyA = evt.bodyA,
+                bodyB = evt.bodyB;
+                console.log(evt)
+            });0
+
+
+            
             // Draw the box.
-            graphics = new PIXI.Graphics();
-            graphics.beginFill(0xff0000);
-            graphics.drawRect(-boxShape.width/2, -boxShape.height/2, boxShape.width, boxShape.height);
-
-            // Add the box to our container
-            container.addChild(graphics);
+            
 
             var keys = {
                 '37': 0, // left
@@ -99,15 +108,15 @@
             });
             function onInputChange(){
                 // Steer value zero means straight forward. Positive is left and negative right.
-                frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
-                backWheel.setBrakeForce(0);
+                player.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
+                player.backWheel.setBrakeForce(0);
                 if(keys[40]){
-                    if(backWheel.getSpeed() > 0.1){
+                    if(player.backWheel.getSpeed() > 0.1){
                         // Moving forward - add some brake force to slow down
-                        backWheel.setBrakeForce(2);
+                        player.backWheel.setBrakeForce(2);
                     } else {
                         // Moving backwards - reverse the engine force
-                        backWheel.setBrakeForce(2);
+                        player.backWheel.setBrakeForce(2);
                     }
                 }
             }
@@ -122,10 +131,16 @@
             world.step(1/60);
 
             // Transfer positions of the physics objects to Pixi.js
-            graphics.position.x = chassisBody.position[0];
-            graphics.position.y = chassisBody.position[1];
-            graphics.rotation =   chassisBody.angle;
+            
+            player.update();
+            for (var i = cars.length - 1; i >= 0; i--) {
+                cars[i].update()
+            };
 
+            if(p2.vec2.length(player.chassisBody.velocity) == 0){
+                cars.push(player);
+                player = new Car(0,0,0.5,1,-1.5,15,0,2,world,container);
+            }
             // Render scene
             renderer.render(stage);
         }
