@@ -18,7 +18,7 @@
         init();
         animate();
 
-        function Car(x,y,w,h,angle,velX,velY,mass,world,container,collisionGroup){
+        function Car(x,y,w,h,angle,velX,velY,mass,world,container,collisionGroup,stage){
             this.chassisBody = new p2.Body({
                 position: [x,y],
                 mass: mass,
@@ -49,8 +49,14 @@
 
             this.graphics = new PIXI.Graphics();
             this.graphics.beginFill(0xff0000);
+            this.texture = PIXI.Texture.fromImage("assets/car.png");
+            this.sprite = new PIXI.Sprite(this.texture);
+            this.graphics.addChild(this.sprite);
             this.graphics.drawRect(-this.boxShape.width/2, -this.boxShape.height/2, this.boxShape.width, this.boxShape.height);
-
+            this.sprite.width = -this.boxShape.width;
+            this.sprite.height = -this.boxShape.height;
+            this.sprite.position={x:-this.boxShape.width/2, y:this.boxShape.height/2}
+            this.sprite.scale.y = -this.sprite.scale.y
             // Add the box to our container
             container.addChild(this.graphics);
 
@@ -75,6 +81,7 @@
             renderer =  PIXI.autoDetectRenderer(800, 600),
             stage = new PIXI.Stage(0xFFFFFF);
             container = new PIXI.Container(),
+            PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
             stage.addChild(container);
             document.body.appendChild(renderer.view);
             // Add transform to the container
@@ -84,9 +91,9 @@
             container.scale.y = -zoom; // Note: we flip the y axis to make "up" the physics "up"
             
 
-            player = new Car(0,0,0.5,1,-1.5,15,0,2,world,container,PLAYER);
+            player = new Car(0,0,0.5,1,-1.5,15,0,2,world,container,PLAYER,stage);
 
-            cars.push(new Car(1,-5,0.5,1,-1.5,0,0,1,world,container,CAR));
+            cars.push(new Car(1,-5,0.5,1,-1.5,0,0,1,world,container,CAR,stage));
 
             world.on("impact",function(evt){
                 console.log(evt)
@@ -152,7 +159,7 @@
             // console.log(p2.vec2.length(player.chassisBody.velocity))
             if(p2.vec2.length(player.chassisBody.velocity) <= 0.05){
                 cars.push(player);
-                player = new Car(0,0,0.5,1,-1.5,15,0,2,world,container,PLAYER);
+                player = new Car(0,0,0.5,1,-1.5,15,0,2,world,container,PLAYER,stage);
             }
             // Render scene
             renderer.render(stage);
