@@ -1,10 +1,11 @@
 var renderer, stage, container, graphics, zoom,
-            world, boxShape, boxBody, planeBody, planeShape,chassisBody,player, cars=[];
+            world, boxShape, boxBody, planeBody, planeShape,chassisBody,player, cars=[],wall=[];
 
         var carTexture;
 
         var PLAYER=Math.pow(2,1),
-            CAR=Math.pow(2,2);
+            CAR=Math.pow(2,2),
+            WALL=Math.pow(2,3);
 
         init();
         
@@ -19,7 +20,7 @@ var renderer, stage, container, graphics, zoom,
             
             this.boxShape = new p2.Box({ width: w, height: h });
             this.boxShape.collisionGroup = collisionGroup;
-            this.boxShape.collisionMask = PLAYER | CAR
+            this.boxShape.collisionMask = PLAYER | CAR | WALL
             this.chassisBody.addShape(this.boxShape);
             world.addBody(this.chassisBody);
             // Create the vehicle
@@ -58,6 +59,30 @@ var renderer, stage, container, graphics, zoom,
             }
         }
 
+        function Wall(x,y,w,h,angle,container,world){
+            this.wallBody = new p2.Body({
+                position: [x,y],
+                mass: 0,
+                angle: angle,
+            });
+            
+            this.boxShape = new p2.Box({ width: w, height: h });
+            this.boxShape.collisionGroup = WALL;
+            this.boxShape.collisionMask = PLAYER | CAR ;
+            this.wallBody.addShape(this.boxShape);
+            world.addBody(this.wallBody);
+            this.graphics = new PIXI.Graphics();
+            this.graphics.beginFill(0xff0000);
+
+            this.graphics.drawRect(-this.boxShape.width/2, -this.boxShape.height/2, this.boxShape.width, this.boxShape.height);
+
+            this.graphics.position.x = this.wallBody.position[0];
+            this.graphics.position.y = this.wallBody.position[1];
+
+            container.addChild(this.graphics);
+
+        }
+
         function init(){
 
             // Init p2.js
@@ -77,6 +102,11 @@ var renderer, stage, container, graphics, zoom,
                         .add('car', 'assets/car.png')
                         .load(function (loader, resources) {
                             carTexture = resources.car.texture;
+                            wall[0] = new Wall(720/zoom,-240/zoom,20/zoom,600/zoom,0,container,world)
+                            wall[1] = new Wall(320/zoom,60/zoom,800/zoom,20/zoom,0,container,world)
+                            wall[2] = new Wall(320/zoom,-540/zoom,800/zoom,20/zoom,0,container,world)
+                            wall[4] = new Wall(-80/zoom,-240/zoom,20/zoom,600/zoom,0,container,world)
+                            
                             player = new Car(0,0,0.5,1,-1.5,15,0,2,world,container,PLAYER,stage);
                             animate();
             });
@@ -89,17 +119,22 @@ var renderer, stage, container, graphics, zoom,
             container.scale.y = -zoom; // Note: we flip the y axis to make "up" the physics "up"
             
 
+
             
 
             world.on("impact",function(evt){
-                console.log(evt)
                 var bodyA = evt.bodyA,
                 bodyB = evt.bodyB;
-                bodyA.frontWheel.setSideFriction(2);
-                bodyB.frontWheel.setSideFriction(2);
 
-                bodyA.backWheel.setSideFriction(2);
-                bodyB.backWheel.setSideFriction(2);
+                if(bodyA.shapes[0].collisionGroup == CAR || bodyA.shapes[0].collisionGroup == PLAYER) {
+                    bodyA.frontWheel.setSideFriction(2);
+                    bodyA.backWheel.setSideFriction(2);
+                }
+                if(bodyB.shapes[0].collisionGroup == CAR || bodyB.shapes[0].collisionGroup == PLAYER) {
+                    bodyB.frontWheel.setSideFriction(2);
+                    bodyB.backWheel.setSideFriction(2);
+                }
+                
             });0
 
 
