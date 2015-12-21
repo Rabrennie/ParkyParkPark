@@ -47,7 +47,7 @@ function init() {
     wall[1] = new Wall(400, 0, 800, 20, 0, container, world);
     wall[2] = new Wall(400, -600, 800, 20, 0, container, world);
     wall[4] = new Wall(0, -300, 20, 600, 0, container, world);
-    player = new Car();
+    player = new Car({ texture: carTexture, wheelTexture: wheelTexture });
     animate();
   });
   stage.addChild(container);
@@ -138,7 +138,7 @@ function animate(t) {
     player.chassisBody.backWheel.setBrakeForce(2);
     player.boxShape.collisionGroup = config.CAR;
     cars.push(player);
-    player = new Car();
+    player = new Car({ texture: carTexture, wheelTexture: wheelTexture });
   }
   // Render scene
   renderer.render(stage);
