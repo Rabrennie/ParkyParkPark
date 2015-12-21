@@ -2,11 +2,15 @@ var Car = require('./car'),
     config = require('./config'),
     Wall = require('./wall');
 
+var world = config.world,
+    renderer = config.renderer,
+    stage = config.stage,
+    container = config.container;
+
 var carTexture,
     wheelTexture;
 
-var renderer, stage, container, graphics, zoom,
-world, boxShape, boxBody, planeBody, planeShape,chassisBody,player, cars=[],wall=[];
+var renderer, stage, container, graphics, zoom, boxShape, boxBody, planeBody, planeShape,chassisBody,player, cars=[],wall=[];
 
 init();
 
@@ -14,19 +18,14 @@ function init(){
 
   // Init p2.js
   // Create a dynamic body for the chassis
-  world = new p2.World({
-    gravity : [0,0]
-  });
   // Initialize the stage
-  renderer =  PIXI.autoDetectRenderer(800, 600),
-  stage = new PIXI.Stage(0x282B2A);
   renderer.backgroundColor = 0x282B2A;
-  container = new PIXI.Container(),
   PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
   var text = new PIXI.Text('MEGA ALPHA EDITION',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
   text.x = 20;
   text.y = 20;
   stage.addChild(text)
+  // TODO: make textures global
   PIXI.loader
   .add('car', 'assets/car1.png')
   .add('wheel', 'assets/wheel.png')
@@ -37,8 +36,7 @@ function init(){
     wall[1] = new Wall(400,0,800,20,0,container,world)
     wall[2] = new Wall(400,-600,800,20,0,container,world)
     wall[4] = new Wall(0,-300,20,600,0,container,world)
-
-    player = new Car(50,-30,0.5,0.875,-1.5708,15,0,2,world,container,config.PLAYER,stage,carTexture,config.PLAYER | config.CAR | config.WALL,wheelTexture);
+    player = new Car();
     animate();
   });
   stage.addChild(container);
@@ -132,7 +130,7 @@ function init(){
         player.chassisBody.backWheel.setBrakeForce(2);
         player.boxShape.collisionGroup = config.CAR;
         cars.push(player);
-        player = new Car(50,-30,0.5,0.875,-1.5708,15,0,2,world,container,config.PLAYER,stage,carTexture,config.PLAYER | config.CAR | config.WALL,wheelTexture);
+        player = new Car();
 
       }
       // Render scene

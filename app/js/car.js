@@ -1,19 +1,40 @@
-var config = require('./config');
+var config = require('./config'),
+    _ = require('lodash');
 
 //TODO Make this a class
-module.exports = function(x,y,w,h,angle,velX,velY,mass,world,container,collisionGroup,stage,texture, collisionMask,wheelTexture){
+module.exports = function(opts = {}){
+
+  const defaults = {x:50,
+              y:-50,
+              w:0.5,
+              h:0.875,
+              angle:-1.5708,
+              velX:15,
+              velY:0,
+              mass:1,
+              world:config.world,
+              container:config.container,
+              collisionGroup:config.PLAYER,
+              stage:config.stage,
+              texture:null,
+              collisionMask:config.PLAYER | config.CAR | config.WALL,
+              wheelTexture:null
+  }
+
+  opts = _.defaultsDeep(opts, defaults)
+
   this.chassisBody = new p2.Body({
-    position: [x/config.zoom,y/config.zoom],
-    mass: mass,
-    angle: angle,
-    velocity: [velX, velY],
+    position: [opts.x/config.zoom,opts.y/config.zoom],
+    mass: opts.mass,
+    angle: opts.angle,
+    velocity: [opts.velX, opts.velY],
   });
 
-  this.boxShape = new p2.Box({ width: w, height: h });
-  this.boxShape.collisionGroup = collisionGroup;
-  this.boxShape.collisionMask = collisionMask;
+  this.boxShape = new p2.Box({ width: opts.w, height: opts.h });
+  this.boxShape.collisionGroup = opts.collisionGroup;
+  this.boxShape.collisionMask = opts.collisionMask;
   this.chassisBody.addShape(this.boxShape);
-  world.addBody(this.chassisBody);
+  opts.world.addBody(this.chassisBody);
   // Create the vehicle
   this.vehicle = new p2.TopDownVehicle(this.chassisBody);
   // Add one front wheel and one back wheel - we don't actually need four :)
@@ -28,14 +49,14 @@ module.exports = function(x,y,w,h,angle,velX,velY,mass,world,container,collision
     localPosition: [0, -0.5] // back
   });
   this.chassisBody.backWheel.setSideFriction(200); // Less side friction on back wheel makes it easier to drift
-  this.vehicle.addToWorld(world);
+  this.vehicle.addToWorld(opts.world);
 
   this.graphics = new PIXI.Graphics();
   this.graphics.beginFill(0xff0000);
   this.wheelSprite = [];
 
   for (var i = 3; i >= 0; i--) {
-    this.wheelSprite[i] = new PIXI.Sprite(wheelTexture);
+    this.wheelSprite[i] = new PIXI.Sprite(opts.wheelTexture);
     this.graphics.addChild(this.wheelSprite[i]);
     this.wheelSprite[i].scale.x = 0.016
     this.wheelSprite[i].scale.y = 0.016
@@ -58,7 +79,7 @@ module.exports = function(x,y,w,h,angle,velX,velY,mass,world,container,collision
   this.wheelSprite[2].position={x:-0.25, y:-0.35}
   //BR
   this.wheelSprite[3].position={x:0.4-this.wheelSprite[3].width, y:-0.35}
-  this.sprite = new PIXI.Sprite(texture);
+  this.sprite = new PIXI.Sprite(opts.texture);
   this.graphics.addChild(this.sprite);
 
   this.graphics.drawRect(-this.boxShape.width/2, -this.boxShape.height/2, this.boxShape.width, this.boxShape.height);
@@ -72,7 +93,7 @@ module.exports = function(x,y,w,h,angle,velX,velY,mass,world,container,collision
 
 
   // Add the box to our container
-  container.addChild(this.graphics);
+  opts.container.addChild(this.graphics);
 
   this.update = function(){
     this.graphics.position.x = this.chassisBody.position[0];
