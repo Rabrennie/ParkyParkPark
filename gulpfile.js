@@ -1,54 +1,52 @@
-var gulp = require('gulp');
-var browserify = require('browserify');
-var source = require("vinyl-source-stream");
-var babelify = require("babelify");
-var watchify = require('watchify');
-var gutil = require('gulp-util');
-var browserSync = require('browser-sync');
-var historyApiFallback = require('connect-history-api-fallback')
-var notify = require("gulp-notify");
+var gulp        = require('gulp');
+var gutil       = require('gulp-util');
+var source      = require('vinyl-source-stream');
+var babelify    = require('babelify');
+var watchify    = require('watchify');
+var exorcist    = require('exorcist');
+var browserify  = require('browserify');
+var browserSync = require('browser-sync').create();
 
-var opts = {
-    appJs: './app/js/app.js',
-    appFolder: './app',
-    jsOutfile: 'bundle.js',
-    jsOutFolder: './app/js'
-};
+// Input file.
+watchify.args.debug = true;
+var bundler = watchify(browserify('./app/js/app.js', watchify.args));
 
-// Save a reference to the `reload` method
-var reload = browserSync.reload;
-gulp.task('browserify', function(){
-    var bundler = watchify(browserify(opts.appJs, watchify.args));
-    bundler.transform(babelify);
-    bundler.on('update', rebundle);
+// Babel transform
+bundler.transform(babelify.configure({
+    sourceMapRelative: 'app/js'
+}));
 
-    function rebundle() {
-        return bundler.bundle()
-            // log errors if they happen
-            .on('error', swallowError)
-            .pipe(source(opts.jsOutfile))
-            .pipe(gulp.dest(opts.jsOutFolder))
-            .pipe(reload({stream:true}))
-            .pipe(notify("Browser reloaded after watchify update!"));;
-    }
+// On updates recompile
+bundler.on('update', bundle);
 
-    return rebundle();
-});
+function bundle() {
 
-function swallowError(error) {
-    //If you want details of the error in the console
-    console.log(error.toString());
-    this.emit('end');
+    gutil.log('Compiling JS...');
+
+    return bundler.bundle()
+        .on('error', function (err) {
+            gutil.log(err.message);
+            browserSync.notify("Browserify Error!");
+            this.emit("end");
+        })
+        .pipe(exorcist('app/js/dist/bundle.js.map'))
+        .pipe(source('bundle.js'))
+        .pipe(gulp.dest('./app/js/dist'))
+        .pipe(browserSync.stream({once: true}));
 }
 
-gulp.task('browser-sync', function() {
-  browserSync({
-    server: {
-      baseDir: opts.appFolder,
-      middleware: [historyApiFallback]
-    }
-  });
+/**
+ * Gulp task alias
+ */
+gulp.task('bundle', function () {
+    return bundle();
 });
 
-gulp.task('default', ['browser-sync', 'browserify'], function() {
+/**
+ * First bundle, then serve from the ./app directory
+ */
+gulp.task('default', ['bundle'], function () {
+    browserSync.init({
+        server: "./app"
+    });
 });
