@@ -13,7 +13,8 @@ var bundler = watchify(browserify('./app/js/app.js', watchify.args));
 
 // Babel transform
 bundler.transform(babelify.configure({
-    sourceMapRelative: 'app/js'
+    sourceMapRelative: 'app/js',
+    presets: ["es2015"]
 }));
 
 // On updates recompile

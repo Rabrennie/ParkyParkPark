@@ -1,0 +1,1 @@
+exports.zoom = 50;

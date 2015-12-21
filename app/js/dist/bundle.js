@@ -1,8 +1,12 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
 
-var carTexture, wheelTexture;
+var Car = require('./car.js'),
+    config = require('./config');
 
-var PLAYER = Math.pow(2, 1),
+var carTexture,
+    wheelTexture,
+    PLAYER = Math.pow(2, 1),
     CAR = Math.pow(2, 2),
     WALL = Math.pow(2, 3);
 
@@ -23,16 +27,15 @@ var renderer,
 
 init();
 
-var Car = require('./car.js');
-
+//TODO Move this to own file and make a class
 function Wall(x, y, w, h, angle, container, world) {
   this.wallBody = new p2.Body({
-    position: [x, y],
+    position: [x / config.zoom, y / config.zoom],
     mass: 0,
     angle: angle
   });
 
-  this.boxShape = new p2.Box({ width: w, height: h });
+  this.boxShape = new p2.Box({ width: w / config.zoom, height: h / config.zoom });
   this.boxShape.collisionGroup = WALL;
   this.boxShape.collisionMask = PLAYER | CAR;
   this.wallBody.addShape(this.boxShape);
@@ -55,9 +58,6 @@ function init() {
   world = new p2.World({
     gravity: [0, 0]
   });
-
-  zoom = 50;
-
   // Initialize the stage
   renderer = PIXI.autoDetectRenderer(800, 600), stage = new PIXI.Stage(0x282B2A);
   renderer.backgroundColor = 0x282B2A;
@@ -69,12 +69,12 @@ function init() {
   PIXI.loader.add('car', 'assets/car1.png').add('wheel', 'assets/wheel.png').load(function (loader, resources) {
     carTexture = resources.car.texture;
     wheelTexture = resources.wheel.texture;
-    wall[0] = new Wall(800 / zoom, -300 / zoom, 20 / zoom, 600 / zoom, 0, container, world);
-    wall[1] = new Wall(400 / zoom, 0 / zoom, 800 / zoom, 20 / zoom, 0, container, world);
-    wall[2] = new Wall(400 / zoom, -600 / zoom, 800 / zoom, 20 / zoom, 0, container, world);
-    wall[4] = new Wall(0 / zoom, -300 / zoom, 20 / zoom, 600 / zoom, 0, container, world);
+    wall[0] = new Wall(800, -300, 20, 600, 0, container, world);
+    wall[1] = new Wall(400, 0, 800, 20, 0, container, world);
+    wall[2] = new Wall(400, -600, 800, 20, 0, container, world);
+    wall[4] = new Wall(0, -300, 20, 600, 0, container, world);
 
-    player = new Car(50 / zoom, -30 / zoom, 0.5, 0.875, -1.5708, 15, 0, 2, world, container, PLAYER, stage, carTexture, PLAYER | CAR | WALL, wheelTexture);
+    player = new Car(50, -30, 0.5, 0.875, -1.5708, 15, 0, 2, world, container, PLAYER, stage, carTexture, PLAYER | CAR | WALL, wheelTexture);
     animate();
   });
   stage.addChild(container);
@@ -82,8 +82,8 @@ function init() {
   // Add transform to the container
   container.position.x = 0; // center at origin
   container.position.y = 0;
-  container.scale.x = zoom; // zoom in
-  container.scale.y = -zoom; // Note: we flip the y axis to make "up" the physics "up"
+  container.scale.x = config.zoom; // zoom in
+  container.scale.y = -config.zoom; // Note: we flip the y axis to make "up" the physics "up"
 
   world.on("impact", function (evt) {
     var bodyA = evt.bodyA,
@@ -165,16 +165,21 @@ function animate(t) {
     player.chassisBody.backWheel.setBrakeForce(2);
     player.boxShape.collisionGroup = CAR;
     cars.push(player);
-    player = new Car(50 / zoom, -30 / zoom, 0.5, 0.875, -1.5708, 15, 0, 2, world, container, PLAYER, stage, carTexture, PLAYER | CAR | WALL, wheelTexture);
+    player = new Car(50, -30, 0.5, 0.875, -1.5708, 15, 0, 2, world, container, PLAYER, stage, carTexture, PLAYER | CAR | WALL, wheelTexture);
   }
   // Render scene
   renderer.render(stage);
 }
 
-},{"./car.js":2}],2:[function(require,module,exports){
+},{"./car.js":2,"./config":3}],2:[function(require,module,exports){
+'use strict';
+
+var config = require('./config');
+
+//TODO Make this a class
 module.exports = function (x, y, w, h, angle, velX, velY, mass, world, container, collisionGroup, stage, texture, collisionMask, wheelTexture) {
   this.chassisBody = new p2.Body({
-    position: [x, y],
+    position: [x / config.zoom, y / config.zoom],
     mass: mass,
     angle: angle,
     velocity: [velX, velY]
@@ -248,6 +253,11 @@ module.exports = function (x, y, w, h, angle, velX, velY, mass, world, container
     this.graphics.rotation = this.chassisBody.angle;
   };
 };
+
+},{"./config":3}],3:[function(require,module,exports){
+"use strict";
+
+exports.zoom = 50;
 
 },{}]},{},[1])
 //# sourceMappingURL=bundle.js.map

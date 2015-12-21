@@ -1,6 +1,10 @@
+var config = require('./config');
+
+
+//TODO Make this a class
 module.exports = function(x,y,w,h,angle,velX,velY,mass,world,container,collisionGroup,stage,texture, collisionMask,wheelTexture){
   this.chassisBody = new p2.Body({
-    position: [x,y],
+    position: [x/config.zoom,y/config.zoom],
     mass: mass,
     angle: angle,
     velocity: [velX, velY],
