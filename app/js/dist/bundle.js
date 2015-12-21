@@ -62,6 +62,10 @@ function init() {
   renderer = PIXI.autoDetectRenderer(800, 600), stage = new PIXI.Stage(0x282B2A);
   renderer.backgroundColor = 0x282B2A;
   container = new PIXI.Container(), PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
+  var text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+  text.x = 20;
+  text.y = 20;
+  stage.addChild(text);
   PIXI.loader.add('car', 'assets/car1.png').add('wheel', 'assets/wheel.png').load(function (loader, resources) {
     carTexture = resources.car.texture;
     wheelTexture = resources.wheel.texture;
