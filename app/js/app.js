@@ -8,23 +8,24 @@ var world = config.world,
     container = config.container;
 
 var carTexture,
-    wheelTexture;
-
-var renderer, stage, container, graphics, zoom, boxShape, boxBody, planeBody, planeShape,chassisBody,player, cars=[],wall=[];
+    wheelTexture,
+    graphics,
+    chassisBody,
+    player,
+    cars=[],
+    wall=[];
 
 init();
 
 function init(){
 
-  // Init p2.js
-  // Create a dynamic body for the chassis
-  // Initialize the stage
   renderer.backgroundColor = 0x282B2A;
   PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
   var text = new PIXI.Text('MEGA ALPHA EDITION',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
   text.x = 20;
   text.y = 20;
   stage.addChild(text)
+
   // TODO: make textures global
   PIXI.loader
   .add('car', 'assets/car1.png')
@@ -39,6 +40,7 @@ function init(){
     player = new Car({texture:carTexture, wheelTexture:wheelTexture});
     animate();
   });
+
   stage.addChild(container);
   document.body.appendChild(renderer.view);
   // Add transform to the container
@@ -72,12 +74,7 @@ function init(){
         }
 
 
-      });0
-
-
-
-      // Draw the box.
-
+      });
 
       var keys = {
         '37': 0, // left
@@ -120,12 +117,13 @@ function init(){
       world.step(1/60);
 
       // Transfer positions of the physics objects to Pixi.js
-
       player.update();
       for (var i = cars.length - 1; i >= 0; i--) {
         cars[i].update()
       };
       // console.log(p2.vec2.length(player.chassisBody.velocity))
+
+      //check if player is moving
       if(p2.vec2.length(player.chassisBody.velocity) <= 0.05){
         player.chassisBody.backWheel.setBrakeForce(2);
         player.boxShape.collisionGroup = config.CAR;

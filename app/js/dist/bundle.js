@@ -10,17 +10,9 @@ var world = config.world,
     stage = config.stage,
     container = config.container;
 
-var carTexture, wheelTexture;
-
-var renderer,
-    stage,
-    container,
+var carTexture,
+    wheelTexture,
     graphics,
-    zoom,
-    boxShape,
-    boxBody,
-    planeBody,
-    planeShape,
     chassisBody,
     player,
     cars = [],
@@ -30,15 +22,13 @@ init();
 
 function init() {
 
-  // Init p2.js
-  // Create a dynamic body for the chassis
-  // Initialize the stage
   renderer.backgroundColor = 0x282B2A;
   PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
   var text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
   text.x = 20;
   text.y = 20;
   stage.addChild(text);
+
   // TODO: make textures global
   PIXI.loader.add('car', 'assets/car1.png').add('wheel', 'assets/wheel.png').load(function (loader, resources) {
     carTexture = resources.car.texture;
@@ -50,6 +40,7 @@ function init() {
     player = new Car({ texture: carTexture, wheelTexture: wheelTexture });
     animate();
   });
+
   stage.addChild(container);
   document.body.appendChild(renderer.view);
   // Add transform to the container
@@ -83,9 +74,7 @@ function init() {
         bodyB.backWheel.setSideFriction(200);
       }, 100);
     }
-  });0;
-
-  // Draw the box.
+  });
 
   var keys = {
     '37': 0, // left
@@ -128,12 +117,13 @@ function animate(t) {
   world.step(1 / 60);
 
   // Transfer positions of the physics objects to Pixi.js
-
   player.update();
   for (var i = cars.length - 1; i >= 0; i--) {
     cars[i].update();
   };
   // console.log(p2.vec2.length(player.chassisBody.velocity))
+
+  //check if player is moving
   if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
     player.chassisBody.backWheel.setBrakeForce(2);
     player.boxShape.collisionGroup = config.CAR;
@@ -151,6 +141,7 @@ var config = require('./config'),
     _ = require('lodash');
 
 //TODO Make this a class
+//TODO: Add an onCollision function. Would have to be part of the chassisBody
 module.exports = function () {
   var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 

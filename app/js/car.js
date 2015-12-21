@@ -2,6 +2,7 @@ var config = require('./config'),
     _ = require('lodash');
 
 //TODO Make this a class
+//TODO: Add an onCollision function. Would have to be part of the chassisBody
 module.exports = function(opts = {}){
 
   const defaults = {x:50,
