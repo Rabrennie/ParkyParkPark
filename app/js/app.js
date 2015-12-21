@@ -1,9 +1,10 @@
 import {config} from './config.js';
 import {Wall} from './Wall.js';
-import {Car} from './car.js';
+import {Cars} from './Cars.js';
 import {resources} from './loader.js';
 import {levels} from './levels.js'
 
+var _ = require('lodash');
 var world = config.world,
 renderer = config.renderer,
 stage = config.stage,
@@ -96,7 +97,7 @@ function init(){
         player.chassisBody.backWheel.setBrakeForce(2);
       }
     }
-  } else if(inMenu){
+  } else if(inMenu && keys[13]){
     playing = true;
     inMenu = false;
     for (var text in menuText) {
@@ -105,7 +106,8 @@ function init(){
       }
     }
     levels.test.load()
-    player = new Car({texture:PIXI.loader.resources.car.texture});
+    var car = _.sample(Cars)
+    player =  new car();
   }
   }
 
@@ -124,7 +126,8 @@ function animate(t){
       player.chassisBody.backWheel.setBrakeForce(2);
       player.boxShape.collisionGroup = config.CAR;
       cars.push(player);
-      player = new Car();
+      var car = _.sample(Cars)
+      player =  new car();
 
     }
     for (var i = cars.length - 1; i >= 0; i--) {

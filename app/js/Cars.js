@@ -3,9 +3,9 @@ import {resources} from './loader.js';
 var _ = require('lodash');
 
 //TODO Make this a class
-//TODO: Add an onCollision function. Would have to be part of the chassisBody
-export function Car(opts = {}){
 
+class BaseCar {
+  constructor(opts = {}) {
   const defaults = {x:50,
               y:-50,
               w:0.5,
@@ -18,7 +18,7 @@ export function Car(opts = {}){
               container:config.container,
               collisionGroup:config.PLAYER,
               stage:config.stage,
-              texture:resources.car.texture,
+              texture:resources.RedCar.texture,
               collisionMask:config.PLAYER | config.CAR | config.WALL,
               wheelTexture:resources.wheel.texture
   }
@@ -114,4 +114,33 @@ export function Car(opts = {}){
     this.graphics.position.y = this.chassisBody.position[1];
     this.graphics.rotation =   this.chassisBody.angle;
   }
+  }
 }
+
+class BlueCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {x:50,
+                y:-200,
+                w:0.5,
+                h:0.875,
+                angle:-1.5708,
+                velX:15,
+                velY:0,
+                mass:1,
+                world:config.world,
+                container:config.container,
+                collisionGroup:config.PLAYER,
+                stage:config.stage,
+                texture:resources.BlueCar.texture,
+                collisionMask:config.PLAYER | config.CAR | config.WALL,
+                wheelTexture:resources.wheel.texture
+    }
+
+    opts = _.defaults(opts, defaults)
+    super(opts)
+  }
+}
+let Cars = {}
+Cars.BlueCar = BlueCar;
+Cars.BaseCar = BaseCar
+export {Cars}

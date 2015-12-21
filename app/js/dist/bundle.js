@@ -4,211 +4,28 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Wall = Wall;
-
-var _config = require('./config.js');
-
-//TODO make this a class
-
-function Wall(x, y, w, h, angle, container, world) {
-  this.wallBody = new p2.Body({
-    position: [x / _config.config.zoom, y / _config.config.zoom],
-    mass: 0,
-    angle: angle
-  });
-
-  this.wallBody.onCollision = function (body) {
-    var a = body;
-  };
-
-  this.world = world;
-  this.container = container;
-
-  this.boxShape = new p2.Box({ width: w / _config.config.zoom, height: h / _config.config.zoom });
-  this.boxShape.collisionGroup = _config.config.WALL;
-  this.boxShape.collisionMask = _config.config.PLAYER | _config.config.CAR;
-  this.wallBody.addShape(this.boxShape);
-
-  this.graphics = new PIXI.Graphics();
-  this.graphics.beginFill(0xff0000);
-
-  this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
-
-  this.graphics.position.x = this.wallBody.position[0];
-  this.graphics.position.y = this.wallBody.position[1];
-
-  this.load = function () {
-    this.world.addBody(this.wallBody);
-    this.container.addChild(this.graphics);
-  };
-}
-
-},{"./config.js":4}],2:[function(require,module,exports){
-'use strict';
-
-var _config = require('./config.js');
-
-var _Wall = require('./Wall.js');
-
-var _car = require('./car.js');
-
-var _loader = require('./loader.js');
-
-var _levels = require('./levels.js');
-
-var world = _config.config.world,
-    renderer = _config.config.renderer,
-    stage = _config.config.stage,
-    container = _config.config.container;
-
-var carTexture,
-    wheelTexture,
-    graphics,
-    chassisBody,
-    player,
-    cars = [],
-    menuText = {};
-
-var playing = false,
-    inMenu = true;
-
-//only initialize when all textures are loaded
-PIXI.loader.once('complete', init);
-
-function init() {
-
-  renderer.backgroundColor = 0x282B2A;
-  PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
-  var text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-  text.x = 20;
-  text.y = 20;
-  stage.addChild(text);
-
-  stage.addChild(container);
-  document.body.appendChild(renderer.view);
-  // Add transform to the container
-  container.position.x = 0; // center at origin
-  container.position.y = 0;
-  container.scale.x = _config.config.zoom; // zoom in
-  container.scale.y = -_config.config.zoom; // Note: we flip the y axis to make "up" the physics "up"
-
-  menuText.play = new PIXI.Text('Play', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-  menuText.play.x = renderer.width / 2 - menuText.play.width / 2;
-  menuText.play.y = 400;
-  stage.addChild(menuText.play);
-
-  menuText.title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-  menuText.title.x = renderer.width / 2 - menuText.title.width / 2;
-  menuText.title.y = 200;
-  stage.addChild(menuText.title);
-
-  menuText.sub = new PIXI.Text('Wow', { font: '24px Arial', fill: 0xFFFF00, align: 'center' });
-  menuText.sub.x = menuText.title.x + menuText.title.width - menuText.sub.width / 2;
-  menuText.sub.y = menuText.title.y + menuText.title.height;
-  menuText.sub.rotation = 100;
-  stage.addChild(menuText.sub);
-  // TODO: give everything onCollision functions
-  world.on("impact", function (evt) {
-    var bodyA = evt.bodyA,
-        bodyB = evt.bodyB;
-
-    bodyA.onCollision(bodyB);
-    bodyB.onCollision(bodyA);
-  });
-
-  var keys = {
-    '37': 0, // left
-    '39': 0, // right
-    '38': 0, // up
-    '40': 0, // down
-    '13': 0 //enter
-  };
-
-  //this magic number though
-  var maxSteer = 20000;
-  window.addEventListener("keydown", function (evt) {
-    keys[evt.keyCode] = 1;
-    onInputChange();
-  });
-  window.addEventListener("keyup", function (evt) {
-    keys[evt.keyCode] = 0;
-    onInputChange();
-  });
-  function onInputChange() {
-    // Steer value zero means straight forward. Positive is left and negative right.
-    if (playing) {
-      player.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
-      player.wheelSprite[0].rotation = player.wheelSprite[1].rotation = 0.5 * (keys[37] - keys[39]);
-      player.chassisBody.backWheel.setBrakeForce(0);
-      if (keys[40]) {
-        if (player.chassisBody.backWheel.getSpeed() > 0.1) {
-          // Moving forward - add some brake force to slow down
-          player.chassisBody.backWheel.setBrakeForce(2);
-        } else {
-          // Moving backwards - reverse the engine force
-          player.chassisBody.backWheel.setBrakeForce(2);
-        }
-      }
-    } else if (inMenu) {
-      playing = true;
-      inMenu = false;
-      for (var text in menuText) {
-        if (menuText.hasOwnProperty(text)) {
-          menuText[text].alpha = 0;
-        }
-      }
-      _levels.levels.test.load();
-      player = new _car.Car({ texture: PIXI.loader.resources.car.texture });
-    }
-  }
-
-  animate();
-}
-
-// Animation loop
-function animate(t) {
-  t = t || 0;
-  requestAnimationFrame(animate);
-
-  if (playing) {
-    world.step(1 / 60);
-    player.update();
-    if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
-      player.chassisBody.backWheel.setBrakeForce(2);
-      player.boxShape.collisionGroup = _config.config.CAR;
-      cars.push(player);
-      player = new _car.Car();
-    }
-    for (var i = cars.length - 1; i >= 0; i--) {
-      cars[i].update();
-    };
-  } else if (inMenu) {
-    menuText.sub.style = { font: Math.round(24 + t / 500) + 'px Arial', fill: 0xFFFF00, align: 'center' };
-  }
-
-  renderer.render(stage);
-}
-
-},{"./Wall.js":1,"./car.js":3,"./config.js":4,"./levels.js":5,"./loader.js":6}],3:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Car = Car;
+exports.Cars = undefined;
 
 var _config = require('./config.js');
 
 var _loader = require('./loader.js');
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var _ = require('lodash');
 
 //TODO Make this a class
-//TODO: Add an onCollision function. Would have to be part of the chassisBody
-function Car() {
+
+var BaseCar = function BaseCar() {
   var _this = this;
 
   var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  _classCallCheck(this, BaseCar);
 
   var defaults = { x: 50,
     y: -50,
@@ -222,7 +39,7 @@ function Car() {
     container: _config.config.container,
     collisionGroup: _config.config.PLAYER,
     stage: _config.config.stage,
-    texture: _loader.resources.car.texture,
+    texture: _loader.resources.RedCar.texture,
     collisionMask: _config.config.PLAYER | _config.config.CAR | _config.config.WALL,
     wheelTexture: _loader.resources.wheel.texture
   };
@@ -316,9 +133,240 @@ function Car() {
     this.graphics.position.y = this.chassisBody.position[1];
     this.graphics.rotation = this.chassisBody.angle;
   };
+};
+
+var BlueCar = (function (_BaseCar) {
+  _inherits(BlueCar, _BaseCar);
+
+  function BlueCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, BlueCar);
+
+    var defaults = { x: 50,
+      y: -200,
+      w: 0.5,
+      h: 0.875,
+      angle: -1.5708,
+      velX: 15,
+      velY: 0,
+      mass: 1,
+      world: _config.config.world,
+      container: _config.config.container,
+      collisionGroup: _config.config.PLAYER,
+      stage: _config.config.stage,
+      texture: _loader.resources.BlueCar.texture,
+      collisionMask: _config.config.PLAYER | _config.config.CAR | _config.config.WALL,
+      wheelTexture: _loader.resources.wheel.texture
+    };
+
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(BlueCar).call(this, opts));
+  }
+
+  return BlueCar;
+})(BaseCar);
+
+var Cars = {};
+Cars.BlueCar = BlueCar;
+Cars.BaseCar = BaseCar;
+exports.Cars = Cars;
+
+},{"./config.js":4,"./loader.js":6,"lodash":7}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Wall = Wall;
+
+var _config = require('./config.js');
+
+//TODO make this a class
+
+function Wall(x, y, w, h, angle, container, world) {
+  this.wallBody = new p2.Body({
+    position: [x / _config.config.zoom, y / _config.config.zoom],
+    mass: 0,
+    angle: angle
+  });
+
+  this.wallBody.onCollision = function (body) {
+    var a = body;
+  };
+
+  this.world = world;
+  this.container = container;
+
+  this.boxShape = new p2.Box({ width: w / _config.config.zoom, height: h / _config.config.zoom });
+  this.boxShape.collisionGroup = _config.config.WALL;
+  this.boxShape.collisionMask = _config.config.PLAYER | _config.config.CAR;
+  this.wallBody.addShape(this.boxShape);
+
+  this.graphics = new PIXI.Graphics();
+  this.graphics.beginFill(0xff0000);
+
+  this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
+
+  this.graphics.position.x = this.wallBody.position[0];
+  this.graphics.position.y = this.wallBody.position[1];
+
+  this.load = function () {
+    this.world.addBody(this.wallBody);
+    this.container.addChild(this.graphics);
+  };
 }
 
-},{"./config.js":4,"./loader.js":6,"lodash":7}],4:[function(require,module,exports){
+},{"./config.js":4}],3:[function(require,module,exports){
+'use strict';
+
+var _config = require('./config.js');
+
+var _Wall = require('./Wall.js');
+
+var _Cars = require('./Cars.js');
+
+var _loader = require('./loader.js');
+
+var _levels = require('./levels.js');
+
+var _ = require('lodash');
+var world = _config.config.world,
+    renderer = _config.config.renderer,
+    stage = _config.config.stage,
+    container = _config.config.container;
+
+var carTexture,
+    wheelTexture,
+    graphics,
+    chassisBody,
+    player,
+    cars = [],
+    menuText = {};
+
+var playing = false,
+    inMenu = true;
+
+//only initialize when all textures are loaded
+PIXI.loader.once('complete', init);
+
+function init() {
+
+  renderer.backgroundColor = 0x282B2A;
+  PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
+  var text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+  text.x = 20;
+  text.y = 20;
+  stage.addChild(text);
+
+  stage.addChild(container);
+  document.body.appendChild(renderer.view);
+  // Add transform to the container
+  container.position.x = 0; // center at origin
+  container.position.y = 0;
+  container.scale.x = _config.config.zoom; // zoom in
+  container.scale.y = -_config.config.zoom; // Note: we flip the y axis to make "up" the physics "up"
+
+  menuText.play = new PIXI.Text('Play', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+  menuText.play.x = renderer.width / 2 - menuText.play.width / 2;
+  menuText.play.y = 400;
+  stage.addChild(menuText.play);
+
+  menuText.title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+  menuText.title.x = renderer.width / 2 - menuText.title.width / 2;
+  menuText.title.y = 200;
+  stage.addChild(menuText.title);
+
+  menuText.sub = new PIXI.Text('Wow', { font: '24px Arial', fill: 0xFFFF00, align: 'center' });
+  menuText.sub.x = menuText.title.x + menuText.title.width - menuText.sub.width / 2;
+  menuText.sub.y = menuText.title.y + menuText.title.height;
+  menuText.sub.rotation = 100;
+  stage.addChild(menuText.sub);
+  // TODO: give everything onCollision functions
+  world.on("impact", function (evt) {
+    var bodyA = evt.bodyA,
+        bodyB = evt.bodyB;
+
+    bodyA.onCollision(bodyB);
+    bodyB.onCollision(bodyA);
+  });
+
+  var keys = {
+    '37': 0, // left
+    '39': 0, // right
+    '38': 0, // up
+    '40': 0, // down
+    '13': 0 //enter
+  };
+
+  //this magic number though
+  var maxSteer = 20000;
+  window.addEventListener("keydown", function (evt) {
+    keys[evt.keyCode] = 1;
+    onInputChange();
+  });
+  window.addEventListener("keyup", function (evt) {
+    keys[evt.keyCode] = 0;
+    onInputChange();
+  });
+  function onInputChange() {
+    // Steer value zero means straight forward. Positive is left and negative right.
+    if (playing) {
+      player.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
+      player.wheelSprite[0].rotation = player.wheelSprite[1].rotation = 0.5 * (keys[37] - keys[39]);
+      player.chassisBody.backWheel.setBrakeForce(0);
+      if (keys[40]) {
+        if (player.chassisBody.backWheel.getSpeed() > 0.1) {
+          // Moving forward - add some brake force to slow down
+          player.chassisBody.backWheel.setBrakeForce(2);
+        } else {
+          // Moving backwards - reverse the engine force
+          player.chassisBody.backWheel.setBrakeForce(2);
+        }
+      }
+    } else if (inMenu && keys[13]) {
+      playing = true;
+      inMenu = false;
+      for (var text in menuText) {
+        if (menuText.hasOwnProperty(text)) {
+          menuText[text].alpha = 0;
+        }
+      }
+      _levels.levels.test.load();
+      var car = _.sample(_Cars.Cars);
+      player = new car();
+    }
+  }
+
+  animate();
+}
+
+// Animation loop
+function animate(t) {
+  t = t || 0;
+  requestAnimationFrame(animate);
+
+  if (playing) {
+    world.step(1 / 60);
+    player.update();
+    if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
+      player.chassisBody.backWheel.setBrakeForce(2);
+      player.boxShape.collisionGroup = _config.config.CAR;
+      cars.push(player);
+      var car = _.sample(_Cars.Cars);
+      player = new car();
+    }
+    for (var i = cars.length - 1; i >= 0; i--) {
+      cars[i].update();
+    };
+  } else if (inMenu) {
+    menuText.sub.style = { font: Math.round(24 + t / 500) + 'px Arial', fill: 0xFFFF00, align: 'center' };
+  }
+
+  renderer.render(stage);
+}
+
+},{"./Cars.js":1,"./Wall.js":2,"./config.js":4,"./levels.js":5,"./loader.js":6,"lodash":7}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -379,13 +427,13 @@ levels.test = new Level("Test", [new _Wall.Wall(800, -300, 20, 600, 0, _config.c
 
 exports.levels = levels;
 
-},{"./Wall.js":1,"./config.js":4}],6:[function(require,module,exports){
+},{"./Wall.js":2,"./config.js":4}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var resources = PIXI.loader.add('car', 'assets/car1.png').add('wheel', 'assets/wheel.png').load().resources;
+var resources = PIXI.loader.add('RedCar', 'assets/RedCar.png').add('BlueCar', 'assets/BlueCar.png').add('wheel', 'assets/wheel.png').load().resources;
 
 exports.resources = resources;
 
@@ -12745,5 +12793,5 @@ exports.resources = resources;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}]},{},[2])
+},{}]},{},[3])
 //# sourceMappingURL=bundle.js.map
