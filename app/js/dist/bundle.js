@@ -1,14 +1,11 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var Car = require('./car.js'),
-    config = require('./config');
+var Car = require('./car'),
+    config = require('./config'),
+    Wall = require('./wall');
 
-var carTexture,
-    wheelTexture,
-    PLAYER = Math.pow(2, 1),
-    CAR = Math.pow(2, 2),
-    WALL = Math.pow(2, 3);
+var carTexture, wheelTexture;
 
 var renderer,
     stage,
@@ -26,30 +23,6 @@ var renderer,
     wall = [];
 
 init();
-
-//TODO Move this to own file and make a class
-function Wall(x, y, w, h, angle, container, world) {
-  this.wallBody = new p2.Body({
-    position: [x / config.zoom, y / config.zoom],
-    mass: 0,
-    angle: angle
-  });
-
-  this.boxShape = new p2.Box({ width: w / config.zoom, height: h / config.zoom });
-  this.boxShape.collisionGroup = WALL;
-  this.boxShape.collisionMask = PLAYER | CAR;
-  this.wallBody.addShape(this.boxShape);
-  world.addBody(this.wallBody);
-  this.graphics = new PIXI.Graphics();
-  this.graphics.beginFill(0xff0000);
-
-  this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
-
-  this.graphics.position.x = this.wallBody.position[0];
-  this.graphics.position.y = this.wallBody.position[1];
-
-  container.addChild(this.graphics);
-}
 
 function init() {
 
@@ -74,7 +47,7 @@ function init() {
     wall[2] = new Wall(400, -600, 800, 20, 0, container, world);
     wall[4] = new Wall(0, -300, 20, 600, 0, container, world);
 
-    player = new Car(50, -30, 0.5, 0.875, -1.5708, 15, 0, 2, world, container, PLAYER, stage, carTexture, PLAYER | CAR | WALL, wheelTexture);
+    player = new Car(50, -30, 0.5, 0.875, -1.5708, 15, 0, 2, world, container, config.PLAYER, stage, carTexture, config.PLAYER | config.CAR | config.WALL, wheelTexture);
     animate();
   });
   stage.addChild(container);
@@ -89,22 +62,22 @@ function init() {
     var bodyA = evt.bodyA,
         bodyB = evt.bodyB;
 
-    if (bodyA.shapes[0].collisionGroup == CAR || bodyA.shapes[0].collisionGroup == PLAYER) {
+    if (bodyA.shapes[0].collisionGroup == config.CAR || bodyA.shapes[0].collisionGroup == config.PLAYER) {
       bodyA.frontWheel.setSideFriction(3);
       bodyA.backWheel.setSideFriction(3);
     }
-    if (bodyB.shapes[0].collisionGroup == CAR || bodyB.shapes[0].collisionGroup == PLAYER) {
+    if (bodyB.shapes[0].collisionGroup == config.CAR || bodyB.shapes[0].collisionGroup == config.PLAYER) {
       bodyB.frontWheel.setSideFriction(3);
       bodyB.backWheel.setSideFriction(3);
     }
 
-    if (bodyB.shapes[0].collisionGroup == WALL && bodyA.shapes.collisionGroup == PLAYER) {
+    if (bodyB.shapes[0].collisionGroup == config.WALL && bodyA.shapes.collisionGroup == config.PLAYER) {
       window.setTimeout(function () {
         bodyA.frontWheel.setSideFriction(200);
         bodyA.backWheel.setSideFriction(200);
       }, 100);
     }
-    if (bodyA.shapes[0].collisionGroup == WALL && bodyB.shapes.collisionGroup == PLAYER) {
+    if (bodyA.shapes[0].collisionGroup == config.WALL && bodyB.shapes.collisionGroup == config.PLAYER) {
       window.setTimeout(function () {
         bodyB.frontWheel.setSideFriction(200);
         bodyB.backWheel.setSideFriction(200);
@@ -163,15 +136,15 @@ function animate(t) {
   // console.log(p2.vec2.length(player.chassisBody.velocity))
   if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
     player.chassisBody.backWheel.setBrakeForce(2);
-    player.boxShape.collisionGroup = CAR;
+    player.boxShape.collisionGroup = config.CAR;
     cars.push(player);
-    player = new Car(50, -30, 0.5, 0.875, -1.5708, 15, 0, 2, world, container, PLAYER, stage, carTexture, PLAYER | CAR | WALL, wheelTexture);
+    player = new Car(50, -30, 0.5, 0.875, -1.5708, 15, 0, 2, world, container, config.PLAYER, stage, carTexture, config.PLAYER | config.CAR | config.WALL, wheelTexture);
   }
   // Render scene
   renderer.render(stage);
 }
 
-},{"./car.js":2,"./config":3}],2:[function(require,module,exports){
+},{"./car":2,"./config":3,"./wall":4}],2:[function(require,module,exports){
 'use strict';
 
 var config = require('./config');
@@ -258,6 +231,39 @@ module.exports = function (x, y, w, h, angle, velX, velY, mass, world, container
 "use strict";
 
 exports.zoom = 50;
+exports.PLAYER = Math.pow(2, 1);
+exports.CAR = Math.pow(2, 2);
+exports.WALL = Math.pow(2, 3);
 
-},{}]},{},[1])
+},{}],4:[function(require,module,exports){
+'use strict';
+
+var config = require('./config');
+
+//TODO make this a class
+
+module.exports = function (x, y, w, h, angle, container, world) {
+  this.wallBody = new p2.Body({
+    position: [x / config.zoom, y / config.zoom],
+    mass: 0,
+    angle: angle
+  });
+
+  this.boxShape = new p2.Box({ width: w / config.zoom, height: h / config.zoom });
+  this.boxShape.collisionGroup = config.WALL;
+  this.boxShape.collisionMask = config.PLAYER | config.CAR;
+  this.wallBody.addShape(this.boxShape);
+  world.addBody(this.wallBody);
+  this.graphics = new PIXI.Graphics();
+  this.graphics.beginFill(0xff0000);
+
+  this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
+
+  this.graphics.position.x = this.wallBody.position[0];
+  this.graphics.position.y = this.wallBody.position[1];
+
+  container.addChild(this.graphics);
+};
+
+},{"./config":3}]},{},[1])
 //# sourceMappingURL=bundle.js.map
