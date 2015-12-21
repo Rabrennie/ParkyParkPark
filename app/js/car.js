@@ -1,9 +1,10 @@
-var config = require('./config'),
-    _ = require('lodash');
+import {config} from './config.js';
+import {resources} from './loader.js';
+var _ = require('lodash');
 
 //TODO Make this a class
 //TODO: Add an onCollision function. Would have to be part of the chassisBody
-module.exports = function(opts = {}){
+export function Car(opts = {}){
 
   const defaults = {x:50,
               y:-50,
@@ -17,13 +18,12 @@ module.exports = function(opts = {}){
               container:config.container,
               collisionGroup:config.PLAYER,
               stage:config.stage,
-              texture:null,
+              texture:resources.car.texture,
               collisionMask:config.PLAYER | config.CAR | config.WALL,
-              wheelTexture:null
+              wheelTexture:PIXI.loader.resources.wheel.texture
   }
 
-  opts = _.defaultsDeep(opts, defaults)
-
+  opts = _.defaults(opts, defaults)
   this.chassisBody = new p2.Body({
     position: [opts.x/config.zoom,opts.y/config.zoom],
     mass: opts.mass,

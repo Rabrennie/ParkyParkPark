@@ -1,14 +1,53 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var Car = require('./car'),
-    config = require('./config'),
-    Wall = require('./wall');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Wall = Wall;
 
-var world = config.world,
-    renderer = config.renderer,
-    stage = config.stage,
-    container = config.container;
+var _config = require('./config.js');
+
+//TODO make this a class
+
+function Wall(x, y, w, h, angle, container, world) {
+  this.wallBody = new p2.Body({
+    position: [x / _config.config.zoom, y / _config.config.zoom],
+    mass: 0,
+    angle: angle
+  });
+
+  this.boxShape = new p2.Box({ width: w / _config.config.zoom, height: h / _config.config.zoom });
+  this.boxShape.collisionGroup = _config.config.WALL;
+  this.boxShape.collisionMask = _config.config.PLAYER | _config.config.CAR;
+  this.wallBody.addShape(this.boxShape);
+  world.addBody(this.wallBody);
+  this.graphics = new PIXI.Graphics();
+  this.graphics.beginFill(0xff0000);
+
+  this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
+
+  this.graphics.position.x = this.wallBody.position[0];
+  this.graphics.position.y = this.wallBody.position[1];
+
+  container.addChild(this.graphics);
+}
+
+},{"./config.js":4}],2:[function(require,module,exports){
+'use strict';
+
+var _config = require('./config.js');
+
+var _Wall = require('./Wall.js');
+
+var _car = require('./car.js');
+
+var _loader = require('./loader.js');
+
+var world = _config.config.world,
+    renderer = _config.config.renderer,
+    stage = _config.config.stage,
+    container = _config.config.container;
 
 var carTexture,
     wheelTexture,
@@ -18,7 +57,8 @@ var carTexture,
     cars = [],
     wall = [];
 
-init();
+//only initialize when all textures are loaded
+PIXI.loader.once('complete', init);
 
 function init() {
 
@@ -29,46 +69,34 @@ function init() {
   text.y = 20;
   stage.addChild(text);
 
-  // TODO: make textures global
-  PIXI.loader.add('car', 'assets/car1.png').add('wheel', 'assets/wheel.png').load(function (loader, resources) {
-    carTexture = resources.car.texture;
-    wheelTexture = resources.wheel.texture;
-    wall[0] = new Wall(800, -300, 20, 600, 0, container, world);
-    wall[1] = new Wall(400, 0, 800, 20, 0, container, world);
-    wall[2] = new Wall(400, -600, 800, 20, 0, container, world);
-    wall[4] = new Wall(0, -300, 20, 600, 0, container, world);
-    player = new Car({ texture: carTexture, wheelTexture: wheelTexture });
-    animate();
-  });
-
   stage.addChild(container);
   document.body.appendChild(renderer.view);
   // Add transform to the container
   container.position.x = 0; // center at origin
   container.position.y = 0;
-  container.scale.x = config.zoom; // zoom in
-  container.scale.y = -config.zoom; // Note: we flip the y axis to make "up" the physics "up"
+  container.scale.x = _config.config.zoom; // zoom in
+  container.scale.y = -_config.config.zoom; // Note: we flip the y axis to make "up" the physics "up"
 
   world.on("impact", function (evt) {
     var bodyA = evt.bodyA,
         bodyB = evt.bodyB;
 
-    if (bodyA.shapes[0].collisionGroup == config.CAR || bodyA.shapes[0].collisionGroup == config.PLAYER) {
+    if (bodyA.shapes[0].collisionGroup == _config.config.CAR || bodyA.shapes[0].collisionGroup == _config.config.PLAYER) {
       bodyA.frontWheel.setSideFriction(3);
       bodyA.backWheel.setSideFriction(3);
     }
-    if (bodyB.shapes[0].collisionGroup == config.CAR || bodyB.shapes[0].collisionGroup == config.PLAYER) {
+    if (bodyB.shapes[0].collisionGroup == _config.config.CAR || bodyB.shapes[0].collisionGroup == _config.config.PLAYER) {
       bodyB.frontWheel.setSideFriction(3);
       bodyB.backWheel.setSideFriction(3);
     }
 
-    if (bodyB.shapes[0].collisionGroup == config.WALL && bodyA.shapes.collisionGroup == config.PLAYER) {
+    if (bodyB.shapes[0].collisionGroup == _config.config.WALL && bodyA.shapes.collisionGroup == _config.config.PLAYER) {
       window.setTimeout(function () {
         bodyA.frontWheel.setSideFriction(200);
         bodyA.backWheel.setSideFriction(200);
       }, 100);
     }
-    if (bodyA.shapes[0].collisionGroup == config.WALL && bodyB.shapes.collisionGroup == config.PLAYER) {
+    if (bodyA.shapes[0].collisionGroup == _config.config.WALL && bodyB.shapes.collisionGroup == _config.config.PLAYER) {
       window.setTimeout(function () {
         bodyB.frontWheel.setSideFriction(200);
         bodyB.backWheel.setSideFriction(200);
@@ -106,6 +134,14 @@ function init() {
       }
     }
   }
+
+  wall[0] = new _Wall.Wall(800, -300, 20, 600, 0, container, world);
+  wall[1] = new _Wall.Wall(400, 0, 800, 20, 0, container, world);
+  wall[2] = new _Wall.Wall(400, -600, 800, 20, 0, container, world);
+  wall[4] = new _Wall.Wall(0, -300, 20, 600, 0, container, world);
+
+  player = new _car.Car();
+  animate();
 }
 
 // Animation loop
@@ -126,23 +162,31 @@ function animate(t) {
   //check if player is moving
   if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
     player.chassisBody.backWheel.setBrakeForce(2);
-    player.boxShape.collisionGroup = config.CAR;
+    player.boxShape.collisionGroup = _config.config.CAR;
     cars.push(player);
-    player = new Car({ texture: carTexture, wheelTexture: wheelTexture });
+    player = new _car.Car();
   }
   // Render scene
   renderer.render(stage);
 }
 
-},{"./car":2,"./config":3,"./wall":4}],2:[function(require,module,exports){
+},{"./Wall.js":1,"./car.js":3,"./config.js":4,"./loader.js":5}],3:[function(require,module,exports){
 'use strict';
 
-var config = require('./config'),
-    _ = require('lodash');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Car = Car;
+
+var _config = require('./config.js');
+
+var _loader = require('./loader.js');
+
+var _ = require('lodash');
 
 //TODO Make this a class
 //TODO: Add an onCollision function. Would have to be part of the chassisBody
-module.exports = function () {
+function Car() {
   var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
   var defaults = { x: 50,
@@ -153,19 +197,18 @@ module.exports = function () {
     velX: 15,
     velY: 0,
     mass: 1,
-    world: config.world,
-    container: config.container,
-    collisionGroup: config.PLAYER,
-    stage: config.stage,
-    texture: null,
-    collisionMask: config.PLAYER | config.CAR | config.WALL,
-    wheelTexture: null
+    world: _config.config.world,
+    container: _config.config.container,
+    collisionGroup: _config.config.PLAYER,
+    stage: _config.config.stage,
+    texture: _loader.resources.car.texture,
+    collisionMask: _config.config.PLAYER | _config.config.CAR | _config.config.WALL,
+    wheelTexture: PIXI.loader.resources.wheel.texture
   };
 
-  opts = _.defaultsDeep(opts, defaults);
-
+  opts = _.defaults(opts, defaults);
   this.chassisBody = new p2.Body({
-    position: [opts.x / config.zoom, opts.y / config.zoom],
+    position: [opts.x / _config.config.zoom, opts.y / _config.config.zoom],
     mass: opts.mass,
     angle: opts.angle,
     velocity: [opts.velX, opts.velY]
@@ -238,53 +281,39 @@ module.exports = function () {
     this.graphics.position.y = this.chassisBody.position[1];
     this.graphics.rotation = this.chassisBody.angle;
   };
-};
+}
 
-},{"./config":3,"lodash":5}],3:[function(require,module,exports){
+},{"./config.js":4,"./loader.js":5,"lodash":6}],4:[function(require,module,exports){
 "use strict";
 
-exports.zoom = 50;
-exports.PLAYER = Math.pow(2, 1);
-exports.CAR = Math.pow(2, 2);
-exports.WALL = Math.pow(2, 3);
-exports.world = new p2.World({
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var config = {};
+config.zoom = 50;
+config.PLAYER = Math.pow(2, 1);
+config.CAR = Math.pow(2, 2);
+config.WALL = Math.pow(2, 3);
+config.world = new p2.World({
   gravity: [0, 0]
 });
-exports.renderer = PIXI.autoDetectRenderer(800, 600);
-exports.stage = new PIXI.Stage(0x282B2A);
-exports.container = new PIXI.Container();
+config.renderer = PIXI.autoDetectRenderer(800, 600);
+config.stage = new PIXI.Stage(0x282B2A);
+config.container = new PIXI.Container();
 
-},{}],4:[function(require,module,exports){
+exports.config = config;
+
+},{}],5:[function(require,module,exports){
 'use strict';
 
-var config = require('./config');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var resources = PIXI.loader.add('car', 'assets/car1.png').add('wheel', 'assets/wheel.png').load().resources;
 
-//TODO make this a class
+exports.resources = resources;
 
-module.exports = function (x, y, w, h, angle, container, world) {
-  this.wallBody = new p2.Body({
-    position: [x / config.zoom, y / config.zoom],
-    mass: 0,
-    angle: angle
-  });
-
-  this.boxShape = new p2.Box({ width: w / config.zoom, height: h / config.zoom });
-  this.boxShape.collisionGroup = config.WALL;
-  this.boxShape.collisionMask = config.PLAYER | config.CAR;
-  this.wallBody.addShape(this.boxShape);
-  world.addBody(this.wallBody);
-  this.graphics = new PIXI.Graphics();
-  this.graphics.beginFill(0xff0000);
-
-  this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
-
-  this.graphics.position.x = this.wallBody.position[0];
-  this.graphics.position.y = this.wallBody.position[1];
-
-  container.addChild(this.graphics);
-};
-
-},{"./config":3}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -12640,5 +12669,5 @@ module.exports = function (x, y, w, h, angle, container, world) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}]},{},[1])
+},{}]},{},[2])
 //# sourceMappingURL=bundle.js.map

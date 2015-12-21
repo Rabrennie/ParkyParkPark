@@ -1,6 +1,8 @@
-var Car = require('./car'),
-    config = require('./config'),
-    Wall = require('./wall');
+import {config} from './config.js';
+import {Wall} from './Wall.js';
+import {Car} from './car.js';
+import {resources} from './loader.js';
+
 
 var world = config.world,
     renderer = config.renderer,
@@ -15,7 +17,9 @@ var carTexture,
     cars=[],
     wall=[];
 
-init();
+//only initialize when all textures are loaded
+PIXI.loader.once('complete',init);
+
 
 function init(){
 
@@ -25,21 +29,6 @@ function init(){
   text.x = 20;
   text.y = 20;
   stage.addChild(text)
-
-  // TODO: make textures global
-  PIXI.loader
-  .add('car', 'assets/car1.png')
-  .add('wheel', 'assets/wheel.png')
-  .load(function (loader, resources) {
-    carTexture = resources.car.texture;
-    wheelTexture = resources.wheel.texture;
-    wall[0] = new Wall(800,-300,20,600,0,container,world)
-    wall[1] = new Wall(400,0,800,20,0,container,world)
-    wall[2] = new Wall(400,-600,800,20,0,container,world)
-    wall[4] = new Wall(0,-300,20,600,0,container,world)
-    player = new Car({texture:carTexture, wheelTexture:wheelTexture});
-    animate();
-  });
 
   stage.addChild(container);
   document.body.appendChild(renderer.view);
@@ -106,6 +95,14 @@ function init(){
           }
         }
       }
+
+      wall[0] = new Wall(800,-300,20,600,0,container,world)
+      wall[1] = new Wall(400,0,800,20,0,container,world)
+      wall[2] = new Wall(400,-600,800,20,0,container,world)
+      wall[4] = new Wall(0,-300,20,600,0,container,world)
+
+      player = new Car();
+      animate();
     }
 
     // Animation loop
@@ -128,7 +125,7 @@ function init(){
         player.chassisBody.backWheel.setBrakeForce(2);
         player.boxShape.collisionGroup = config.CAR;
         cars.push(player);
-        player = new Car({texture:carTexture, wheelTexture:wheelTexture});
+        player = new Car();
 
       }
       // Render scene

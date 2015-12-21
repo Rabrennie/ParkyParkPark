@@ -1,8 +1,8 @@
-var config = require('./config');
+import {config} from './config.js';
 
 //TODO make this a class
 
-module.exports = function(x,y,w,h,angle,container,world){
+export function Wall(x,y,w,h,angle,container,world){
   this.wallBody = new p2.Body({
     position: [x/config.zoom,y/config.zoom],
     mass: 0,
