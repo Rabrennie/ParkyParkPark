@@ -2,24 +2,26 @@ import {config} from './config.js';
 import {Wall} from './Wall.js';
 import {Car} from './car.js';
 import {resources} from './loader.js';
-
+import {levels} from './levels.js'
 
 var world = config.world,
-    renderer = config.renderer,
-    stage = config.stage,
-    container = config.container;
+renderer = config.renderer,
+stage = config.stage,
+container = config.container;
 
 var carTexture,
-    wheelTexture,
-    graphics,
-    chassisBody,
-    player,
-    cars=[],
-    wall=[];
+wheelTexture,
+graphics,
+chassisBody,
+player,
+cars=[],
+menuText = {};
+
+var playing = false,
+    inMenu = true;
 
 //only initialize when all textures are loaded
 PIXI.loader.once('complete',init);
-
 
 function init(){
 
@@ -38,96 +40,99 @@ function init(){
   container.scale.x =  config.zoom;  // zoom in
   container.scale.y = -config.zoom; // Note: we flip the y axis to make "up" the physics "up"
 
+  menuText.play = new PIXI.Text('Play',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
+  menuText.play.x = renderer.width/2 - menuText.play.width/2;
+  menuText.play.y = 400;
+  stage.addChild(menuText.play)
+
+  menuText.title = new PIXI.Text('Parky Park Park',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
+  menuText.title.x = renderer.width/2 - menuText.title.width/2;
+  menuText.title.y = 200;
+  stage.addChild(menuText.title)
+
+  menuText.sub = new PIXI.Text('Wow',{font : '24px Arial', fill : 0xFFFF00, align : 'center'});
+  menuText.sub.x = menuText.title.x + menuText.title.width - menuText.sub.width/2;
+  menuText.sub.y = menuText.title.y + menuText.title.height;
+  menuText.sub.rotation=100
+  stage.addChild(menuText.sub)
+  // TODO: give everything onCollision functions
   world.on("impact",function(evt){
-    var bodyA = evt.bodyA,
+    let bodyA = evt.bodyA,
     bodyB = evt.bodyB;
 
-    if(bodyA.shapes[0].collisionGroup == config.CAR || bodyA.shapes[0].collisionGroup == config.PLAYER) {
-      bodyA.frontWheel.setSideFriction(3);
-      bodyA.backWheel.setSideFriction(3);
-    }
-    if(bodyB.shapes[0].collisionGroup == config.CAR || bodyB.shapes[0].collisionGroup == config.PLAYER) {
-      bodyB.frontWheel.setSideFriction(3);
-      bodyB.backWheel.setSideFriction(3);
-    }
+    bodyA.onCollision(bodyB);
+    bodyB.onCollision(bodyA);
+  });
 
-    if(bodyB.shapes[0].collisionGroup == config.WALL && bodyA.shapes.collisionGroup == config.PLAYER) {
-      window.setTimeout(function(){
-        bodyA.frontWheel.setSideFriction(200);
-        bodyA.backWheel.setSideFriction(200);}, 100)
-      }
-      if(bodyA.shapes[0].collisionGroup == config.WALL && bodyB.shapes.collisionGroup == config.PLAYER) {
-        window.setTimeout(function(){
-          bodyB.frontWheel.setSideFriction(200);
-          bodyB.backWheel.setSideFriction(200);}, 100)
-        }
+  var keys = {
+    '37': 0, // left
+    '39': 0, // right
+    '38': 0, // up
+    '40': 0, // down
+    '13': 0 //enter
+  };
 
-
-      });
-
-      var keys = {
-        '37': 0, // left
-        '39': 0, // right
-        '38': 0, // up
-        '40': 0 // down
-      };
-      var maxSteer = 20000;
-      window.addEventListener("keydown",function (evt){
-        keys[evt.keyCode] = 1;
-        onInputChange();
-      });
-      window.addEventListener("keyup",function (evt){
-        keys[evt.keyCode] = 0;
-        onInputChange();
-      });
-      function onInputChange(){
-        // Steer value zero means straight forward. Positive is left and negative right.
-        player.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
-        player.wheelSprite[0].rotation = player.wheelSprite[1].rotation = 0.5*(keys[37] - keys[39])
-        player.chassisBody.backWheel.setBrakeForce(0);
-        if(keys[40]){
-          if(player.chassisBody.backWheel.getSpeed() > 0.1){
-            // Moving forward - add some brake force to slow down
-            player.chassisBody.backWheel.setBrakeForce(2);
-          } else {
-            // Moving backwards - reverse the engine force
-            player.chassisBody.backWheel.setBrakeForce(2);
-          }
-        }
-      }
-
-      wall[0] = new Wall(800,-300,20,600,0,container,world)
-      wall[1] = new Wall(400,0,800,20,0,container,world)
-      wall[2] = new Wall(400,-600,800,20,0,container,world)
-      wall[4] = new Wall(0,-300,20,600,0,container,world)
-
-      player = new Car();
-      animate();
-    }
-
-    // Animation loop
-    function animate(t){
-      t = t || 0;
-      requestAnimationFrame(animate);
-
-      // Move physics bodies forward in time
-      world.step(1/60);
-
-      // Transfer positions of the physics objects to Pixi.js
-      player.update();
-      for (var i = cars.length - 1; i >= 0; i--) {
-        cars[i].update()
-      };
-      // console.log(p2.vec2.length(player.chassisBody.velocity))
-
-      //check if player is moving
-      if(p2.vec2.length(player.chassisBody.velocity) <= 0.05){
+  //this magic number though
+  var maxSteer = 20000;
+  window.addEventListener("keydown",function (evt){
+    keys[evt.keyCode] = 1;
+    onInputChange();
+  });
+  window.addEventListener("keyup",function (evt){
+    keys[evt.keyCode] = 0;
+    onInputChange();
+  });
+  function onInputChange(){
+    // Steer value zero means straight forward. Positive is left and negative right.
+    if (playing) {player.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
+    player.wheelSprite[0].rotation = player.wheelSprite[1].rotation = 0.5*(keys[37] - keys[39])
+    player.chassisBody.backWheel.setBrakeForce(0);
+    if(keys[40]){
+      if(player.chassisBody.backWheel.getSpeed() > 0.1){
+        // Moving forward - add some brake force to slow down
         player.chassisBody.backWheel.setBrakeForce(2);
-        player.boxShape.collisionGroup = config.CAR;
-        cars.push(player);
-        player = new Car();
-
+      } else {
+        // Moving backwards - reverse the engine force
+        player.chassisBody.backWheel.setBrakeForce(2);
       }
-      // Render scene
-      renderer.render(stage);
     }
+  } else if(inMenu){
+    playing = true;
+    inMenu = false;
+    for (var text in menuText) {
+      if (menuText.hasOwnProperty(text)) {
+        menuText[text].alpha = 0;
+      }
+    }
+    levels.test.load()
+    player = new Car({texture:PIXI.loader.resources.car.texture});
+  }
+  }
+
+  animate();
+}
+
+// Animation loop
+function animate(t){
+  t = t || 0;
+  requestAnimationFrame(animate);
+
+  if (playing) {
+    world.step(1/60);
+    player.update();
+    if(p2.vec2.length(player.chassisBody.velocity) <= 0.05){
+      player.chassisBody.backWheel.setBrakeForce(2);
+      player.boxShape.collisionGroup = config.CAR;
+      cars.push(player);
+      player = new Car();
+
+    }
+    for (var i = cars.length - 1; i >= 0; i--) {
+      cars[i].update()
+    };
+  } else if(inMenu) {
+    menuText.sub.style = {font : Math.round(24+t/500)+'px Arial', fill : 0xFFFF00, align : 'center'};
+  }
+
+  renderer.render(stage);
+}

@@ -20,7 +20,7 @@ export function Car(opts = {}){
               stage:config.stage,
               texture:resources.car.texture,
               collisionMask:config.PLAYER | config.CAR | config.WALL,
-              wheelTexture:PIXI.loader.resources.wheel.texture
+              wheelTexture:resources.wheel.texture
   }
 
   opts = _.defaults(opts, defaults)
@@ -30,6 +30,19 @@ export function Car(opts = {}){
     angle: opts.angle,
     velocity: [opts.velX, opts.velY],
   });
+
+  this.chassisBody.onCollision = body => {
+    this.setSideFriction(3,3)
+    if(body.shapes[0].collisionGroup == config.WALL){
+      window.setTimeout(() => this.setSideFriction(200,200), 100)
+    }
+  }
+
+
+  this.setSideFriction = function(front, back) {
+    this.chassisBody.frontWheel.setSideFriction(front);
+    this.chassisBody.backWheel.setSideFriction(back);
+  }
 
   this.boxShape = new p2.Box({ width: opts.w, height: opts.h });
   this.boxShape.collisionGroup = opts.collisionGroup;

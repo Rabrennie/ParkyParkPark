@@ -17,11 +17,18 @@ function Wall(x, y, w, h, angle, container, world) {
     angle: angle
   });
 
+  this.wallBody.onCollision = function (body) {
+    var a = body;
+  };
+
+  this.world = world;
+  this.container = container;
+
   this.boxShape = new p2.Box({ width: w / _config.config.zoom, height: h / _config.config.zoom });
   this.boxShape.collisionGroup = _config.config.WALL;
   this.boxShape.collisionMask = _config.config.PLAYER | _config.config.CAR;
   this.wallBody.addShape(this.boxShape);
-  world.addBody(this.wallBody);
+
   this.graphics = new PIXI.Graphics();
   this.graphics.beginFill(0xff0000);
 
@@ -30,7 +37,10 @@ function Wall(x, y, w, h, angle, container, world) {
   this.graphics.position.x = this.wallBody.position[0];
   this.graphics.position.y = this.wallBody.position[1];
 
-  container.addChild(this.graphics);
+  this.load = function () {
+    this.world.addBody(this.wallBody);
+    this.container.addChild(this.graphics);
+  };
 }
 
 },{"./config.js":4}],2:[function(require,module,exports){
@@ -44,6 +54,8 @@ var _car = require('./car.js');
 
 var _loader = require('./loader.js');
 
+var _levels = require('./levels.js');
+
 var world = _config.config.world,
     renderer = _config.config.renderer,
     stage = _config.config.stage,
@@ -55,7 +67,10 @@ var carTexture,
     chassisBody,
     player,
     cars = [],
-    wall = [];
+    menuText = {};
+
+var playing = false,
+    inMenu = true;
 
 //only initialize when all textures are loaded
 PIXI.loader.once('complete', init);
@@ -77,39 +92,39 @@ function init() {
   container.scale.x = _config.config.zoom; // zoom in
   container.scale.y = -_config.config.zoom; // Note: we flip the y axis to make "up" the physics "up"
 
+  menuText.play = new PIXI.Text('Play', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+  menuText.play.x = renderer.width / 2 - menuText.play.width / 2;
+  menuText.play.y = 400;
+  stage.addChild(menuText.play);
+
+  menuText.title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+  menuText.title.x = renderer.width / 2 - menuText.title.width / 2;
+  menuText.title.y = 200;
+  stage.addChild(menuText.title);
+
+  menuText.sub = new PIXI.Text('Wow', { font: '24px Arial', fill: 0xFFFF00, align: 'center' });
+  menuText.sub.x = menuText.title.x + menuText.title.width - menuText.sub.width / 2;
+  menuText.sub.y = menuText.title.y + menuText.title.height;
+  menuText.sub.rotation = 100;
+  stage.addChild(menuText.sub);
+  // TODO: give everything onCollision functions
   world.on("impact", function (evt) {
     var bodyA = evt.bodyA,
         bodyB = evt.bodyB;
 
-    if (bodyA.shapes[0].collisionGroup == _config.config.CAR || bodyA.shapes[0].collisionGroup == _config.config.PLAYER) {
-      bodyA.frontWheel.setSideFriction(3);
-      bodyA.backWheel.setSideFriction(3);
-    }
-    if (bodyB.shapes[0].collisionGroup == _config.config.CAR || bodyB.shapes[0].collisionGroup == _config.config.PLAYER) {
-      bodyB.frontWheel.setSideFriction(3);
-      bodyB.backWheel.setSideFriction(3);
-    }
-
-    if (bodyB.shapes[0].collisionGroup == _config.config.WALL && bodyA.shapes.collisionGroup == _config.config.PLAYER) {
-      window.setTimeout(function () {
-        bodyA.frontWheel.setSideFriction(200);
-        bodyA.backWheel.setSideFriction(200);
-      }, 100);
-    }
-    if (bodyA.shapes[0].collisionGroup == _config.config.WALL && bodyB.shapes.collisionGroup == _config.config.PLAYER) {
-      window.setTimeout(function () {
-        bodyB.frontWheel.setSideFriction(200);
-        bodyB.backWheel.setSideFriction(200);
-      }, 100);
-    }
+    bodyA.onCollision(bodyB);
+    bodyB.onCollision(bodyA);
   });
 
   var keys = {
     '37': 0, // left
     '39': 0, // right
     '38': 0, // up
-    '40': 0 // down
+    '40': 0, // down
+    '13': 0 //enter
   };
+
+  //this magic number though
   var maxSteer = 20000;
   window.addEventListener("keydown", function (evt) {
     keys[evt.keyCode] = 1;
@@ -121,26 +136,32 @@ function init() {
   });
   function onInputChange() {
     // Steer value zero means straight forward. Positive is left and negative right.
-    player.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
-    player.wheelSprite[0].rotation = player.wheelSprite[1].rotation = 0.5 * (keys[37] - keys[39]);
-    player.chassisBody.backWheel.setBrakeForce(0);
-    if (keys[40]) {
-      if (player.chassisBody.backWheel.getSpeed() > 0.1) {
-        // Moving forward - add some brake force to slow down
-        player.chassisBody.backWheel.setBrakeForce(2);
-      } else {
-        // Moving backwards - reverse the engine force
-        player.chassisBody.backWheel.setBrakeForce(2);
+    if (playing) {
+      player.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
+      player.wheelSprite[0].rotation = player.wheelSprite[1].rotation = 0.5 * (keys[37] - keys[39]);
+      player.chassisBody.backWheel.setBrakeForce(0);
+      if (keys[40]) {
+        if (player.chassisBody.backWheel.getSpeed() > 0.1) {
+          // Moving forward - add some brake force to slow down
+          player.chassisBody.backWheel.setBrakeForce(2);
+        } else {
+          // Moving backwards - reverse the engine force
+          player.chassisBody.backWheel.setBrakeForce(2);
+        }
       }
+    } else if (inMenu) {
+      playing = true;
+      inMenu = false;
+      for (var text in menuText) {
+        if (menuText.hasOwnProperty(text)) {
+          menuText[text].alpha = 0;
+        }
+      }
+      _levels.levels.test.load();
+      player = new _car.Car({ texture: PIXI.loader.resources.car.texture });
     }
   }
 
-  wall[0] = new _Wall.Wall(800, -300, 20, 600, 0, container, world);
-  wall[1] = new _Wall.Wall(400, 0, 800, 20, 0, container, world);
-  wall[2] = new _Wall.Wall(400, -600, 800, 20, 0, container, world);
-  wall[4] = new _Wall.Wall(0, -300, 20, 600, 0, container, world);
-
-  player = new _car.Car();
   animate();
 }
 
@@ -149,28 +170,26 @@ function animate(t) {
   t = t || 0;
   requestAnimationFrame(animate);
 
-  // Move physics bodies forward in time
-  world.step(1 / 60);
-
-  // Transfer positions of the physics objects to Pixi.js
-  player.update();
-  for (var i = cars.length - 1; i >= 0; i--) {
-    cars[i].update();
-  };
-  // console.log(p2.vec2.length(player.chassisBody.velocity))
-
-  //check if player is moving
-  if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
-    player.chassisBody.backWheel.setBrakeForce(2);
-    player.boxShape.collisionGroup = _config.config.CAR;
-    cars.push(player);
-    player = new _car.Car();
+  if (playing) {
+    world.step(1 / 60);
+    player.update();
+    if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
+      player.chassisBody.backWheel.setBrakeForce(2);
+      player.boxShape.collisionGroup = _config.config.CAR;
+      cars.push(player);
+      player = new _car.Car();
+    }
+    for (var i = cars.length - 1; i >= 0; i--) {
+      cars[i].update();
+    };
+  } else if (inMenu) {
+    menuText.sub.style = { font: Math.round(24 + t / 500) + 'px Arial', fill: 0xFFFF00, align: 'center' };
   }
-  // Render scene
+
   renderer.render(stage);
 }
 
-},{"./Wall.js":1,"./car.js":3,"./config.js":4,"./loader.js":5}],3:[function(require,module,exports){
+},{"./Wall.js":1,"./car.js":3,"./config.js":4,"./levels.js":5,"./loader.js":6}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -187,6 +206,8 @@ var _ = require('lodash');
 //TODO Make this a class
 //TODO: Add an onCollision function. Would have to be part of the chassisBody
 function Car() {
+  var _this = this;
+
   var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
   var defaults = { x: 50,
@@ -203,7 +224,7 @@ function Car() {
     stage: _config.config.stage,
     texture: _loader.resources.car.texture,
     collisionMask: _config.config.PLAYER | _config.config.CAR | _config.config.WALL,
-    wheelTexture: PIXI.loader.resources.wheel.texture
+    wheelTexture: _loader.resources.wheel.texture
   };
 
   opts = _.defaults(opts, defaults);
@@ -213,6 +234,20 @@ function Car() {
     angle: opts.angle,
     velocity: [opts.velX, opts.velY]
   });
+
+  this.chassisBody.onCollision = function (body) {
+    _this.setSideFriction(3, 3);
+    if (body.shapes[0].collisionGroup == _config.config.WALL) {
+      window.setTimeout(function () {
+        return _this.setSideFriction(200, 200);
+      }, 100);
+    }
+  };
+
+  this.setSideFriction = function (front, back) {
+    this.chassisBody.frontWheel.setSideFriction(front);
+    this.chassisBody.backWheel.setSideFriction(back);
+  };
 
   this.boxShape = new p2.Box({ width: opts.w, height: opts.h });
   this.boxShape.collisionGroup = opts.collisionGroup;
@@ -283,7 +318,7 @@ function Car() {
   };
 }
 
-},{"./config.js":4,"./loader.js":5,"lodash":6}],4:[function(require,module,exports){
+},{"./config.js":4,"./loader.js":6,"lodash":7}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -306,6 +341,47 @@ exports.config = config;
 },{}],5:[function(require,module,exports){
 'use strict';
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.levels = undefined;
+
+var _config = require('./config.js');
+
+var _Wall = require('./Wall.js');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Level = (function () {
+  function Level(name, walls) {
+    _classCallCheck(this, Level);
+
+    this.name = name;
+    this.walls = walls;
+  }
+
+  _createClass(Level, [{
+    key: 'load',
+    value: function load() {
+      for (var i = 0; i < this.walls.length; i++) {
+        this.walls[i].load();
+      }
+    }
+  }]);
+
+  return Level;
+})();
+
+var levels = {};
+levels.test = new Level("Test", [new _Wall.Wall(800, -300, 20, 600, 0, _config.config.container, _config.config.world), new _Wall.Wall(400, 0, 800, 20, 0, _config.config.container, _config.config.world), new _Wall.Wall(400, -600, 800, 20, 0, _config.config.container, _config.config.world), new _Wall.Wall(0, -300, 20, 600, 0, _config.config.container, _config.config.world)]);
+
+exports.levels = levels;
+
+},{"./Wall.js":1,"./config.js":4}],6:[function(require,module,exports){
+'use strict';
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -313,7 +389,7 @@ var resources = PIXI.loader.add('car', 'assets/car1.png').add('wheel', 'assets/w
 
 exports.resources = resources;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 /**
  * @license
