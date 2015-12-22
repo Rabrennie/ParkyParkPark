@@ -105,7 +105,7 @@ function init(){
         menuText[text].alpha = 0;
       }
     }
-    levels.test.load()
+    levels.test.load(levels.test.texture)
     var car = _.sample(Cars)
     player =  new car();
   }

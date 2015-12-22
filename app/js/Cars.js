@@ -102,11 +102,6 @@ class BaseCar {
   this.sprite.position={x:-this.boxShape.width/2, y:this.boxShape.height/2}
   this.sprite.scale.x = -this.sprite.scale.x
 
-
-  //wheel sprites
-
-
-  // Add the box to our container
   opts.container.addChild(this.graphics);
 
   this.update = function(){

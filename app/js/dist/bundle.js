@@ -123,9 +123,6 @@ var BaseCar = function BaseCar() {
   this.sprite.position = { x: -this.boxShape.width / 2, y: this.boxShape.height / 2 };
   this.sprite.scale.x = -this.sprite.scale.x;
 
-  //wheel sprites
-
-  // Add the box to our container
   opts.container.addChild(this.graphics);
 
   this.update = function () {
@@ -203,17 +200,8 @@ function Wall(x, y, w, h, angle, container, world) {
   this.boxShape.collisionMask = _config.config.PLAYER | _config.config.CAR;
   this.wallBody.addShape(this.boxShape);
 
-  this.graphics = new PIXI.Graphics();
-  this.graphics.beginFill(0xff0000);
-
-  this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
-
-  this.graphics.position.x = this.wallBody.position[0];
-  this.graphics.position.y = this.wallBody.position[1];
-
   this.load = function () {
     this.world.addBody(this.wallBody);
-    this.container.addChild(this.graphics);
   };
 }
 
@@ -332,7 +320,7 @@ function init() {
           menuText[text].alpha = 0;
         }
       }
-      _levels.levels.test.load();
+      _levels.levels.test.load(_levels.levels.test.texture);
       var car = _.sample(_Cars.Cars);
       player = new car();
     }
@@ -400,22 +388,38 @@ var _config = require('./config.js');
 
 var _Wall = require('./Wall.js');
 
+var _loader = require('./loader.js');
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Level = (function () {
-  function Level(name, walls) {
+  function Level(name, walls, texture) {
     _classCallCheck(this, Level);
 
     this.name = name;
     this.walls = walls;
+    this.graphics = new PIXI.Graphics();
+    this.graphics.beginFill(0xff0000);
+    this.graphics.width = 800;
+    this.graphics.height = 600;
+    this.texture = texture;
   }
 
   _createClass(Level, [{
     key: 'load',
     value: function load() {
+
       for (var i = 0; i < this.walls.length; i++) {
         this.walls[i].load();
       }
+      this.sprite = new PIXI.Sprite(_loader.resources[this.texture].texture);
+      this.sprite.position.x = 0 / _config.config.zoom;
+      this.sprite.position.y = -600 / _config.config.zoom;
+      this.sprite.scale.x = 1 / _config.config.zoom;
+      this.sprite.scale.y = 1 / _config.config.zoom;
+      console.log(this.sprite);
+      this.graphics.addChild(this.sprite);
+      _config.config.container.addChild(this.graphics);
     }
   }]);
 
@@ -423,17 +427,17 @@ var Level = (function () {
 })();
 
 var levels = {};
-levels.test = new Level("Test", [new _Wall.Wall(800, -300, 20, 600, 0, _config.config.container, _config.config.world), new _Wall.Wall(400, 0, 800, 20, 0, _config.config.container, _config.config.world), new _Wall.Wall(400, -600, 800, 20, 0, _config.config.container, _config.config.world), new _Wall.Wall(0, -300, 20, 600, 0, _config.config.container, _config.config.world)]);
+levels.test = new Level("Test", [new _Wall.Wall(800, -300, 20, 600, 0, _config.config.container, _config.config.world), new _Wall.Wall(400, 0, 800, 20, 0, _config.config.container, _config.config.world), new _Wall.Wall(400, -600, 800, 20, 0, _config.config.container, _config.config.world), new _Wall.Wall(0, -300, 20, 600, 0, _config.config.container, _config.config.world)], 'TestLevel');
 
 exports.levels = levels;
 
-},{"./Wall.js":2,"./config.js":4}],6:[function(require,module,exports){
+},{"./Wall.js":2,"./config.js":4,"./loader.js":6}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var resources = PIXI.loader.add('RedCar', 'assets/RedCar.png').add('BlueCar', 'assets/BlueCar.png').add('wheel', 'assets/wheel.png').load().resources;
+var resources = PIXI.loader.add('TestLevel', 'assets/TestLevel.png').add('RedCar', 'assets/RedCar.png').add('BlueCar', 'assets/BlueCar.png').add('wheel', 'assets/wheel.png').load().resources;
 
 exports.resources = resources;
 
