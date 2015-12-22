@@ -16,7 +16,8 @@ graphics,
 chassisBody,
 player,
 cars=[],
-menuText = {};
+menuText = {},
+test2
 
 var playing = false,
     inMenu = true;
@@ -45,6 +46,13 @@ function init(){
   menuText.play.x = renderer.width/2 - menuText.play.width/2;
   menuText.play.y = 400;
   stage.addChild(menuText.play)
+
+  menuText.sprite = new PIXI.Sprite(resources.MenuArrow.texture);
+  menuText.sprite.width = 16;
+  menuText.sprite.height = 16;
+  menuText.sprite.x = menuText.play.x - 20;
+  test2 = menuText.sprite.y = menuText.play.y + 5;
+  stage.addChild(menuText.sprite)
 
   menuText.title = new PIXI.Text('Parky Park Park',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
   menuText.title.x = renderer.width/2 - menuText.title.width/2;
@@ -135,6 +143,16 @@ function animate(t){
     };
   } else if(inMenu) {
     menuText.sub.style = {font : Math.round(24+t/500)+'px Arial', fill : 0xFFFF00, align : 'center'};
+    let test = (t/25)%28
+
+    if(test < 14){
+      menuText.sprite.height = 16-test
+      menuText.sprite.y = test2 + test/2
+    } else {
+      menuText.sprite.height = 2+test-14
+      menuText.sprite.y = test2 +14 - test/2
+    }
+
   }
 
   renderer.render(stage);
