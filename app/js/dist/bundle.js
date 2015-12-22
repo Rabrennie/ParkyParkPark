@@ -141,23 +141,7 @@ var BlueCar = (function (_BaseCar) {
 
     _classCallCheck(this, BlueCar);
 
-    var defaults = { x: 50,
-      y: -200,
-      w: 0.5,
-      h: 0.875,
-      angle: -1.5708,
-      velX: 15,
-      velY: 0,
-      mass: 1,
-      world: _config.config.world,
-      container: _config.config.container,
-      collisionGroup: _config.config.PLAYER,
-      stage: _config.config.stage,
-      texture: _loader.resources.BlueCar.texture,
-      collisionMask: _config.config.PLAYER | _config.config.CAR | _config.config.WALL,
-      wheelTexture: _loader.resources.wheel.texture
-    };
-
+    var defaults = { texture: _loader.resources.BlueCar.texture };
     opts = _.defaults(opts, defaults);
     return _possibleConstructorReturn(this, Object.getPrototypeOf(BlueCar).call(this, opts));
   }
@@ -165,9 +149,61 @@ var BlueCar = (function (_BaseCar) {
   return BlueCar;
 })(BaseCar);
 
+var GreenCar = (function (_BaseCar2) {
+  _inherits(GreenCar, _BaseCar2);
+
+  function GreenCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, GreenCar);
+
+    var defaults = { texture: _loader.resources.GreenCar.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(GreenCar).call(this, opts));
+  }
+
+  return GreenCar;
+})(BaseCar);
+
+var OrangeCar = (function (_BaseCar3) {
+  _inherits(OrangeCar, _BaseCar3);
+
+  function OrangeCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, OrangeCar);
+
+    var defaults = { texture: _loader.resources.OrangeCar.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(OrangeCar).call(this, opts));
+  }
+
+  return OrangeCar;
+})(BaseCar);
+
+var RedStripeCar = (function (_BaseCar4) {
+  _inherits(RedStripeCar, _BaseCar4);
+
+  function RedStripeCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, RedStripeCar);
+
+    var defaults = { texture: _loader.resources.RedStripeCar.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(RedStripeCar).call(this, opts));
+  }
+
+  return RedStripeCar;
+})(BaseCar);
+
 var Cars = {};
 Cars.BlueCar = BlueCar;
+Cars.GreenCar = GreenCar;
+Cars.OrangeCar = OrangeCar;
+Cars.OrangeCar = RedStripeCar;
 Cars.BaseCar = BaseCar;
+
 exports.Cars = Cars;
 
 },{"./config.js":4,"./loader.js":6,"lodash":7}],2:[function(require,module,exports){
@@ -474,7 +510,7 @@ exports.levels = levels;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var resources = PIXI.loader.add('TestLevel', 'assets/TestLevel.png').add('MenuArrow', 'assets/MenuArrow.png').add('RedCar', 'assets/RedCar.png').add('BlueCar', 'assets/BlueCar.png').add('wheel', 'assets/wheel.png').load().resources;
+var resources = PIXI.loader.add('TestLevel', 'assets/TestLevel.png').add('MenuArrow', 'assets/MenuArrow.png').add('RedCar', 'assets/RedCar.png').add('BlueCar', 'assets/BlueCar.png').add('GreenCar', 'assets/GreenCar.png').add('OrangeCar', 'assets/OrangeCar.png').add('RedStripeCar', 'assets/RedStripeCar.png').add('wheel', 'assets/wheel.png').load().resources;
 
 exports.resources = resources;
 

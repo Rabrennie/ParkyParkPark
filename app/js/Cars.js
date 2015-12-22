@@ -117,28 +117,41 @@ class BaseCar {
 
 class BlueCar extends BaseCar {
   constructor(opts={}) {
-    const defaults = {x:50,
-                y:-200,
-                w:0.5,
-                h:0.875,
-                angle:-1.5708,
-                velX:15,
-                velY:0,
-                mass:1,
-                world:config.world,
-                container:config.container,
-                collisionGroup:config.PLAYER,
-                stage:config.stage,
-                texture:resources.BlueCar.texture,
-                collisionMask:config.PLAYER | config.CAR | config.WALL,
-                wheelTexture:resources.wheel.texture
-    }
-
+    const defaults = {texture:resources.BlueCar.texture}
     opts = _.defaults(opts, defaults)
     super(opts)
   }
 }
+
+class GreenCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.GreenCar.texture}
+    opts = _.defaults(opts, defaults)
+    super(opts)
+  }
+}
+
+class OrangeCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.OrangeCar.texture}
+    opts = _.defaults(opts, defaults)
+    super(opts)
+  }
+}
+
+class RedStripeCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.RedStripeCar.texture}
+    opts = _.defaults(opts, defaults)
+    super(opts)
+  }
+}
+
 let Cars = {}
 Cars.BlueCar = BlueCar;
+Cars.GreenCar = GreenCar;
+Cars.OrangeCar = OrangeCar;
+Cars.OrangeCar = RedStripeCar;
 Cars.BaseCar = BaseCar
+
 export {Cars}
