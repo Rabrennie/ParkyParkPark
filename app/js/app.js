@@ -25,6 +25,83 @@ var playing = false,
 //only initialize when all textures are loaded
 PIXI.loader.once('complete',init);
 
+//make this work
+//I should have listened in math class
+function explode(point, force){
+
+  point[0] = point[0]/config.zoom
+  point[1] = -point[1]/config.zoom
+  let testgraphics = new PIXI.Graphics();
+  testgraphics.beginFill(0xFFFFFF);
+  testgraphics.drawCircle(point[0], point[1], 1)
+  container.addChild(testgraphics);
+
+  let angle = Math.atan2(player.chassisBody.position[1]-point[1],player.chassisBody.position[0]-point[0])
+  let distance = p2.vec2.distance(player.chassisBody.position, point)
+
+  let target = player.chassisBody.position;
+  let bomb = point;
+
+  console.log(target, bomb)
+  let testbody = new p2.Body({
+            mass: 1,
+            position: [point[0], -point[1]],
+            angle: 0,
+            velocity: [0, 0],
+            angularVelocity: 0,
+
+        });
+  let circleShape = new p2.Circle({ radius:1, collisionMask:config.CAR, collisionMask:config.PLAYER | config.CAR | config.WALL, });
+  testbody.addShape(circleShape)
+  testbody.fixedX = testbody.fixedY = true;
+  console.log(testbody)
+  testbody.on("impact",function(evt){
+    console.log(evt);
+  });
+
+  world.addBody(testbody)
+  let direction =[]
+  p2.vec2.sub(direction,target, bomb)
+  direction[0] = direction[0]*force
+  direction[1] = direction[1]*force
+  player.setSideFriction(0,0)
+  console.log(direction)
+  player.chassisBody.applyImpulse(direction)
+  window.setTimeout(()=>car.setSideFriction(200,200),300)
+  for (var i = 0; i < cars.length; i++) {
+    let car = cars[i];
+    let target = car.chassisBody.position;
+    let bomb = point;
+
+    console.log(target, bomb)
+    let direction =[]
+    p2.vec2.sub(direction,target, bomb)
+    direction[0] = direction[0]*force
+    direction[1] = direction[1]*force
+    car.setSideFriction(0,0)
+    console.log(direction)
+    car.chassisBody.applyImpulse(direction)
+    window.setTimeout(()=>car.setSideFriction(200,200),300)
+  }
+  // console.log(Math.cos(angle) * ((10 - distance) / 1))
+  // player.setSideFriction(3,3)
+  // player.chassisBody.velocity[0] -= Math.cos(angle) * ((10 - distance) / 1);
+  // player.chassisBody.velocity[1] += Math.sin(angle) * ((10 - distance) / 1);
+  // window.setTimeout(()=>player.setSideFriction(200,200),300)
+  //
+  // for (var i = 0; i < cars.length; i++) {
+  //   let car = cars[i];
+  //   let angle = Math.atan2(car.chassisBody.position[1]-point[1],car.chassisBody.position[0]-point[0])
+  //   let distance = p2.vec2.distance(car.chassisBody.position, point)
+  //   car.setSideFriction(3,3)
+  //   car.chassisBody.velocity[0] -= Math.cos(angle) * ((2 - distance) / 1);
+  //   car.chassisBody.velocity[1] += Math.sin(angle) * ((2 - distance) / 1);
+  //   window.setTimeout(()=>car.setSideFriction(200,200),300)
+  //
+  // }
+
+}
+
 function init(){
 
   renderer.backgroundColor = 0x040404;
@@ -104,6 +181,9 @@ function init(){
         // Moving backwards - reverse the engine force
         player.chassisBody.backWheel.setBrakeForce(2);
       }
+    }
+    if(keys[38]){
+      explode([400,300], 2)
     }
   } else if(inMenu && keys[13]){
     playing = true;
