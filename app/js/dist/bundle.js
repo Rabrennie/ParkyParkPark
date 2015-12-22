@@ -392,7 +392,12 @@ var playing = false,
 PIXI.loader.once('complete', init);
 
 function init() {
-
+  var test = renderer.view;
+  test.onclick = function (e) {
+    if (playing) {
+      new _Bomb.Bomb(e.offsetX, -e.offsetY);
+    }
+  };
   renderer.backgroundColor = 0x040404;
   PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
   var text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
