@@ -68,7 +68,7 @@ function explode(point, force){
 
   window.setTimeout(() => {
     world.removeBody(this.body);
-    container.removeChild(testgraphics);}, 10)
+    container.removeChild(testgraphics);}, 33)
 }
 
 function init(){

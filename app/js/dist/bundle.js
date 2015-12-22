@@ -332,7 +332,7 @@ function explode(point, force) {
   window.setTimeout(function () {
     world.removeBody(_this.body);
     container.removeChild(testgraphics);
-  }, 10);
+  }, 33);
 }
 
 function init() {
