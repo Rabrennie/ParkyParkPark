@@ -4,6 +4,7 @@ import {Cars} from './Cars.js';
 import {resources} from './loader.js';
 import {levels} from './levels.js';
 import {Explosion} from './Explosion.js'
+import {Bomb} from './Bomb.js'
 
 var _ = require('lodash');
 var world = config.world,
@@ -109,9 +110,6 @@ function init(){
         player.chassisBody.backWheel.setBrakeForce(2);
       }
     }
-    if(keys[38]){
-      new Explosion([400,300], 5)
-    }
   } else if(inMenu && keys[13]){
     playing = true;
     inMenu = false;
@@ -123,6 +121,7 @@ function init(){
     levels.test.load(levels.test.texture)
     var car = _.sample(Cars)
     player =  new car();
+    new Bomb(300,-300)
   }
   }
 

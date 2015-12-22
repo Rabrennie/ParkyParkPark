@@ -22,7 +22,6 @@ class Level {
     this.sprite.position.y = -600/config.zoom;
     this.sprite.scale.x = 1/config.zoom;
     this.sprite.scale.y = 1/config.zoom
-    console.log(this.sprite)
     this.graphics.addChild(this.sprite);
     config.container.addChild(this.graphics);
   }

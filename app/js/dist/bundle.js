@@ -4,6 +4,51 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Bomb = undefined;
+
+var _config = require('./config.js');
+
+var _Explosion = require('./Explosion.js');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Bomb = exports.Bomb = function Bomb(x, y) {
+  var _this = this;
+
+  _classCallCheck(this, Bomb);
+
+  this.body = new p2.Body({
+    mass: 0,
+    position: [x / _config.config.zoom, y / _config.config.zoom],
+    angle: 0,
+    velocity: [0, 0],
+    angularVelocity: 0,
+    collisionResponse: false
+  });
+  this.body.addShape(new p2.Circle({ radius: 1 }));
+
+  this.graphics = new PIXI.Graphics();
+  this.graphics.beginFill(0xFFFFFF);
+  this.graphics.drawCircle(0, 0, 0.5);
+  this.graphics.position.x = this.body.position[0];
+  this.graphics.position.y = this.body.position[1];
+  _config.config.world.addBody(this.body);
+  _config.config.container.addChild(this.graphics);
+  this.body.onCollision = function (e) {
+    console.log(e);
+    _config.config.world.removeBody(_this.body);
+    _config.config.container.removeChild(_this.graphics);
+    _this.explosion.explode();
+  };
+  this.explosion = new _Explosion.Explosion([x, y], 8, 2);
+};
+
+},{"./Explosion.js":3,"./config.js":6}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.Cars = undefined;
 
 var _config = require('./config.js');
@@ -206,7 +251,7 @@ Cars.BaseCar = BaseCar;
 
 exports.Cars = Cars;
 
-},{"./config.js":5,"./loader.js":7,"lodash":8}],2:[function(require,module,exports){
+},{"./config.js":6,"./loader.js":8,"lodash":9}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -216,17 +261,16 @@ exports.Explosion = Explosion;
 
 var _config = require('./config.js');
 
-function Explosion(point, force) {
+function Explosion(point, force, radius) {
   var _this = this;
 
   this.point = [];
   this.point[0] = point[0] / _config.config.zoom;
-  this.point[1] = -point[1] / _config.config.zoom;
+  this.point[1] = point[1] / _config.config.zoom;
 
   var testgraphics = new PIXI.Graphics();
   testgraphics.beginFill(0xFFFFFF);
-  testgraphics.drawCircle(0, 0, 1.5);
-  _config.config.container.addChild(testgraphics);
+  testgraphics.drawCircle(0, 0, radius - 0.5);
 
   this.body = new p2.Body({
     mass: 0,
@@ -236,13 +280,9 @@ function Explosion(point, force) {
     angularVelocity: 0,
     collisionResponse: false
   });
-  this.body.addShape(new p2.Circle({ radius: 2 }));
-  _config.config.world.addBody(this.body);
+  this.body.addShape(new p2.Circle({ radius: radius }));
 
-  this.body.fixedX = true;
-  this.body.fixedY = true;
   this.body.onCollision = function (e) {
-    console.log(e, _this.point);
     var target = e.position;
     var bomb = _this.point;
     var distance = p2.vec2.distance(e.position, _this.point);
@@ -250,19 +290,23 @@ function Explosion(point, force) {
     p2.vec2.sub(direction, target, bomb);
     direction[0] = direction[0] / distance * force;
     direction[1] = direction[1] / distance * force;
-    console.log(direction);
     e.applyImpulse(direction);
   };
+
   testgraphics.position.x = this.body.position[0];
   testgraphics.position.y = this.body.position[1];
 
-  window.setTimeout(function () {
-    _config.config.world.removeBody(_this.body);
-    _config.config.container.removeChild(testgraphics);
-  }, 33);
+  this.explode = function () {
+    _config.config.world.addBody(_this.body);
+    _config.config.container.addChild(testgraphics);
+    window.setTimeout(function () {
+      _config.config.world.removeBody(_this.body);
+      _config.config.container.removeChild(testgraphics);
+    }, 33);
+  };
 }
 
-},{"./config.js":5}],3:[function(require,module,exports){
+},{"./config.js":6}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -309,7 +353,7 @@ function Wall(x, y, w, h, angle, container, world) {
   };
 }
 
-},{"./config.js":5}],4:[function(require,module,exports){
+},{"./config.js":6}],5:[function(require,module,exports){
 'use strict';
 
 var _config = require('./config.js');
@@ -323,6 +367,8 @@ var _loader = require('./loader.js');
 var _levels = require('./levels.js');
 
 var _Explosion = require('./Explosion.js');
+
+var _Bomb = require('./Bomb.js');
 
 var _ = require('lodash');
 var world = _config.config.world,
@@ -429,9 +475,6 @@ function init() {
           player.chassisBody.backWheel.setBrakeForce(2);
         }
       }
-      if (keys[38]) {
-        new _Explosion.Explosion([400, 300], 5);
-      }
     } else if (inMenu && keys[13]) {
       playing = true;
       inMenu = false;
@@ -443,6 +486,7 @@ function init() {
       _levels.levels.test.load(_levels.levels.test.texture);
       var car = _.sample(_Cars.Cars);
       player = new car();
+      new _Bomb.Bomb(300, -300);
     }
   }
 
@@ -491,7 +535,7 @@ function animate(t) {
   renderer.render(stage);
 }
 
-},{"./Cars.js":1,"./Explosion.js":2,"./Wall.js":3,"./config.js":5,"./levels.js":6,"./loader.js":7,"lodash":8}],5:[function(require,module,exports){
+},{"./Bomb.js":1,"./Cars.js":2,"./Explosion.js":3,"./Wall.js":4,"./config.js":6,"./levels.js":7,"./loader.js":8,"lodash":9}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -511,7 +555,7 @@ config.container = new PIXI.Container();
 
 exports.config = config;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -554,7 +598,6 @@ var Level = (function () {
       this.sprite.position.y = -600 / _config.config.zoom;
       this.sprite.scale.x = 1 / _config.config.zoom;
       this.sprite.scale.y = 1 / _config.config.zoom;
-      console.log(this.sprite);
       this.graphics.addChild(this.sprite);
       _config.config.container.addChild(this.graphics);
     }
@@ -568,7 +611,7 @@ levels.test = new Level("Test", [new _Wall.Wall(800, -300, 20, 600, 0, _config.c
 
 exports.levels = levels;
 
-},{"./Wall.js":3,"./config.js":5,"./loader.js":7}],7:[function(require,module,exports){
+},{"./Wall.js":4,"./config.js":6,"./loader.js":8}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -578,7 +621,7 @@ var resources = PIXI.loader.add('TestLevel', 'assets/TestLevel.png').add('MenuAr
 
 exports.resources = resources;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -12934,5 +12977,5 @@ exports.resources = resources;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}]},{},[4])
+},{}]},{},[5])
 //# sourceMappingURL=bundle.js.map
