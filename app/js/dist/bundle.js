@@ -206,7 +206,63 @@ Cars.BaseCar = BaseCar;
 
 exports.Cars = Cars;
 
-},{"./config.js":4,"./loader.js":6,"lodash":7}],2:[function(require,module,exports){
+},{"./config.js":5,"./loader.js":7,"lodash":8}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Explosion = Explosion;
+
+var _config = require('./config.js');
+
+function Explosion(point, force) {
+  var _this = this;
+
+  this.point = [];
+  this.point[0] = point[0] / _config.config.zoom;
+  this.point[1] = -point[1] / _config.config.zoom;
+
+  var testgraphics = new PIXI.Graphics();
+  testgraphics.beginFill(0xFFFFFF);
+  testgraphics.drawCircle(0, 0, 1.5);
+  _config.config.container.addChild(testgraphics);
+
+  this.body = new p2.Body({
+    mass: 0,
+    position: this.point,
+    angle: 0,
+    velocity: [0, 0],
+    angularVelocity: 0,
+    collisionResponse: false
+  });
+  this.body.addShape(new p2.Circle({ radius: 2 }));
+  _config.config.world.addBody(this.body);
+
+  this.body.fixedX = true;
+  this.body.fixedY = true;
+  this.body.onCollision = function (e) {
+    console.log(e, _this.point);
+    var target = e.position;
+    var bomb = _this.point;
+    var distance = p2.vec2.distance(e.position, _this.point);
+    var direction = [];
+    p2.vec2.sub(direction, target, bomb);
+    direction[0] = direction[0] / distance * force;
+    direction[1] = direction[1] / distance * force;
+    console.log(direction);
+    e.applyImpulse(direction);
+  };
+  testgraphics.position.x = this.body.position[0];
+  testgraphics.position.y = this.body.position[1];
+
+  window.setTimeout(function () {
+    _config.config.world.removeBody(_this.body);
+    _config.config.container.removeChild(testgraphics);
+  }, 33);
+}
+
+},{"./config.js":5}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -253,7 +309,7 @@ function Wall(x, y, w, h, angle, container, world) {
   };
 }
 
-},{"./config.js":4}],3:[function(require,module,exports){
+},{"./config.js":5}],4:[function(require,module,exports){
 'use strict';
 
 var _config = require('./config.js');
@@ -265,6 +321,8 @@ var _Cars = require('./Cars.js');
 var _loader = require('./loader.js');
 
 var _levels = require('./levels.js');
+
+var _Explosion = require('./Explosion.js');
 
 var _ = require('lodash');
 var world = _config.config.world,
@@ -286,54 +344,6 @@ var playing = false,
 
 //only initialize when all textures are loaded
 PIXI.loader.once('complete', init);
-
-//make this work
-//I should have listened in math class
-function explode(point, force) {
-  var _this = this;
-
-  this.point = [];
-  this.point[0] = point[0] / _config.config.zoom;
-  this.point[1] = -point[1] / _config.config.zoom;
-
-  var testgraphics = new PIXI.Graphics();
-  testgraphics.beginFill(0xFFFFFF);
-  testgraphics.drawCircle(0, 0, 1.5);
-  container.addChild(testgraphics);
-
-  this.body = new p2.Body({
-    mass: 0,
-    position: this.point,
-    angle: 0,
-    velocity: [0, 0],
-    angularVelocity: 0,
-    collisionResponse: false
-  });
-  this.body.addShape(new p2.Circle({ radius: 2 }));
-  world.addBody(this.body);
-
-  this.body.fixedX = true;
-  this.body.fixedY = true;
-  this.body.onCollision = function (e) {
-    console.log(e, _this.point);
-    var target = e.position;
-    var bomb = _this.point;
-    var distance = p2.vec2.distance(e.position, _this.point);
-    var direction = [];
-    p2.vec2.sub(direction, target, bomb);
-    direction[0] = direction[0] / distance * force;
-    direction[1] = direction[1] / distance * force;
-    console.log(direction);
-    e.applyImpulse(direction);
-  };
-  testgraphics.position.x = this.body.position[0];
-  testgraphics.position.y = this.body.position[1];
-
-  window.setTimeout(function () {
-    world.removeBody(_this.body);
-    container.removeChild(testgraphics);
-  }, 33);
-}
 
 function init() {
 
@@ -420,7 +430,7 @@ function init() {
         }
       }
       if (keys[38]) {
-        new explode([400, 300], 5);
+        new _Explosion.Explosion([400, 300], 5);
       }
     } else if (inMenu && keys[13]) {
       playing = true;
@@ -481,7 +491,7 @@ function animate(t) {
   renderer.render(stage);
 }
 
-},{"./Cars.js":1,"./Wall.js":2,"./config.js":4,"./levels.js":5,"./loader.js":6,"lodash":7}],4:[function(require,module,exports){
+},{"./Cars.js":1,"./Explosion.js":2,"./Wall.js":3,"./config.js":5,"./levels.js":6,"./loader.js":7,"lodash":8}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -501,7 +511,7 @@ config.container = new PIXI.Container();
 
 exports.config = config;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -558,7 +568,7 @@ levels.test = new Level("Test", [new _Wall.Wall(800, -300, 20, 600, 0, _config.c
 
 exports.levels = levels;
 
-},{"./Wall.js":2,"./config.js":4,"./loader.js":6}],6:[function(require,module,exports){
+},{"./Wall.js":3,"./config.js":5,"./loader.js":7}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -568,7 +578,7 @@ var resources = PIXI.loader.add('TestLevel', 'assets/TestLevel.png').add('MenuAr
 
 exports.resources = resources;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -12924,5 +12934,5 @@ exports.resources = resources;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}]},{},[3])
+},{}]},{},[4])
 //# sourceMappingURL=bundle.js.map
