@@ -96,7 +96,7 @@ class BaseCar {
   this.sprite = new PIXI.Sprite(opts.texture);
   this.graphics.addChild(this.sprite);
 
-  this.graphics.drawRect(-this.boxShape.width/2, -this.boxShape.height/2, this.boxShape.width, this.boxShape.height);
+  // this.graphics.drawRect(-this.boxShape.width/2, -this.boxShape.height/2, this.boxShape.width, this.boxShape.height);
   this.sprite.width = -this.boxShape.width;
   this.sprite.height = -this.boxShape.height;
   this.sprite.position={x:-this.boxShape.width/2, y:this.boxShape.height/2}
@@ -104,11 +104,14 @@ class BaseCar {
 
   opts.container.addChild(this.graphics);
 
+
+
   this.update = function(){
     this.graphics.position.x = this.chassisBody.position[0];
     this.graphics.position.y = this.chassisBody.position[1];
     this.graphics.rotation =   this.chassisBody.angle;
   }
+  this.update();
   }
 }
 

@@ -17,7 +17,7 @@ chassisBody,
 player,
 cars=[],
 menuText = {},
-test2
+menuSpriteY;
 
 var playing = false,
     inMenu = true;
@@ -27,7 +27,7 @@ PIXI.loader.once('complete',init);
 
 function init(){
 
-  renderer.backgroundColor = 0x282B2A;
+  renderer.backgroundColor = 0x040404;
   PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
   var text = new PIXI.Text('MEGA ALPHA EDITION',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
   text.x = 20;
@@ -51,7 +51,7 @@ function init(){
   menuText.sprite.width = 16;
   menuText.sprite.height = 16;
   menuText.sprite.x = menuText.play.x - 20;
-  test2 = menuText.sprite.y = menuText.play.y + 5;
+  menuSpriteY = menuText.sprite.y = menuText.play.y + 5;
   stage.addChild(menuText.sprite)
 
   menuText.title = new PIXI.Text('Parky Park Park',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
@@ -59,7 +59,7 @@ function init(){
   menuText.title.y = 200;
   stage.addChild(menuText.title)
 
-  menuText.sub = new PIXI.Text('Wow',{font : '24px Arial', fill : 0xFFFF00, align : 'center'});
+  menuText.sub = new PIXI.Text('Wow',{font : '30px Arial', fill : 0xFFFF00, align : 'center'});
   menuText.sub.x = menuText.title.x + menuText.title.width - menuText.sub.width/2;
   menuText.sub.y = menuText.title.y + menuText.title.height;
   menuText.sub.rotation=100
@@ -142,15 +142,23 @@ function animate(t){
       cars[i].update()
     };
   } else if(inMenu) {
-    menuText.sub.style = {font : Math.round(24+t/500)+'px Arial', fill : 0xFFFF00, align : 'center'};
-    let test = (t/25)%28
 
-    if(test < 14){
-      menuText.sprite.height = 16-test
-      menuText.sprite.y = test2 + test/2
+    if((t/2000)%1 <= 0.5){
+      menuText.sub.scale.x = 1.5-(t/2000)%1
+      menuText.sub.scale.y = 1.5-(t/2000)%1
     } else {
-      menuText.sprite.height = 2+test-14
-      menuText.sprite.y = test2 +14 - test/2
+      menuText.sub.scale.x = 0.5+(t/2000)%1
+      menuText.sub.scale.y = 0.5+(t/2000)%1
+    }
+
+    let menuSpriteThing= (t/25)%28
+
+    if(menuSpriteThing < 14){
+      menuText.sprite.height = 16-menuSpriteThing
+      menuText.sprite.y = menuSpriteY + menuSpriteThing/2
+    } else {
+      menuText.sprite.height = 2+menuSpriteThing-14
+      menuText.sprite.y = menuSpriteY +14 - menuSpriteThing/2
     }
 
   }
