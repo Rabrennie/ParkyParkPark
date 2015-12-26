@@ -1,5 +1,7 @@
 var gulp        = require('gulp');
+var copy        = require('gulp-copy');
 var gutil       = require('gulp-util');
+var watch       = require('gulp-watch');
 var source      = require('vinyl-source-stream');
 var babelify    = require('babelify');
 var watchify    = require('watchify');
@@ -30,11 +32,23 @@ function bundle() {
             browserSync.notify("Browserify Error!");
             this.emit("end");
         })
-        .pipe(exorcist('app/js/dist/bundle.js.map'))
+        .pipe(exorcist('./dist/js/bundle.js.map'))
         .pipe(source('bundle.js'))
-        .pipe(gulp.dest('./app/js/dist'))
+        .pipe(gulp.dest('./dist/js'))
         .pipe(browserSync.stream({once: true}));
 }
+
+gulp.task('watch:css', function() {
+    return gulp.src('app/css/style.css')
+        .pipe(watch('app/css/style.css'))
+        .pipe(gulp.dest('dist/css'));
+});
+
+gulp.task('watch:html', function() {
+    return gulp.src('app/index.html')
+        .pipe(watch('app/index.html'))
+        .pipe(gulp.dest('dist'));
+});
 
 /**
  * Gulp task alias
@@ -43,11 +57,13 @@ gulp.task('bundle', function () {
     return bundle();
 });
 
+gulp.task('watch:all', ['watch:css', 'watch:html']);
+
 /**
  * First bundle, then serve from the ./app directory
  */
-gulp.task('default', ['bundle'], function () {
+gulp.task('default', ['watch:all', 'bundle'], function () {
     browserSync.init({
-        server: "./app"
+        server: "./dist"
     });
 });

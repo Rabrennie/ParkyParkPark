@@ -24,8 +24,10 @@
     "connect-history-api-fallback": "^1.1.0",
     "exorcist": "^0.4.0",
     "gulp": "^3.9.0",
+    "gulp-copy": "0.0.2",
     "gulp-notify": "^2.2.0",
     "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.5",
     "lodash": "^3.10.1",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.6.1"
