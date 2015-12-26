@@ -23,7 +23,6 @@ export class Bomb {
     config.world.addBody(this.body);
     config.container.addChild(this.graphics);
     this.body.onCollision = (e) =>{
-      console.log(e)
       config.world.removeBody(this.body);
       config.container.removeChild(this.graphics);
       this.explosion.explode();
