@@ -50,6 +50,11 @@ gulp.task('watch:html', function() {
         .pipe(gulp.dest('dist'));
 });
 
+gulp.task('copy:assets', function() {
+    return gulp.src('app/assets/**/*')
+        .pipe(gulp.dest('dist/assets'));
+});
+
 /**
  * Gulp task alias
  */
@@ -59,11 +64,13 @@ gulp.task('bundle', function () {
 
 gulp.task('watch:all', ['watch:css', 'watch:html']);
 
+gulp.task('browser', function() {
+    browserSync.init({
+        server: './dist'
+    });
+});
+
 /**
  * First bundle, then serve from the ./app directory
  */
-gulp.task('default', ['watch:all', 'bundle'], function () {
-    browserSync.init({
-        server: "./dist"
-    });
-});
+gulp.task('default', ['watch:all', 'copy:assets', 'bundle', 'browser']);
