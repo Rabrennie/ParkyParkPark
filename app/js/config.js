@@ -4,6 +4,8 @@ export default {
     PLAYER: Math.pow(2,1),
     CAR: Math.pow(2,2),
     WALL: Math.pow(2,3),
+    BOMB: Math.pow(2,4),
+    EXPLOSION: Math.pow(2,5),
     world: new p2.World({
       gravity : [0,0]
     }),

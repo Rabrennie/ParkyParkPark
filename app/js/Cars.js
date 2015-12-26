@@ -16,7 +16,7 @@ const defaults = {
   collisionGroup:config.PLAYER,
   stage:config.stage,
   texture:resources.RedCar.texture,
-  collisionMask:config.PLAYER | config.CAR | config.WALL,
+  collisionMask:config.PLAYER | config.CAR | config.WALL | config.BOMB | config.EXPLOSION,
   wheelTexture:resources.wheel.texture
 };
 
@@ -77,6 +77,7 @@ class BaseCar {
     this.graphics = new PIXI.Graphics();
     this.graphics.beginFill(0xff0000);
     this.wheelSprite = [];
+    this.wheelPositions = [{x:-0.25, y:0.15}, {x:0.4-0.016, y:0.15},{x:-0.25, y:-0.35}, {x:0.4-0.016, y:-0.35}]
 
     for (var i = 3; i >= 0; i--) {
       this.wheelSprite[i] = new PIXI.Sprite(opts.wheelTexture);
@@ -84,25 +85,16 @@ class BaseCar {
       this.wheelSprite[i].scale.x = 0.016;
       this.wheelSprite[i].scale.y = 0.016;
       this.wheelSprite[i].anchor = new PIXI.Point(1,0.5)
+      this.wheelSprite[i].position = this.wheelPositions[i]
     }
 
-    //FL
-    this.wheelSprite[0].position={x:-0.25, y:0.15};
-    this.boxShape1 = new p2.Box({ width: this.wheelSprite[0].width, height: this.wheelSprite[0].height });
+    // this.boxShape1 = new p2.Box({ width: this.wheelSprite[0].width, height: this.wheelSprite[0].height });
+    //
+    // this.boxShape1.anchor = new PIXI.Point(1,0.5);
+    // this.boxShape1.position[0] = -0.25;
+    // this.boxShape1.position[1] = 0.15;
+    // this.chassisBody.addShape(this.boxShape1);
 
-    this.boxShape1.anchor = new PIXI.Point(1,0.5);
-    this.boxShape1.position[0] = -0.25;
-    this.boxShape1.position[1] = 0.15;
-    this.chassisBody.addShape(this.boxShape1);
-
-    //FR
-    this.wheelSprite[1].position={x:0.4-this.wheelSprite[1].width, y:0.15};
-
-    //BL
-    this.wheelSprite[2].position={x:-0.25, y:-0.35};
-
-    //BR
-    this.wheelSprite[3].position={x:0.4-this.wheelSprite[3].width, y:-0.35};
     this.sprite = new PIXI.Sprite(opts.texture);
     this.graphics.addChild(this.sprite);
 

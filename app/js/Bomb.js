@@ -12,6 +12,8 @@ export class Bomb {
          collisionResponse:false
      });
     this.body.addShape(new p2.Circle({ radius: 1 }));
+    this.body.shapes[0].collisionGroup = config.BOMB;
+    this.body.shapes[0].collisionMask = config.PLAYER | config.CAR ;
 
     this.graphics= new PIXI.Graphics();
     this.graphics.beginFill(0xFFFFFF);
