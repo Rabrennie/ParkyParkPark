@@ -25,6 +25,7 @@
     "exorcist": "^0.4.0",
     "gulp": "^3.9.0",
     "gulp-copy": "0.0.2",
+    "gulp-gh-pages": "^0.5.4",
     "gulp-notify": "^2.2.0",
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.5",

@@ -35,5 +35,5 @@ node_modules
 
 app/js/dist
 .idea
-# Removing dist for now to easily push to gh-pages
-# dist
+dist
+.publish
