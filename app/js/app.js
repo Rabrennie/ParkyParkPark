@@ -81,10 +81,10 @@ function init(){
         shapeB = evt.shapeB;
 
     if(bodyA.onCollision){
-      bodyA.onCollision(bodyB, shapeA);
+      bodyA.onCollision(bodyB, shapeA, bodyB === player.chassisBody);
     }
     if(bodyB.onCollision){
-      bodyB.onCollision(bodyA, shapeB);
+      bodyB.onCollision(bodyA, shapeB, bodyA === player.chassisBody);
     }
   });
 

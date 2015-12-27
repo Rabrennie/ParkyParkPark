@@ -29,6 +29,12 @@ class BaseCar {
     this.graphics.position.x = this.chassisBody.position[0];
     this.graphics.position.y = this.chassisBody.position[1];
     this.graphics.rotation =   this.chassisBody.angle;
+
+    // Check if we should (still) display the Hit Effects
+    if (this.hitFrames > 0) {
+      this.hitFrames--
+      this.hitSprite.alpha = this.hitFrames > 0 ? (this.hitFrames / 10) + 0.6 : 0
+    }
   };
 
   setSideFriction(front, back) {
@@ -65,10 +71,13 @@ class BaseCar {
       velocity: [opts.velX, opts.velY]
     });
 
-    this.chassisBody.onCollision = body => {
+    this.chassisBody.onCollision = (body, otherShape, playerHit) => {
       this.setSideFriction(3,3);
       if(body.shapes[0].collisionGroup == config.WALL){
         window.setTimeout(() => this.setSideFriction(200,200), 100)
+      } else if (playerHit) {
+        // Display the hit effect
+        this.hitFrames = 6
       }
     };
 
@@ -111,12 +120,25 @@ class BaseCar {
 
     this.sprite = new PIXI.Sprite(opts.texture);
     this.graphics.addChild(this.sprite);
-
-
     this.sprite.width = -this.boxShape.width;
     this.sprite.height = -this.boxShape.height;
     this.sprite.position={x:-this.boxShape.width/2, y:this.boxShape.height/2};
     this.sprite.scale.x = -this.sprite.scale.x;
+
+
+    this.hitFrames = 0
+    // "Extra" Sprite for displaying on-hit graphics
+    this.hitSprite = new PIXI.Sprite(
+        opts.texture === resources.OrangeTruck.texture
+        ? resources.TruckHit.texture
+        : resources.CarHit.texture
+    );
+    this.graphics.addChild(this.hitSprite);
+    this.hitSprite.width = -this.boxShape.width;
+    this.hitSprite.height = -this.boxShape.height;
+    this.hitSprite.position={x:-this.boxShape.width/2, y:this.boxShape.height/2};
+    this.hitSprite.scale.x = -this.hitSprite.scale.x;
+    this.hitSprite.alpha = 0
 
     opts.container.addChild(this.graphics);
 
@@ -154,7 +176,7 @@ class BaseTruck extends BaseCar {
     // this.graphics.drawRect(this.boxShapeBack.position[0]-this.boxShapeBack.width/2, this.boxShapeBack.position[1]-this.boxShapeBack.height/2, this.boxShapeBack.width, this.boxShapeBack.height);
     console.log(this.sprite.texture)
 
-    this.chassisBody.onCollision = (body,shape) => {
+    this.chassisBody.onCollision = (body, shape, playerHit) => {
       //Need to fix the sensitivity of the explosive. They're about as sensitive as a tumblr feminist right now
       if (shape.collisionGroup == config.TRUCKBACK && this.exploded == false && (p2.vec2.length(body.velocity) >= 1 || p2.vec2.length(this.chassisBody.velocity) >= 1)) {
         this.explosion = new Explosion([this.chassisBody.position[0]*config.zoom,this.chassisBody.position[1]*config.zoom], 8, 2);
@@ -169,6 +191,9 @@ class BaseTruck extends BaseCar {
       this.setSideFriction(3,3);
       if(body.shapes[0].collisionGroup == config.WALL){
         window.setTimeout(() => this.setSideFriction(200,200), 100)
+      } else if (playerHit) {
+        // Display the hit effect
+        this.hitFrames = 4
       }
     };
 

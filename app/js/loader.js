@@ -9,5 +9,7 @@ export default PIXI.loader
     .add('RektTruck', 'assets/RektTruck.png')
     .add('OrangeTruck', 'assets/OrangeTruck.png')
     .add('wheel', 'assets/wheel.png')
+    .add('CarHit', 'assets/CarHit.png')
+    .add('TruckHit', 'assets/Truckhit.png')
     .load()
     .resources;
