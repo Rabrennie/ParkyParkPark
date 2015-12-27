@@ -179,6 +179,7 @@ export class BaseTruck extends BaseCar {
     console.log(this.sprite.texture)
 
     this.chassisBody.onCollision = (body,shape) => {
+      //Need to fix the sensitivity of the explosive. They're about as sensitive as a tumblr feminist right now
       if (shape.collisionGroup == config.TRUCKBACK && this.exploded == false && (p2.vec2.length(body.velocity) >= 1 || p2.vec2.length(this.chassisBody.velocity) >= 1)) {
         this.explosion = new Explosion([this.chassisBody.position[0]*config.zoom,this.chassisBody.position[1]*config.zoom], 8, 2);
         this.explosion.explode();
