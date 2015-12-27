@@ -111,6 +111,21 @@ var BaseCar = (function () {
       this.chassisBody.frontWheel.setSideFriction(front);
       this.chassisBody.backWheel.setSideFriction(back);
     }
+  }, {
+    key: 'onInput',
+    value: function onInput(keys) {
+      this.wheelSprite[0].rotation = this.wheelSprite[1].rotation = 0.5 * (keys[37] - keys[39]);
+      this.chassisBody.backWheel.setBrakeForce(0);
+      if (keys[40]) {
+        if (this.chassisBody.backWheel.getSpeed() > 0.1) {
+          // Moving forward - add some brake force to slow down
+          this.chassisBody.backWheel.setBrakeForce(2);
+        } else {
+          // Moving backwards - reverse the engine force
+          this.chassisBody.backWheel.setBrakeForce(2);
+        }
+      }
+    }
   }]);
 
   function BaseCar() {
@@ -606,17 +621,7 @@ function init() {
     // Steer value zero means straight forward. Positive is left and negative right.
     if (playing) {
       player.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
-      player.wheelSprite[0].rotation = player.wheelSprite[1].rotation = 0.5 * (keys[37] - keys[39]);
-      player.chassisBody.backWheel.setBrakeForce(0);
-      if (keys[40]) {
-        if (player.chassisBody.backWheel.getSpeed() > 0.1) {
-          // Moving forward - add some brake force to slow down
-          player.chassisBody.backWheel.setBrakeForce(2);
-        } else {
-          // Moving backwards - reverse the engine force
-          player.chassisBody.backWheel.setBrakeForce(2);
-        }
-      }
+      player.onInput(keys);
     } else if (inMenu && keys[13]) {
       playing = true;
       inMenu = false;

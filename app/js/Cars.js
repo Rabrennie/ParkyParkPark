@@ -36,6 +36,20 @@ class BaseCar {
     this.chassisBody.backWheel.setSideFriction(back);
   }
 
+  onInput(keys){
+    this.wheelSprite[0].rotation = this.wheelSprite[1].rotation = 0.5*(keys[37] - keys[39]);
+    this.chassisBody.backWheel.setBrakeForce(0);
+    if(keys[40]){
+      if(this.chassisBody.backWheel.getSpeed() > 0.1){
+        // Moving forward - add some brake force to slow down
+        this.chassisBody.backWheel.setBrakeForce(2);
+      } else {
+        // Moving backwards - reverse the engine force
+        this.chassisBody.backWheel.setBrakeForce(2);
+      }
+    }
+  }
+
   constructor(opts = {}) {
     //fix so wheels show
     defaults.wheelTexture = resources.wheel.texture;
