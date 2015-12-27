@@ -2,6 +2,7 @@ var gulp        = require('gulp');
 var copy        = require('gulp-copy');
 var gutil       = require('gulp-util');
 var watch       = require('gulp-watch');
+var ghPages     = require('gulp-gh-pages');
 var source      = require('vinyl-source-stream');
 var babelify    = require('babelify');
 var watchify    = require('watchify');
@@ -53,6 +54,11 @@ gulp.task('watch:html', function() {
 gulp.task('copy:assets', function() {
     return gulp.src('app/assets/**/*')
         .pipe(gulp.dest('dist/assets'));
+});
+
+gulp.task('deploy', function() {
+    return gulp.src(`dist/**/*`, { base: 'dist' })
+        .pipe(ghPages());
 });
 
 /**
