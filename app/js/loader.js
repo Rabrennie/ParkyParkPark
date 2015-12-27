@@ -6,6 +6,8 @@ export default PIXI.loader
     .add('GreenCar', 'assets/GreenCar.png')
     .add('OrangeCar', 'assets/OrangeCar.png')
     .add('RedStripeCar', 'assets/RedStripeCar.png')
+    .add('RektTruck', 'assets/RektTruck.png')
+    .add('OrangeTruck', 'assets/OrangeTruck.png')
     .add('wheel', 'assets/wheel.png')
     .load()
     .resources;

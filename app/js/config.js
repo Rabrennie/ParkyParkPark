@@ -6,6 +6,7 @@ export default {
     WALL: Math.pow(2,3),
     BOMB: Math.pow(2,4),
     EXPLOSION: Math.pow(2,5),
+    TRUCKBACK: Math.pow(2,6),
     world: new p2.World({
       gravity : [0,0]
     }),

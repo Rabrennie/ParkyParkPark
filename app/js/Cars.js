@@ -1,5 +1,7 @@
 import config from './config.js';
 import resources from './loader.js';
+import {Explosion} from './Explosion.js'
+
 var _ = require('lodash');
 
 const defaults = {
@@ -16,7 +18,7 @@ const defaults = {
   collisionGroup:config.PLAYER,
   stage:config.stage,
   texture:resources.RedCar.texture,
-  collisionMask:config.PLAYER | config.CAR | config.WALL | config.BOMB | config.EXPLOSION,
+  collisionMask:config.PLAYER | config.CAR | config.TRUCKBACK |config.WALL | config.BOMB | config.EXPLOSION,
   wheelTexture:resources.wheel.texture,
   wheelPositions: [{x:-0.25, y:0.15}, {x:0.4-0.048, y:0.15},{x:-0.25, y:-0.35}, {x:0.4-0.048, y:-0.35}]
 };
@@ -82,7 +84,7 @@ class BaseCar {
     this.wheelSprite = [];
 
 
-    for (var i = 3; i >= 0; i--) {
+    for (var i = opts.wheelPositions.length-1; i >= 0; i--) {
       this.wheelSprite[i] = new PIXI.Sprite(opts.wheelTexture);
       this.wheelSprite[i].scale.x = 0.016;
       this.wheelSprite[i].scale.y = 0.016;
@@ -94,7 +96,7 @@ class BaseCar {
     this.sprite = new PIXI.Sprite(opts.texture);
     this.graphics.addChild(this.sprite);
 
-    // this.graphics.drawRect(-this.boxShape.width/2, -this.boxShape.height/2, this.boxShape.width, this.boxShape.height);
+
     this.sprite.width = -this.boxShape.width;
     this.sprite.height = -this.boxShape.height;
     this.sprite.position={x:-this.boxShape.width/2, y:this.boxShape.height/2};
@@ -143,5 +145,55 @@ export class RedStripeCar extends BaseCar {
     const defaults = {texture:resources.RedStripeCar.texture};
     opts = _.defaults(opts, defaults);
     super(opts)
+  }
+}
+
+export class BaseTruck extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.OrangeTruck.texture,
+      w:0.7,
+      h:1.075,
+      //TODO: fix wheel positions
+      wheelPositions: [{x:-0.16, y:0.32}, {x:0.30-0.048, y:0.32},{x:-0.25, y:0}, {x:0.4-0.048, y:0},{x:-0.25, y:-0.35}, {x:0.4-0.048, y:-0.35}],
+      collisionGroup: config.PLAYER};
+    opts = _.defaults(opts, defaults);
+    super(opts)
+    this.exploded = false;
+
+    this.chassisBody.removeShape(this.boxShape);
+    this.boxShape = new p2.Box({ width: opts.w-0.1, height: opts.h-0.675 });
+    this.boxShape.collisionGroup = opts.collisionGroup;
+    this.boxShape.collisionMask = opts.collisionMask;
+    this.chassisBody.addShape(this.boxShape);
+    this.boxShape.position[0] = 0
+    this.boxShape.position[1] = 0.3
+
+    this.boxShapeBack = new p2.Box({ width: opts.w, height: opts.h-0.4});
+    this.boxShapeBack.collisionGroup = config.TRUCKBACK;
+    this.boxShapeBack.collisionMask = opts.collisionMask;
+    this.chassisBody.addShape(this.boxShapeBack);
+    this.boxShapeBack.position[0] = 0
+    this.boxShapeBack.position[1] = -0.2
+
+    // this.graphics.drawRect(this.boxShapeBack.position[0]-this.boxShapeBack.width/2, this.boxShapeBack.position[1]-this.boxShapeBack.height/2, this.boxShapeBack.width, this.boxShapeBack.height);
+    console.log(this.sprite.texture)
+
+    this.chassisBody.onCollision = (body,shape) => {
+      if (shape.collisionGroup == config.TRUCKBACK && this.exploded == false && (p2.vec2.length(body.velocity) >= 1 || p2.vec2.length(this.chassisBody.velocity) >= 1)) {
+        this.explosion = new Explosion([this.chassisBody.position[0]*config.zoom,this.chassisBody.position[1]*config.zoom], 8, 2);
+        this.explosion.explode();
+        this.sprite.texture = resources.RektTruck.texture;
+        this.sprite.height = -this.sprite.height
+        this.sprite.x = this.sprite.width/2;
+
+        this.exploded = true;
+      }
+
+      this.setSideFriction(3,3);
+      if(body.shapes[0].collisionGroup == config.WALL){
+        window.setTimeout(() => this.setSideFriction(200,200), 100)
+      }
+    };
+
   }
 }

@@ -75,12 +75,15 @@ function init(){
   // TODO: give everything onCollision functions
   world.on("impact",function(evt){
     let bodyA = evt.bodyA,
-    bodyB = evt.bodyB;
+        bodyB = evt.bodyB,
+        shapeA = evt.shapeA,
+        shapeB = evt.shapeB;
+
     if(bodyA.onCollision){
-      bodyA.onCollision(bodyB);
+      bodyA.onCollision(bodyB, shapeA);
     }
     if(bodyB.onCollision){
-      bodyB.onCollision(bodyA);
+      bodyB.onCollision(bodyA, shapeB);
     }
   });
 
@@ -125,7 +128,7 @@ function init(){
       }
     }
     levels.test.load(levels.test.texture);
-    var car = _.sample(Cars);
+    var car = Cars.BaseTruck
     player =  new car();
     new Bomb(300,-300)
   }
@@ -146,7 +149,7 @@ function animate(t){
       player.chassisBody.backWheel.setBrakeForce(2);
       player.boxShape.collisionGroup = config.CAR;
       cars.push(player);
-      var car = _.sample(Cars);
+      var car = Cars.BaseTruck;
       player =  new car();
 
     }

@@ -19,7 +19,7 @@ export class Wall {
 
     this.boxShape = new p2.Box({width: w / config.zoom, height: h / config.zoom});
     this.boxShape.collisionGroup = config.WALL;
-    this.boxShape.collisionMask = config.PLAYER | config.CAR;
+    this.boxShape.collisionMask = config.PLAYER | config.CAR | config.TRUCKBACK;
     this.wallBody.addShape(this.boxShape);
 
     this.graphics = new PIXI.Graphics();
