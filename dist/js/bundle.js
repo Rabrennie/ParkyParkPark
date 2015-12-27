@@ -204,7 +204,7 @@ var BaseTruck = (function (_BaseCar) {
       w: 0.7,
       h: 1.075,
       //TODO: fix wheel positions
-      wheelPositions: [{ x: -0.16, y: 0.32 }, { x: 0.30 - 0.048, y: 0.32 }, { x: -0.25, y: 0 }, { x: 0.4 - 0.048, y: 0 }, { x: -0.25, y: -0.35 }, { x: 0.4 - 0.048, y: -0.35 }],
+      wheelPositions: [{ x: -0.26, y: 0.32 }, { x: 0.40 - 0.058, y: 0.32 }, { x: -0.35, y: 0 }, { x: 0.5 - 0.058, y: 0 }, { x: -0.35, y: -0.38 }, { x: 0.5 - 0.058, y: -0.38 }],
       collisionGroup: _config2.default.PLAYER };
     opts = _.defaults(opts, defaults);
 
