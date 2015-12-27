@@ -56,7 +56,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.BaseTruck = exports.RedStripeCar = exports.OrangeCar = exports.GreenCar = exports.BlueCar = exports.RedCar = undefined;
+exports.OrangeTruck = exports.RedStripeCar = exports.OrangeCar = exports.GreenCar = exports.BlueCar = exports.RedCar = undefined;
 
 var _config = require('./config.js');
 
@@ -192,88 +192,8 @@ var BaseCar = (function () {
   return BaseCar;
 })();
 
-var RedCar = exports.RedCar = (function (_BaseCar) {
-  _inherits(RedCar, _BaseCar);
-
-  function RedCar() {
-    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, RedCar);
-
-    var defaults = { texture: _loader2.default.RedCar.texture };
-    opts = _.defaults(opts, defaults);
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(RedCar).call(this, opts));
-  }
-
-  return RedCar;
-})(BaseCar);
-
-var BlueCar = exports.BlueCar = (function (_BaseCar2) {
-  _inherits(BlueCar, _BaseCar2);
-
-  function BlueCar() {
-    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, BlueCar);
-
-    var defaults = { texture: _loader2.default.BlueCar.texture };
-    opts = _.defaults(opts, defaults);
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(BlueCar).call(this, opts));
-  }
-
-  return BlueCar;
-})(BaseCar);
-
-var GreenCar = exports.GreenCar = (function (_BaseCar3) {
-  _inherits(GreenCar, _BaseCar3);
-
-  function GreenCar() {
-    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, GreenCar);
-
-    var defaults = { texture: _loader2.default.GreenCar.texture };
-    opts = _.defaults(opts, defaults);
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(GreenCar).call(this, opts));
-  }
-
-  return GreenCar;
-})(BaseCar);
-
-var OrangeCar = exports.OrangeCar = (function (_BaseCar4) {
-  _inherits(OrangeCar, _BaseCar4);
-
-  function OrangeCar() {
-    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, OrangeCar);
-
-    var defaults = { texture: _loader2.default.OrangeCar.texture };
-    opts = _.defaults(opts, defaults);
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(OrangeCar).call(this, opts));
-  }
-
-  return OrangeCar;
-})(BaseCar);
-
-var RedStripeCar = exports.RedStripeCar = (function (_BaseCar5) {
-  _inherits(RedStripeCar, _BaseCar5);
-
-  function RedStripeCar() {
-    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    _classCallCheck(this, RedStripeCar);
-
-    var defaults = { texture: _loader2.default.RedStripeCar.texture };
-    opts = _.defaults(opts, defaults);
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(RedStripeCar).call(this, opts));
-  }
-
-  return RedStripeCar;
-})(BaseCar);
-
-var BaseTruck = exports.BaseTruck = (function (_BaseCar6) {
-  _inherits(BaseTruck, _BaseCar6);
+var BaseTruck = (function (_BaseCar) {
+  _inherits(BaseTruck, _BaseCar);
 
   function BaseTruck() {
     var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -288,53 +208,149 @@ var BaseTruck = exports.BaseTruck = (function (_BaseCar6) {
       collisionGroup: _config2.default.PLAYER };
     opts = _.defaults(opts, defaults);
 
-    var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTruck).call(this, opts));
+    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTruck).call(this, opts));
 
-    _this7.exploded = false;
+    _this2.exploded = false;
 
-    _this7.chassisBody.removeShape(_this7.boxShape);
-    _this7.boxShape = new p2.Box({ width: opts.w - 0.1, height: opts.h - 0.675 });
-    _this7.boxShape.collisionGroup = opts.collisionGroup;
-    _this7.boxShape.collisionMask = opts.collisionMask;
-    _this7.chassisBody.addShape(_this7.boxShape);
-    _this7.boxShape.position[0] = 0;
-    _this7.boxShape.position[1] = 0.3;
+    _this2.chassisBody.removeShape(_this2.boxShape);
+    _this2.boxShape = new p2.Box({ width: opts.w - 0.1, height: opts.h - 0.675 });
+    _this2.boxShape.collisionGroup = opts.collisionGroup;
+    _this2.boxShape.collisionMask = opts.collisionMask;
+    _this2.chassisBody.addShape(_this2.boxShape);
+    _this2.boxShape.position[0] = 0;
+    _this2.boxShape.position[1] = 0.3;
 
-    _this7.boxShapeBack = new p2.Box({ width: opts.w, height: opts.h - 0.4 });
-    _this7.boxShapeBack.collisionGroup = _config2.default.TRUCKBACK;
-    _this7.boxShapeBack.collisionMask = opts.collisionMask;
-    _this7.chassisBody.addShape(_this7.boxShapeBack);
-    _this7.boxShapeBack.position[0] = 0;
-    _this7.boxShapeBack.position[1] = -0.2;
+    _this2.boxShapeBack = new p2.Box({ width: opts.w, height: opts.h - 0.4 });
+    _this2.boxShapeBack.collisionGroup = _config2.default.TRUCKBACK;
+    _this2.boxShapeBack.collisionMask = opts.collisionMask;
+    _this2.chassisBody.addShape(_this2.boxShapeBack);
+    _this2.boxShapeBack.position[0] = 0;
+    _this2.boxShapeBack.position[1] = -0.2;
 
     // this.graphics.drawRect(this.boxShapeBack.position[0]-this.boxShapeBack.width/2, this.boxShapeBack.position[1]-this.boxShapeBack.height/2, this.boxShapeBack.width, this.boxShapeBack.height);
-    console.log(_this7.sprite.texture);
+    console.log(_this2.sprite.texture);
 
-    _this7.chassisBody.onCollision = function (body, shape) {
+    _this2.chassisBody.onCollision = function (body, shape) {
       //Need to fix the sensitivity of the explosive. They're about as sensitive as a tumblr feminist right now
-      if (shape.collisionGroup == _config2.default.TRUCKBACK && _this7.exploded == false && (p2.vec2.length(body.velocity) >= 1 || p2.vec2.length(_this7.chassisBody.velocity) >= 1)) {
-        _this7.explosion = new _Explosion.Explosion([_this7.chassisBody.position[0] * _config2.default.zoom, _this7.chassisBody.position[1] * _config2.default.zoom], 8, 2);
-        _this7.explosion.explode();
-        _this7.sprite.texture = _loader2.default.RektTruck.texture;
-        _this7.sprite.height = -_this7.sprite.height;
-        _this7.sprite.x = _this7.sprite.width / 2;
+      if (shape.collisionGroup == _config2.default.TRUCKBACK && _this2.exploded == false && (p2.vec2.length(body.velocity) >= 1 || p2.vec2.length(_this2.chassisBody.velocity) >= 1)) {
+        _this2.explosion = new _Explosion.Explosion([_this2.chassisBody.position[0] * _config2.default.zoom, _this2.chassisBody.position[1] * _config2.default.zoom], 8, 2);
+        _this2.explosion.explode();
+        _this2.sprite.texture = _loader2.default.RektTruck.texture;
+        _this2.sprite.height = -_this2.sprite.height;
+        _this2.sprite.x = _this2.sprite.width / 2;
 
-        _this7.exploded = true;
+        _this2.exploded = true;
       }
 
-      _this7.setSideFriction(3, 3);
+      _this2.setSideFriction(3, 3);
       if (body.shapes[0].collisionGroup == _config2.default.WALL) {
         window.setTimeout(function () {
-          return _this7.setSideFriction(200, 200);
+          return _this2.setSideFriction(200, 200);
         }, 100);
       }
     };
 
-    return _this7;
+    return _this2;
   }
 
   return BaseTruck;
 })(BaseCar);
+
+var RedCar = exports.RedCar = (function (_BaseCar2) {
+  _inherits(RedCar, _BaseCar2);
+
+  function RedCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, RedCar);
+
+    var defaults = { texture: _loader2.default.RedCar.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(RedCar).call(this, opts));
+  }
+
+  return RedCar;
+})(BaseCar);
+
+var BlueCar = exports.BlueCar = (function (_BaseCar3) {
+  _inherits(BlueCar, _BaseCar3);
+
+  function BlueCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, BlueCar);
+
+    var defaults = { texture: _loader2.default.BlueCar.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(BlueCar).call(this, opts));
+  }
+
+  return BlueCar;
+})(BaseCar);
+
+var GreenCar = exports.GreenCar = (function (_BaseCar4) {
+  _inherits(GreenCar, _BaseCar4);
+
+  function GreenCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, GreenCar);
+
+    var defaults = { texture: _loader2.default.GreenCar.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(GreenCar).call(this, opts));
+  }
+
+  return GreenCar;
+})(BaseCar);
+
+var OrangeCar = exports.OrangeCar = (function (_BaseCar5) {
+  _inherits(OrangeCar, _BaseCar5);
+
+  function OrangeCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, OrangeCar);
+
+    var defaults = { texture: _loader2.default.OrangeCar.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(OrangeCar).call(this, opts));
+  }
+
+  return OrangeCar;
+})(BaseCar);
+
+var RedStripeCar = exports.RedStripeCar = (function (_BaseCar6) {
+  _inherits(RedStripeCar, _BaseCar6);
+
+  function RedStripeCar() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, RedStripeCar);
+
+    var defaults = { texture: _loader2.default.RedStripeCar.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(RedStripeCar).call(this, opts));
+  }
+
+  return RedStripeCar;
+})(BaseCar);
+
+var OrangeTruck = exports.OrangeTruck = (function (_BaseTruck) {
+  _inherits(OrangeTruck, _BaseTruck);
+
+  function OrangeTruck() {
+    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, OrangeTruck);
+
+    var defaults = { texture: _loader2.default.OrangeTruck.texture };
+    opts = _.defaults(opts, defaults);
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(OrangeTruck).call(this, opts));
+  }
+
+  return OrangeTruck;
+})(BaseTruck);
 
 },{"./Explosion.js":3,"./config.js":6,"./loader.js":8,"lodash":9}],3:[function(require,module,exports){
 'use strict';
@@ -610,7 +626,7 @@ function init() {
         }
       }
       _levels.levels.test.load(_levels.levels.test.texture);
-      var car = Cars.BaseTruck;
+      var car = _.sample(Cars);
       player = new car();
       new _Bomb.Bomb(300, -300);
     }
@@ -631,7 +647,7 @@ function animate(t) {
       player.chassisBody.backWheel.setBrakeForce(2);
       player.boxShape.collisionGroup = _config2.default.CAR;
       cars.push(player);
-      var car = Cars.BaseTruck;
+      var car = _.sample(Cars);
       player = new car();
     }
     for (var i = cars.length - 1; i >= 0; i--) {

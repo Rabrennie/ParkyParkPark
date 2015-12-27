@@ -128,7 +128,7 @@ function init(){
       }
     }
     levels.test.load(levels.test.texture);
-    var car = Cars.BaseTruck
+    var car = _.sample(Cars)
     player =  new car();
     new Bomb(300,-300)
   }
@@ -149,7 +149,7 @@ function animate(t){
       player.chassisBody.backWheel.setBrakeForce(2);
       player.boxShape.collisionGroup = config.CAR;
       cars.push(player);
-      var car = Cars.BaseTruck;
+      var car = _.sample(Cars)
       player =  new car();
 
     }

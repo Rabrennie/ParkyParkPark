@@ -108,47 +108,7 @@ class BaseCar {
   }
 }
 
-export class RedCar extends BaseCar {
-  constructor(opts={}) {
-    const defaults = {texture:resources.RedCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
-  }
-}
-
-export class BlueCar extends BaseCar {
-  constructor(opts={}) {
-    const defaults = {texture:resources.BlueCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
-  }
-}
-
-export class GreenCar extends BaseCar {
-  constructor(opts={}) {
-    const defaults = {texture:resources.GreenCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
-  }
-}
-
-export class OrangeCar extends BaseCar {
-  constructor(opts={}) {
-    const defaults = {texture:resources.OrangeCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
-  }
-}
-
-export class RedStripeCar extends BaseCar {
-  constructor(opts={}) {
-    const defaults = {texture:resources.RedStripeCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
-  }
-}
-
-export class BaseTruck extends BaseCar {
+class BaseTruck extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.OrangeTruck.texture,
       w:0.7,
@@ -196,5 +156,53 @@ export class BaseTruck extends BaseCar {
       }
     };
 
+  }
+}
+
+export class RedCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.RedCar.texture};
+    opts = _.defaults(opts, defaults);
+    super(opts)
+  }
+}
+
+export class BlueCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.BlueCar.texture};
+    opts = _.defaults(opts, defaults);
+    super(opts)
+  }
+}
+
+export class GreenCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.GreenCar.texture};
+    opts = _.defaults(opts, defaults);
+    super(opts)
+  }
+}
+
+export class OrangeCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.OrangeCar.texture};
+    opts = _.defaults(opts, defaults);
+    super(opts)
+  }
+}
+
+export class RedStripeCar extends BaseCar {
+  constructor(opts={}) {
+    const defaults = {texture:resources.RedStripeCar.texture};
+    opts = _.defaults(opts, defaults);
+    super(opts)
+  }
+}
+
+export class OrangeTruck extends BaseTruck {
+  constructor(opts={}) {
+    const defaults = {texture:resources.OrangeTruck.texture};
+    opts = _.defaults(opts, defaults);
+    super(opts)
   }
 }
