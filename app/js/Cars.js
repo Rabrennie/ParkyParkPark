@@ -37,6 +37,8 @@ class BaseCar {
   }
 
   onInput(keys){
+    const maxSteer = 20000;
+    this.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
     this.wheelSprite[0].rotation = this.wheelSprite[1].rotation = 0.5*(keys[37] - keys[39]);
     this.chassisBody.backWheel.setBrakeForce(0);
     if(keys[40]){

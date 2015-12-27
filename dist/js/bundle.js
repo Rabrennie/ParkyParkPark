@@ -114,6 +114,8 @@ var BaseCar = (function () {
   }, {
     key: 'onInput',
     value: function onInput(keys) {
+      var maxSteer = 20000;
+      this.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
       this.wheelSprite[0].rotation = this.wheelSprite[1].rotation = 0.5 * (keys[37] - keys[39]);
       this.chassisBody.backWheel.setBrakeForce(0);
       if (keys[40]) {
@@ -561,6 +563,7 @@ function init() {
   container.scale.x = _config2.default.zoom; // zoom in
   container.scale.y = -_config2.default.zoom; // Note: we flip the y axis to make "up" the physics "up"
 
+  // TODO: Better menu handling
   menuText.play = new PIXI.Text('Play', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
   menuText.play.x = renderer.width / 2 - menuText.play.width / 2;
   menuText.play.y = 400;
@@ -599,6 +602,8 @@ function init() {
     }
   });
 
+  //INPUT STUFF
+  // TODO: Add gamepad support
   var keys = {
     '37': 0, // left
     '39': 0, // right
@@ -607,8 +612,6 @@ function init() {
     '13': 0 //enter
   };
 
-  //this magic number though
-  var maxSteer = 20000;
   window.addEventListener("keydown", function (evt) {
     keys[evt.keyCode] = 1;
     onInputChange();
@@ -617,10 +620,10 @@ function init() {
     keys[evt.keyCode] = 0;
     onInputChange();
   });
+
   function onInputChange() {
-    // Steer value zero means straight forward. Positive is left and negative right.
+
     if (playing) {
-      player.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
       player.onInput(keys);
     } else if (inMenu && keys[13]) {
       playing = true;
@@ -644,7 +647,7 @@ function init() {
 function animate(t) {
   t = t || 0;
   requestAnimationFrame(animate);
-
+  //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
   if (playing) {
     world.step(1 / 60);
     player.update();
@@ -659,7 +662,7 @@ function animate(t) {
       cars[i].update();
     }
   } else if (inMenu) {
-
+    //TODO: Give menu it's own update function
     if (t / 2000 % 1 <= 0.5) {
       menuText.sub.scale.x = 1.5 - t / 2000 % 1;
       menuText.sub.scale.y = 1.5 - t / 2000 % 1;
