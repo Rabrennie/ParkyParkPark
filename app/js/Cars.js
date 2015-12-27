@@ -153,6 +153,7 @@ class BaseTruck extends BaseCar {
       h:1.075,
       //TODO: fix wheel positions
       wheelPositions: [{x:-0.26, y:0.32}, {x:0.40-0.058, y:0.32},{x:-0.35, y:0}, {x:0.5-0.058, y:0},{x:-0.35, y:-0.38}, {x:0.5-0.058, y:-0.38}],
+      mass: 5,
       collisionGroup: config.PLAYER};
     opts = _.defaults(opts, defaults);
     super(opts)
@@ -166,7 +167,7 @@ class BaseTruck extends BaseCar {
     this.boxShape.position[0] = 0
     this.boxShape.position[1] = 0.3
 
-    this.boxShapeBack = new p2.Box({ width: opts.w, height: opts.h-0.4});
+    this.boxShapeBack = new p2.Box({ width: opts.w * 0.9, height: (opts.h-0.4) * 0.92});
     this.boxShapeBack.collisionGroup = config.TRUCKBACK;
     this.boxShapeBack.collisionMask = opts.collisionMask;
     this.chassisBody.addShape(this.boxShapeBack);
@@ -177,8 +178,14 @@ class BaseTruck extends BaseCar {
     console.log(this.sprite.texture)
 
     this.chassisBody.onCollision = (body, shape, playerHit) => {
-      //Need to fix the sensitivity of the explosive. They're about as sensitive as a tumblr feminist right now
-      if (shape.collisionGroup == config.TRUCKBACK && this.exploded == false && (p2.vec2.length(body.velocity) >= 1 || p2.vec2.length(this.chassisBody.velocity) >= 1)) {
+      const bodyMomentum = [body.velocity[0] * body.mass, body.velocity[1] * body.mass]
+      const thisMomentum = [this.chassisBody.velocity[0] * this.chassisBody.mass,
+                            this.chassisBody.velocity[1] * this.chassisBody.mass]
+
+      // Explosion tigger sensitivity
+      if (shape.collisionGroup == config.TRUCKBACK && this.exploded == false &&
+           (p2.vec2.length(bodyMomentum) > 6.1 ||
+            p2.vec2.length(thisMomentum) > 6.1)) {
         this.explosion = new Explosion([this.chassisBody.position[0]*config.zoom,this.chassisBody.position[1]*config.zoom], 8, 2);
         this.explosion.explode();
         this.sprite.texture = resources.RektTruck.texture;
