@@ -133,10 +133,8 @@ function init(){
 // Animation loop
 function animate(t){
   t = t || 0;
-  requestAnimationFrame(animate);
   //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
   if (playing) {
-    world.step(1/60);
     player.update();
     if(p2.vec2.length(player.chassisBody.velocity) <= 0.05){
       player.chassisBody.backWheel.setBrakeForce(2);
@@ -171,5 +169,7 @@ function animate(t){
 
   }
 
+  requestAnimationFrame(animate);
+  world.step(1/60);
   renderer.render(stage);
 }
