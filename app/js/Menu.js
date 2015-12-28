@@ -25,16 +25,49 @@ export class MainMenu extends Menu {
     this._text.y = 20
     this.addChild(this._text)
 
-    this._play = new PIXI.Text('Play',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'})
-    this._play.x = renderer.width/2 - this._play.width/2
-    this._play.y = 400
-    this.addChild(this._play)
+    this._options = [];
+    this._options.push({
+      text:"Play",
+      callback:(menus) => {
+        menus.splice(menus.indexOf(this))
+        config.stage.removeChild(this)
+
+        levels.test.load(levels.test.texture);
+
+        return { p: true };
+      }
+    });
+
+    this._options.push({
+      text:"Test",
+      callback:(menus) => {
+        console.log("test");
+        return {override:true};
+      }
+    });
+
+    this._options.push({
+      text:"Another One",
+      callback:(menus) => {
+        alert("Wow So Good");
+        return {override:true};
+      }
+    });
+
+    for (var i = 0; i < this._options.length; i++) {
+      this._options[i].textObj = new PIXI.Text(this._options[i].text,{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
+      this._options[i].textObj.x = renderer.width/2 - this._options[i].textObj.width/2;
+      this._options[i].textObj.y = 400 + 50*i;
+      this.addChild(this._options[i].textObj);
+    }
+
+    this.selectedOption = 0;
 
     this._sprite = new PIXI.Sprite(resources.MenuArrow.texture)
     this._sprite.width = 16
     this._sprite.height = 16
-    this._sprite.x = this._play.x - 20
-    this.menuSpriteY = this._sprite.y = this._play.y + 5
+    this._sprite.x = this._options[0].textObj.x - 20
+    this.menuSpriteY = this._sprite.y = this._options[0].textObj.y + 5
     this.addChild(this._sprite)
 
     this._title = new PIXI.Text('Parky Park Park',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'})
@@ -70,11 +103,18 @@ export class MainMenu extends Menu {
   }
 
   onInputChange(keys, menus) {
-    menus.splice(menus.indexOf(this))
-    config.stage.removeChild(this)
-
-    levels.test.load(levels.test.texture);
-
-    return { p: true }
+    if(keys[13]){
+      return this._options[this.selectedOption].callback(menus);
+    }
+    if(keys[40]){
+      this.selectedOption += 1;
+      if(this.selectedOption == this._options.length){
+        this.selectedOption = 0;
+      }
+      this._sprite.x = this._options[this.selectedOption].textObj.x - 20
+      this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5
+      return {override:true}
+    }
+    return {override:true}
   }
 }

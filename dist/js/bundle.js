@@ -48,7 +48,7 @@ var Bomb = exports.Bomb = function Bomb(x, y) {
   this.explosion = new _Explosion.Explosion([x, y], 8, 2);
 };
 
-},{"./Explosion.js":3,"./config.js":6}],2:[function(require,module,exports){
+},{"./Explosion.js":3,"./config.js":7}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -104,6 +104,12 @@ var BaseCar = (function () {
       this.graphics.position.x = this.chassisBody.position[0];
       this.graphics.position.y = this.chassisBody.position[1];
       this.graphics.rotation = this.chassisBody.angle;
+
+      // Check if we should (still) display the Hit Effects
+      if (this.hitFrames > 0) {
+        this.hitFrames--;
+        this.hitSprite.alpha = this.hitFrames > 0 ? this.hitFrames / 10 + 0.6 : 0;
+      }
     }
   }, {
     key: 'setSideFriction',
@@ -149,12 +155,15 @@ var BaseCar = (function () {
       velocity: [opts.velX, opts.velY]
     });
 
-    this.chassisBody.onCollision = function (body) {
+    this.chassisBody.onCollision = function (body, otherShape, playerHit) {
       _this.setSideFriction(3, 3);
       if (body.shapes[0].collisionGroup == _config2.default.WALL) {
         window.setTimeout(function () {
           return _this.setSideFriction(200, 200);
         }, 100);
+      } else if (playerHit) {
+        // Display the hit effect
+        _this.hitFrames = 6;
       }
     };
 
@@ -195,11 +204,20 @@ var BaseCar = (function () {
 
     this.sprite = new PIXI.Sprite(opts.texture);
     this.graphics.addChild(this.sprite);
-
     this.sprite.width = -this.boxShape.width;
     this.sprite.height = -this.boxShape.height;
     this.sprite.position = { x: -this.boxShape.width / 2, y: this.boxShape.height / 2 };
     this.sprite.scale.x = -this.sprite.scale.x;
+
+    this.hitFrames = 0;
+    // "Extra" Sprite for displaying on-hit graphics
+    this.hitSprite = new PIXI.Sprite(opts.texture === _loader2.default.OrangeTruck.texture ? _loader2.default.TruckHit.texture : _loader2.default.CarHit.texture);
+    this.graphics.addChild(this.hitSprite);
+    this.hitSprite.width = -this.boxShape.width;
+    this.hitSprite.height = -this.boxShape.height;
+    this.hitSprite.position = { x: -this.boxShape.width / 2, y: this.boxShape.height / 2 };
+    this.hitSprite.scale.x = -this.hitSprite.scale.x;
+    this.hitSprite.alpha = 0;
 
     opts.container.addChild(this.graphics);
 
@@ -222,6 +240,7 @@ var BaseTruck = (function (_BaseCar) {
       h: 1.075,
       //TODO: fix wheel positions
       wheelPositions: [{ x: -0.26, y: 0.32 }, { x: 0.40 - 0.058, y: 0.32 }, { x: -0.35, y: 0 }, { x: 0.5 - 0.058, y: 0 }, { x: -0.35, y: -0.38 }, { x: 0.5 - 0.058, y: -0.38 }],
+      mass: 5,
       collisionGroup: _config2.default.PLAYER };
     opts = _.defaults(opts, defaults);
 
@@ -237,7 +256,7 @@ var BaseTruck = (function (_BaseCar) {
     _this2.boxShape.position[0] = 0;
     _this2.boxShape.position[1] = 0.3;
 
-    _this2.boxShapeBack = new p2.Box({ width: opts.w, height: opts.h - 0.4 });
+    _this2.boxShapeBack = new p2.Box({ width: opts.w * 0.9, height: (opts.h - 0.4) * 0.92 });
     _this2.boxShapeBack.collisionGroup = _config2.default.TRUCKBACK;
     _this2.boxShapeBack.collisionMask = opts.collisionMask;
     _this2.chassisBody.addShape(_this2.boxShapeBack);
@@ -247,9 +266,12 @@ var BaseTruck = (function (_BaseCar) {
     // this.graphics.drawRect(this.boxShapeBack.position[0]-this.boxShapeBack.width/2, this.boxShapeBack.position[1]-this.boxShapeBack.height/2, this.boxShapeBack.width, this.boxShapeBack.height);
     console.log(_this2.sprite.texture);
 
-    _this2.chassisBody.onCollision = function (body, shape) {
-      //Need to fix the sensitivity of the explosive. They're about as sensitive as a tumblr feminist right now
-      if (shape.collisionGroup == _config2.default.TRUCKBACK && _this2.exploded == false && (p2.vec2.length(body.velocity) >= 1 || p2.vec2.length(_this2.chassisBody.velocity) >= 1)) {
+    _this2.chassisBody.onCollision = function (body, shape, playerHit) {
+      var bodyMomentum = [body.velocity[0] * body.mass, body.velocity[1] * body.mass];
+      var thisMomentum = [_this2.chassisBody.velocity[0] * _this2.chassisBody.mass, _this2.chassisBody.velocity[1] * _this2.chassisBody.mass];
+
+      // Explosion tigger sensitivity
+      if (shape.collisionGroup == _config2.default.TRUCKBACK && _this2.exploded == false && (p2.vec2.length(bodyMomentum) > 6.1 || p2.vec2.length(thisMomentum) > 6.1)) {
         _this2.explosion = new _Explosion.Explosion([_this2.chassisBody.position[0] * _config2.default.zoom, _this2.chassisBody.position[1] * _config2.default.zoom], 8, 2);
         _this2.explosion.explode();
         _this2.sprite.texture = _loader2.default.RektTruck.texture;
@@ -264,6 +286,9 @@ var BaseTruck = (function (_BaseCar) {
         window.setTimeout(function () {
           return _this2.setSideFriction(200, 200);
         }, 100);
+      } else if (playerHit) {
+        // Display the hit effect
+        _this2.hitFrames = 4;
       }
     };
 
@@ -369,7 +394,7 @@ var OrangeTruck = exports.OrangeTruck = (function (_BaseTruck) {
   return OrangeTruck;
 })(BaseTruck);
 
-},{"./Explosion.js":3,"./config.js":6,"./loader.js":8,"lodash":9}],3:[function(require,module,exports){
+},{"./Explosion.js":3,"./config.js":7,"./loader.js":9,"lodash":10}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -429,7 +454,180 @@ function Explosion(point, force, radius) {
   };
 }
 
-},{"./config.js":6}],4:[function(require,module,exports){
+},{"./config.js":7}],4:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MainMenu = undefined;
+
+var _loader = require('./loader.js');
+
+var _loader2 = _interopRequireDefault(_loader);
+
+var _config = require('./config.js');
+
+var _config2 = _interopRequireDefault(_config);
+
+var _levels = require('./levels.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Menu = (function (_PIXI$Container) {
+  _inherits(Menu, _PIXI$Container);
+
+  function Menu() {
+    _classCallCheck(this, Menu);
+
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
+  }
+
+  // Implement these in subclasses
+
+  _createClass(Menu, [{
+    key: 'update',
+    value: function update() {
+      var delta = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
+    }
+  }, {
+    key: 'onInputChange',
+    value: function onInputChange() {
+      var keys = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+      var menus = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+
+      return { skip: true };
+    }
+  }]);
+
+  return Menu;
+})(PIXI.Container);
+
+var MainMenu = exports.MainMenu = (function (_Menu) {
+  _inherits(MainMenu, _Menu);
+
+  function MainMenu() {
+    _classCallCheck(this, MainMenu);
+
+    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(MainMenu).call(this));
+
+    var renderer = _config2.default.renderer;
+
+    _this2._text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+    _this2._text.x = 20;
+    _this2._text.y = 20;
+    _this2.addChild(_this2._text);
+
+    _this2._options = [];
+    _this2._options.push({
+      text: "Play",
+      callback: function callback(menus) {
+        menus.splice(menus.indexOf(_this2));
+        _config2.default.stage.removeChild(_this2);
+
+        _levels.levels.test.load(_levels.levels.test.texture);
+
+        return { p: true };
+      }
+    });
+
+    _this2._options.push({
+      text: "Test",
+      callback: function callback(menus) {
+        console.log("test");
+        return { override: true };
+      }
+    });
+
+    _this2._options.push({
+      text: "Another One",
+      callback: function callback(menus) {
+        alert("Wow So Good");
+        return { override: true };
+      }
+    });
+
+    for (var i = 0; i < _this2._options.length; i++) {
+      _this2._options[i].textObj = new PIXI.Text(_this2._options[i].text, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+      _this2._options[i].textObj.x = renderer.width / 2 - _this2._options[i].textObj.width / 2;
+      _this2._options[i].textObj.y = 400 + 50 * i;
+      _this2.addChild(_this2._options[i].textObj);
+    }
+
+    _this2.selectedOption = 0;
+
+    _this2._sprite = new PIXI.Sprite(_loader2.default.MenuArrow.texture);
+    _this2._sprite.width = 16;
+    _this2._sprite.height = 16;
+    _this2._sprite.x = _this2._options[0].textObj.x - 20;
+    _this2.menuSpriteY = _this2._sprite.y = _this2._options[0].textObj.y + 5;
+    _this2.addChild(_this2._sprite);
+
+    _this2._title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+    _this2._title.x = renderer.width / 2 - _this2._title.width / 2;
+    _this2._title.y = 200;
+    _this2.addChild(_this2._title);
+
+    _this2._splash = new PIXI.Text('Wow', { font: '30px Arial', fill: 0xFFFF00, align: 'center' });
+    _this2._splash.x = _this2._title.x + _this2._title.width - _this2._splash.width / 2;
+    _this2._splash.y = _this2._title.y + _this2._title.height;
+    _this2._splash.rotation = 100;
+    _this2.addChild(_this2._splash);
+    return _this2;
+  }
+
+  _createClass(MainMenu, [{
+    key: 'update',
+    value: function update(delta) {
+      if (delta / 2000 % 1 <= 0.5) {
+        this._splash.scale.x = 1.5 - delta / 2000 % 1;
+        this._splash.scale.y = 1.5 - delta / 2000 % 1;
+      } else {
+        this._splash.scale.x = 0.5 + delta / 2000 % 1;
+        this._splash.scale.y = 0.5 + delta / 2000 % 1;
+      }
+
+      var menuSpriteThing = delta / 25 % 28;
+
+      if (menuSpriteThing < 14) {
+        this._sprite.height = 16 - menuSpriteThing;
+        this._sprite.y = this.menuSpriteY + menuSpriteThing / 2;
+      } else {
+        this._sprite.height = 2 + menuSpriteThing - 14;
+        this._sprite.y = this.menuSpriteY + 14 - menuSpriteThing / 2;
+      }
+    }
+  }, {
+    key: 'onInputChange',
+    value: function onInputChange(keys, menus) {
+      if (keys[13]) {
+        return this._options[this.selectedOption].callback(menus);
+      }
+      if (keys[40]) {
+        this.selectedOption += 1;
+        if (this.selectedOption == this._options.length) {
+          this.selectedOption = 0;
+        }
+        this._sprite.x = this._options[this.selectedOption].textObj.x - 20;
+        this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5;
+        return { override: true };
+      }
+      return { override: true };
+    }
+  }]);
+
+  return MainMenu;
+})(Menu);
+
+},{"./config.js":7,"./levels.js":8,"./loader.js":9}],5:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -493,7 +691,7 @@ var Wall = exports.Wall = (function () {
   return Wall;
 })();
 
-},{"./config.js":6}],5:[function(require,module,exports){
+},{"./config.js":7}],6:[function(require,module,exports){
 'use strict';
 
 var _config = require('./config.js');
@@ -510,11 +708,11 @@ var _loader = require('./loader.js');
 
 var _loader2 = _interopRequireDefault(_loader);
 
-var _levels = require('./levels.js');
-
 var _Explosion = require('./Explosion.js');
 
 var _Bomb = require('./Bomb.js');
+
+var _Menu = require('./Menu.js');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -531,12 +729,10 @@ var carTexture,
     graphics,
     chassisBody,
     player,
-    cars = [],
-    menuText = {},
-    menuSpriteY;
+    cars = [];
+var menus = [];
 
-var playing = false,
-    inMenu = true;
+var playing = false;
 
 //only initialize when all textures are loaded
 PIXI.loader.once('complete', init);
@@ -550,10 +746,6 @@ function init() {
   };
   renderer.backgroundColor = 0x040404;
   PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
-  var text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-  text.x = 20;
-  text.y = 20;
-  stage.addChild(text);
 
   stage.addChild(container);
   document.body.appendChild(renderer.view);
@@ -563,29 +755,9 @@ function init() {
   container.scale.x = _config2.default.zoom; // zoom in
   container.scale.y = -_config2.default.zoom; // Note: we flip the y axis to make "up" the physics "up"
 
-  // TODO: Better menu handling
-  menuText.play = new PIXI.Text('Play', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-  menuText.play.x = renderer.width / 2 - menuText.play.width / 2;
-  menuText.play.y = 400;
-  stage.addChild(menuText.play);
-
-  menuText.sprite = new PIXI.Sprite(_loader2.default.MenuArrow.texture);
-  menuText.sprite.width = 16;
-  menuText.sprite.height = 16;
-  menuText.sprite.x = menuText.play.x - 20;
-  menuSpriteY = menuText.sprite.y = menuText.play.y + 5;
-  stage.addChild(menuText.sprite);
-
-  menuText.title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-  menuText.title.x = renderer.width / 2 - menuText.title.width / 2;
-  menuText.title.y = 200;
-  stage.addChild(menuText.title);
-
-  menuText.sub = new PIXI.Text('Wow', { font: '30px Arial', fill: 0xFFFF00, align: 'center' });
-  menuText.sub.x = menuText.title.x + menuText.title.width - menuText.sub.width / 2;
-  menuText.sub.y = menuText.title.y + menuText.title.height;
-  menuText.sub.rotation = 100;
-  stage.addChild(menuText.sub);
+  var menu = new _Menu.MainMenu();
+  menus.push(menu);
+  stage.addChild(menu);
 
   // TODO: give everything onCollision functions
   world.on("impact", function (evt) {
@@ -595,10 +767,10 @@ function init() {
         shapeB = evt.shapeB;
 
     if (bodyA.onCollision) {
-      bodyA.onCollision(bodyB, shapeA);
+      bodyA.onCollision(bodyB, shapeA, bodyB === player.chassisBody);
     }
     if (bodyB.onCollision) {
-      bodyB.onCollision(bodyA, shapeB);
+      bodyB.onCollision(bodyA, shapeB, bodyA === player.chassisBody);
     }
   });
 
@@ -609,9 +781,10 @@ function init() {
     '39': 0, // right
     '38': 0, // up
     '40': 0, // down
-    '13': 0 //enter
-  };
+    '13': 0, // enter
+    '27': 0 };
 
+  // escape
   window.addEventListener("keydown", function (evt) {
     keys[evt.keyCode] = 1;
     onInputChange();
@@ -623,34 +796,53 @@ function init() {
 
   function onInputChange() {
 
+    if (keys[27]) {
+      // TODO: Toggle the menu
+      return;
+    }
+
     if (playing) {
       player.onInput(keys);
-    } else if (inMenu && keys[13]) {
+      return;
+    }
+
+    for (var i = menus.length - 1; i > -1; i--) {
+      var _menus$i$onInputChang = menus[i].onInputChange(keys, menus);
+
+      var p = _menus$i$onInputChang.p;
+      var skip = _menus$i$onInputChang.skip;
+      var override = _menus$i$onInputChang.override;
+
+      if (skip) continue;
+      playing = p;
+
+      if (override) break;
+    }
+
+    if (menus.length === 0) {
       playing = true;
-      inMenu = false;
-      for (var text in menuText) {
-        if (menuText.hasOwnProperty(text)) {
-          menuText[text].alpha = 0;
-        }
-      }
-      _levels.levels.test.load(_levels.levels.test.texture);
-      var car = _.sample(Cars);
-      player = new car();
-      new _Bomb.Bomb(300, -300);
     }
   }
 
-  animate();
+  animate(1);
 }
 
 // Animation loop
-function animate(t) {
-  t = t || 0;
-  requestAnimationFrame(animate);
+function animate(delta) {
+
+  for (var i = menus.length - 1; i > -1; i--) {
+    menus[i].update(delta);
+  }
+
   //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
   if (playing) {
-    world.step(1 / 60);
+    // TODO: do initialization better somehow?
+    if (!player) {
+      var car = _.sample(Cars);
+      player = new car();
+    }
     player.update();
+
     if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
       player.chassisBody.backWheel.setBrakeForce(2);
       player.boxShape.collisionGroup = _config2.default.CAR;
@@ -658,34 +850,18 @@ function animate(t) {
       var car = _.sample(Cars);
       player = new car();
     }
+
     for (var i = cars.length - 1; i >= 0; i--) {
       cars[i].update();
     }
-  } else if (inMenu) {
-    //TODO: Give menu it's own update function
-    if (t / 2000 % 1 <= 0.5) {
-      menuText.sub.scale.x = 1.5 - t / 2000 % 1;
-      menuText.sub.scale.y = 1.5 - t / 2000 % 1;
-    } else {
-      menuText.sub.scale.x = 0.5 + t / 2000 % 1;
-      menuText.sub.scale.y = 0.5 + t / 2000 % 1;
-    }
-
-    var menuSpriteThing = t / 25 % 28;
-
-    if (menuSpriteThing < 14) {
-      menuText.sprite.height = 16 - menuSpriteThing;
-      menuText.sprite.y = menuSpriteY + menuSpriteThing / 2;
-    } else {
-      menuText.sprite.height = 2 + menuSpriteThing - 14;
-      menuText.sprite.y = menuSpriteY + 14 - menuSpriteThing / 2;
-    }
   }
 
+  requestAnimationFrame(animate);
+  world.step(1 / 60);
   renderer.render(stage);
 }
 
-},{"./Bomb.js":1,"./Cars.js":2,"./Explosion.js":3,"./Wall.js":4,"./config.js":6,"./levels.js":7,"./loader.js":8,"lodash":9}],6:[function(require,module,exports){
+},{"./Bomb.js":1,"./Cars.js":2,"./Explosion.js":3,"./Menu.js":4,"./Wall.js":5,"./config.js":7,"./loader.js":9,"lodash":10}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -707,7 +883,7 @@ exports.default = {
     container: new PIXI.Container()
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -770,15 +946,15 @@ levels.test = new Level("Test", [new _Wall.Wall(800, -300, 20, 600, 0, _config2.
 
 exports.levels = levels;
 
-},{"./Wall.js":4,"./config.js":6,"./loader.js":8}],8:[function(require,module,exports){
+},{"./Wall.js":5,"./config.js":7,"./loader.js":9}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.default = PIXI.loader.add('TestLevel', 'assets/TestLevel.png').add('MenuArrow', 'assets/MenuArrow.png').add('RedCar', 'assets/RedCar.png').add('BlueCar', 'assets/BlueCar.png').add('GreenCar', 'assets/GreenCar.png').add('OrangeCar', 'assets/OrangeCar.png').add('RedStripeCar', 'assets/RedStripeCar.png').add('RektTruck', 'assets/RektTruck.png').add('OrangeTruck', 'assets/OrangeTruck.png').add('wheel', 'assets/wheel.png').load().resources;
+exports.default = PIXI.loader.add('TestLevel', 'assets/TestLevel.png').add('MenuArrow', 'assets/MenuArrow.png').add('RedCar', 'assets/RedCar.png').add('BlueCar', 'assets/BlueCar.png').add('GreenCar', 'assets/GreenCar.png').add('OrangeCar', 'assets/OrangeCar.png').add('RedStripeCar', 'assets/RedStripeCar.png').add('RektTruck', 'assets/RektTruck.png').add('OrangeTruck', 'assets/OrangeTruck.png').add('wheel', 'assets/wheel.png').add('CarHit', 'assets/CarHit.png').add('TruckHit', 'assets/Truckhit.png').load().resources;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -13134,5 +13310,5 @@ exports.default = PIXI.loader.add('TestLevel', 'assets/TestLevel.png').add('Menu
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}]},{},[5])
+},{}]},{},[6])
 //# sourceMappingURL=bundle.js.map
