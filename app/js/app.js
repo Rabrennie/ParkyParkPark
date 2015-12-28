@@ -2,7 +2,6 @@ import config from './config.js';
 import {Wall} from './Wall.js';
 import * as Cars from './Cars.js';
 import resources from './loader.js';
-import {levels} from './levels.js';
 import {Explosion} from './Explosion.js'
 import {Bomb} from './Bomb.js'
 import {MainMenu} from './Menu.js'
@@ -21,8 +20,7 @@ player,
 cars=[]
 const menus = []
 
-var playing = false,
-    inMenu = true;
+var playing = false;
 
 //only initialize when all textures are loaded
 PIXI.loader.once('complete',init);
@@ -73,7 +71,8 @@ function init(){
     '39': 0, // right
     '38': 0, // up
     '40': 0, // down
-    '13': 0 //enter
+    '13': 0, // enter
+    '27': 0, // escape
   };
 
   window.addEventListener("keydown",function (evt){
@@ -87,47 +86,58 @@ function init(){
 
   function onInputChange(){
 
+    if (keys[27]) {
+      // TODO: Toggle the menu
+      return
+    }
+
     if (playing) {
       player.onInput(keys);
-    } else if(inMenu && keys[13]) {
-      playing = true;
-      inMenu = false;
+      return
+    }
 
-      menus.splice(menus.indexOf(menu))
-      stage.removeChild(menu)
+    for (let i = menus.length - 1; i > -1; i--) {
+      let { p, skip, override } = menus[i].onInputChange(keys, menus)
+      if (skip) continue
+      playing = p
 
-      levels.test.load(levels.test.texture);
-      var car = _.sample(Cars);
-      player =  new car();
-      new Bomb(300,-300)
+      if (override) break
+    }
+
+    if (menus.length === 0) {
+      playing = true
     }
   }
 
-  animate();
+  animate(1);
 }
 
 // Animation loop
-function animate(t){
-  t = t || 0;
+function animate(delta) {
+
+  for (let i = menus.length - 1; i > -1; i--) {
+    menus[i].update(delta)
+  }
+
   //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
   if (playing) {
+    // TODO: do initialization better somehow?
+    if (!player) {
+      var car = _.sample(Cars);
+      player =  new car();
+    }
     player.update();
-    if(p2.vec2.length(player.chassisBody.velocity) <= 0.05){
+
+    if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
       player.chassisBody.backWheel.setBrakeForce(2);
       player.boxShape.collisionGroup = config.CAR;
       cars.push(player);
       var car = _.sample(Cars);
       player =  new car();
-
     }
+
     for (let i = cars.length - 1; i >= 0; i--) {
       cars[i].update()
-    }
-  } else if(inMenu) {
-    //TODO: Give menu it's own update function
-
-    for (let i = menus.length - 1; i > -1; i--) {
-      menus[i].update(t)
     }
   }
 
