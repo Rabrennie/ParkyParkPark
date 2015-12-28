@@ -21,6 +21,12 @@ class Menu extends PIXI.Container {
     this._text.x = 20
     this._text.y = 20
     this.addChild(this._text)
+
+    this._pointer = new PIXI.Sprite(resources.MenuArrow.texture)
+    this._pointer.width = 16
+    this._pointer.height = 16
+    this._pointer.visible = false
+    this.addChild(this._pointer)
   }
 
   addOption(text, callback){
@@ -34,6 +40,13 @@ class Menu extends PIXI.Container {
     this._options[i].textObj.x = config.renderer.width/2 - this._options[i].textObj.width/2;
     this._options[i].textObj.y = 400 + 50*i;
     this.addChild(this._options[i].textObj);
+
+    // Load pointer
+    if (i === 0) {
+      this._pointer.visible = true
+      this._pointer.x = this._options[0].textObj.x - 20
+      this.menuSpriteY = this._pointer.y = this._options[0].textObj.y + 5
+    }
   }
 
   // Can be implemented in submenus
@@ -53,8 +66,8 @@ class Menu extends PIXI.Container {
       if(this.selectedOption == this._options.length){
         this.selectedOption = 0;
       }
-      this._sprite.x = this._options[this.selectedOption].textObj.x - 20
-      this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5
+      this._pointer.x = this._options[this.selectedOption].textObj.x - 20
+      this.menuSpriteY = this._pointer.y = this._options[this.selectedOption].textObj.y + 5
       return { done: true }
     }
 
@@ -63,23 +76,30 @@ class Menu extends PIXI.Container {
       if(this.selectedOption == -1){
         this.selectedOption = this._options.length-1;
       }
-      this._sprite.x = this._options[this.selectedOption].textObj.x - 20
-      this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5
+      this._pointer.x = this._options[this.selectedOption].textObj.x - 20
+      this.menuSpriteY = this._pointer.y = this._options[this.selectedOption].textObj.y + 5
       return { done: true }
     }
 
     return
   }
 
-  // Implement these in subclasses
-  update(delta = 1) {}
+  update(delta) {
+    const menuSpriteThing = (delta / 25) % 28
+
+    if (menuSpriteThing < 14) {
+      this._pointer.height = 16 - menuSpriteThing
+      this._pointer.y = this.menuSpriteY + menuSpriteThing / 2
+    } else {
+      this._pointer.height = 2 + menuSpriteThing - 14
+      this._pointer.y = this.menuSpriteY + 14 - menuSpriteThing / 2
+    }
+  }
 }
 
 export class TestMenu extends Menu {
   constructor(){
     super()
-
-    const renderer = config.renderer
 
     this.addOption('Back',(menus) => {
       menus.splice(menus.indexOf(this))
@@ -87,27 +107,7 @@ export class TestMenu extends Menu {
 
       return { done: true };
     })
-
-    this._sprite = new PIXI.Sprite(resources.MenuArrow.texture)
-    this._sprite.width = 16
-    this._sprite.height = 16
-    this._sprite.x = this._options[0].textObj.x - 20
-    this.menuSpriteY = this._sprite.y = this._options[0].textObj.y + 5
-    this.addChild(this._sprite)
   }
-
-  update(delta) {
-    const menuSpriteThing = (delta / 25) % 28
-
-    if (menuSpriteThing < 14) {
-      this._sprite.height = 16 - menuSpriteThing
-      this._sprite.y = this.menuSpriteY + menuSpriteThing / 2
-    } else {
-      this._sprite.height = 2 + menuSpriteThing - 14
-      this._sprite.y = this.menuSpriteY + 14 - menuSpriteThing / 2
-    }
-  }
-
 }
 
 export class MainMenu extends Menu {
@@ -137,14 +137,6 @@ export class MainMenu extends Menu {
       return
     });
 
-
-    this._sprite = new PIXI.Sprite(resources.MenuArrow.texture)
-    this._sprite.width = 16
-    this._sprite.height = 16
-    this._sprite.x = this._options[0].textObj.x - 20
-    this.menuSpriteY = this._sprite.y = this._options[0].textObj.y + 5
-    this.addChild(this._sprite)
-
     this._title = new PIXI.Text('Parky Park Park',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'})
     this._title.x = renderer.width/2 - this._title.width/2
     this._title.y = 200
@@ -158,22 +150,14 @@ export class MainMenu extends Menu {
   }
 
   update(delta) {
+    super.update(delta)
+
     if ((delta / 2000) % 1 <= 0.5) {
       this._splash.scale.x = 1.5 - (delta / 2000) % 1
       this._splash.scale.y = 1.5 - (delta / 2000) % 1
     } else {
       this._splash.scale.x = 0.5 + (delta / 2000) % 1
       this._splash.scale.y = 0.5 + (delta / 2000) % 1
-    }
-
-    const menuSpriteThing = (delta / 25) % 28
-
-    if (menuSpriteThing < 14) {
-      this._sprite.height = 16 - menuSpriteThing
-      this._sprite.y = this.menuSpriteY + menuSpriteThing / 2
-    } else {
-      this._sprite.height = 2 + menuSpriteThing - 14
-      this._sprite.y = this.menuSpriteY + 14 - menuSpriteThing / 2
     }
   }
 
