@@ -1,4 +1,5 @@
 export default PIXI.loader
+    .add('Default', 'assets/Default.png')
     .add('TestLevel', 'assets/TestLevel.png')
     .add('MenuArrow', 'assets/MenuArrow.png')
     .add('RedCar', 'assets/RedCar.png')

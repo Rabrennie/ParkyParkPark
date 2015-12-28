@@ -6,6 +6,23 @@ import {key} from './Input.js'
 
 //TODO: Refactor this so there is less repeated text
 class Menu extends PIXI.Container {
+  constructor() {
+    super()
+    this._options = [];
+    this.selectedOption = 0;
+
+    this._background = new PIXI.Sprite(resources.Default.texture)
+    this._background.width = config.renderer.width
+    this._background.height = config.renderer.height
+    this._background.tint = 0x040404
+    this.addChild(this._background)
+
+    this._text = new PIXI.Text('MEGA ALPHA EDITION',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'})
+    this._text.x = 20
+    this._text.y = 20
+    this.addChild(this._text)
+  }
+
   addOption(text, callback){
     let i = this._options.length;
 
@@ -19,65 +36,57 @@ class Menu extends PIXI.Container {
     this.addChild(this._options[i].textObj);
   }
 
-  constructor() {
-    super()
-    this._options = [];
-    this.active = true;
-    this.selectedOption = 0;
+  // Can be implemented in submenus
+  // Return API:
+  //
+  // Do nothing: `return`
+  // Prevent inputChange from reaching other menus (below, earlier in `menus`):
+  //   `return { done: true }``
+  // Tell the game it should (Boolean) playing: `return { _playing: <boolean> }`
+  //
+  onInputChange(menus){
+    if (key('enter')) {
+      return this._options[this.selectedOption].callback(menus);
+    }
+    if (key('down')) {
+      this.selectedOption += 1;
+      if(this.selectedOption == this._options.length){
+        this.selectedOption = 0;
+      }
+      this._sprite.x = this._options[this.selectedOption].textObj.x - 20
+      this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5
+      return { done: true }
+    }
+
+    if (key('up')) {
+      this.selectedOption -= 1;
+      if(this.selectedOption == -1){
+        this.selectedOption = this._options.length-1;
+      }
+      this._sprite.x = this._options[this.selectedOption].textObj.x - 20
+      this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5
+      return { done: true }
+    }
+
+    return
   }
 
   // Implement these in subclasses
   update(delta = 1) {}
-  onInputChange(menus){
-    if (this.active) {
-
-      if (key('enter')) {
-        return this._options[this.selectedOption].callback(menus);
-      }
-      if(key('down')){
-        this.selectedOption += 1;
-        if(this.selectedOption == this._options.length){
-          this.selectedOption = 0;
-        }
-        this._sprite.x = this._options[this.selectedOption].textObj.x - 20
-        this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5
-        return {override:true}
-      }
-
-      if(key('up')){
-        this.selectedOption -= 1;
-        if(this.selectedOption == -1){
-          this.selectedOption = this._options.length-1;
-        }
-        this._sprite.x = this._options[this.selectedOption].textObj.x - 20
-        this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5
-        return {override:true}
-      }
-
-      return {override:true}
-    } else {
-      return { skip:true }
-    }
-  }
 }
 
 export class TestMenu extends Menu {
-  constructor(parent){
+  constructor(){
     super()
 
     const renderer = config.renderer
 
-    this._text = new PIXI.Text('MEGA ALPHA EDITION',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'})
-    this._text.x = 20
-    this._text.y = 20
-    this.addChild(this._text)
     this.addOption('Back',(menus) => {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
-      parent.active = true
-      parent.visible = true;
-      return { override:true };
-    } )
+
+      return { done: true };
+    })
 
     this._sprite = new PIXI.Sprite(resources.MenuArrow.texture)
     this._sprite.width = 16
@@ -85,7 +94,6 @@ export class TestMenu extends Menu {
     this._sprite.x = this._options[0].textObj.x - 20
     this.menuSpriteY = this._sprite.y = this._options[0].textObj.y + 5
     this.addChild(this._sprite)
-
   }
 
   update(delta) {
@@ -108,13 +116,6 @@ export class MainMenu extends Menu {
 
     const renderer = config.renderer
 
-    this.active = true;
-
-    this._text = new PIXI.Text('MEGA ALPHA EDITION',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'})
-    this._text.x = 20
-    this._text.y = 20
-    this.addChild(this._text)
-
     this._options = [];
     this.selectedOption = 0;
 
@@ -124,13 +125,16 @@ export class MainMenu extends Menu {
 
       levels.test.load(levels.test.texture);
 
-      return { p: true };
+      return { _playing: true };
     });
 
     this.addOption("Test Menu", (menus) => {
-      this.active = false;
-      this.visible = false;
-      return {newMenu:new TestMenu(this)};
+
+      const newMenu = new TestMenu()
+      menus.push(newMenu)
+      config.stage.addChild(newMenu)
+
+      return
     });
 
 
@@ -151,7 +155,6 @@ export class MainMenu extends Menu {
     this._splash.y = this._title.y + this._title.height
     this._splash.rotation = 100
     this.addChild(this._splash)
-
   }
 
   update(delta) {

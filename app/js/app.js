@@ -86,21 +86,14 @@ function init(){
     }
 
     for (let i = menus.length - 1; i > -1; i--) {
-      let { p, skip, override, newMenu } = menus[i].onInputChange(menus)
-      if (skip) continue
+      let { _playing, done } = menus[i].onInputChange(menus) || {}
 
-      if (p) {
-        playing = p;
+      if (_playing !== undefined) {
+        playing = _playing;
         break;
       }
 
-      if (override) break
-
-      if (newMenu) {
-        menus.push(newMenu);
-        stage.addChild(newMenu);
-      }
-
+      if (done) break
     }
 
     if (menus.length === 0) {
@@ -114,8 +107,9 @@ function init(){
 // Animation loop
 function animate(delta) {
 
-  for (let i = menus.length - 1; i > -1; i--) {
-    menus[i].update(delta)
+  // Only update the topmost (last) (currently "active") menu layer
+  if (menus.length > 0) {
+    menus[menus.length - 1].update(delta)
   }
 
   //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
