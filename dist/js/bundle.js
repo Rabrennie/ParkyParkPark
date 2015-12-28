@@ -620,6 +620,17 @@ var MainMenu = exports.MainMenu = (function (_Menu) {
         this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5;
         return { override: true };
       }
+
+      if (keys[38]) {
+        this.selectedOption -= 1;
+        if (this.selectedOption == -1) {
+          this.selectedOption = this._options.length - 1;
+        }
+        this._sprite.x = this._options[this.selectedOption].textObj.x - 20;
+        this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5;
+        return { override: true };
+      }
+
       return { override: true };
     }
   }]);
