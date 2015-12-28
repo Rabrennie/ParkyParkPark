@@ -29,14 +29,16 @@ class Menu extends PIXI.Container {
     this.addChild(this._pointer)
   }
 
-  addOption(text, callback){
+  // XXX(Fishrock123) onInputChange MUST be a *regular* function so it can inherit scope
+  addOption(text, opts={}){
     let i = this._options.length;
 
-    this._options.push({
-      text:text,
-      callback:callback
-    });
-    this._options[i].textObj = new PIXI.Text(this._options[i].text,{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
+    if (typeof opts === 'function') {
+      opts = { callback: opts }
+    }
+
+    this._options.push(new Option(opts.callback, opts.onInputChange, opts.update, opts.state));
+    this._options[i].textObj = new PIXI.Text(text,{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
     this._options[i].textObj.x = config.renderer.width/2 - this._options[i].textObj.width/2;
     this._options[i].textObj.y = 400 + 50*i;
     this.addChild(this._options[i].textObj);
@@ -58,16 +60,14 @@ class Menu extends PIXI.Container {
   // Tell the game it should (Boolean) playing: `return { _playing: <boolean> }`
   //
   onInputChange(menus){
-    if (key('enter')) {
-      return this._options[this.selectedOption].callback(menus);
-    }
     if (key('down')) {
       this.selectedOption += 1;
       if(this.selectedOption == this._options.length){
         this.selectedOption = 0;
       }
-      this._pointer.x = this._options[this.selectedOption].textObj.x - 20
-      this.menuSpriteY = this._pointer.y = this._options[this.selectedOption].textObj.y + 5
+      const option = this._options[this.selectedOption]
+      this._pointer.x = option.textObj.x - 20
+      this.menuSpriteY = this._pointer.y = option.textObj.y + 5
       return { done: true }
     }
 
@@ -76,16 +76,31 @@ class Menu extends PIXI.Container {
       if(this.selectedOption == -1){
         this.selectedOption = this._options.length-1;
       }
-      this._pointer.x = this._options[this.selectedOption].textObj.x - 20
-      this.menuSpriteY = this._pointer.y = this._options[this.selectedOption].textObj.y + 5
+      const option = this._options[this.selectedOption]
+      this._pointer.x = option.textObj.x - 20
+      this.menuSpriteY = this._pointer.y = option.textObj.y + 5
       return { done: true }
+    }
+
+    const option = this._options[this.selectedOption]
+    if (key('enter') && option.callback) {
+      return option.callback(menus);
+    }
+
+    if (option.onInputChange) {
+      option.onInputChange()
     }
 
     return
   }
 
-  update(delta) {
-    const menuSpriteThing = (delta / 25) % 28
+  update(now, delta) {
+    const option = this._options[this.selectedOption]
+    if (option.update) {
+      option.update(now, delta)
+    }
+
+    const menuSpriteThing = (now / 25) % 28
 
     if (menuSpriteThing < 14) {
       this._pointer.height = 16 - menuSpriteThing
@@ -97,11 +112,42 @@ class Menu extends PIXI.Container {
   }
 }
 
-export class TestMenu extends Menu {
+export class OptionsMenu extends Menu {
   constructor(){
     super()
 
-    this.addOption('Back',(menus) => {
+    this.addOption(`Screen Shake: ${config.screenShake * 100}%`, {
+      state: {
+        accumulator: 0
+      },
+      update(now, delta) {
+        this.state.accumulator += delta
+        if (this.state.accumulator < 100) return
+        this.state.accumulator = 0
+
+        /// "this" scope is the actual Option
+        if (key('left')) {
+          if ((config.screenShake -= 0.05) < 0) config.screenShake = 0
+
+          if (config.screenShake === 0) {
+            this.textObj.text = 'Screen Shake: None'
+          } else {
+            this.textObj.text = `Screen Shake: ${Math.round(config.screenShake * 100)}%`
+          }
+        }
+        if (key('right')) {
+          if ((config.screenShake += 0.05) > 2) config.screenShake = 2
+
+          if (config.screenShake === 2) {
+            this.textObj.text = 'Screen Shake: Nuclear Throne'
+          } else {
+            this.textObj.text = `Screen Shake: ${Math.round(config.screenShake * 100)}%`
+          }
+        }
+      }
+    })
+
+    this.addOption('Back', (menus) => {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
 
@@ -128,9 +174,9 @@ export class MainMenu extends Menu {
       return { _playing: true };
     });
 
-    this.addOption("Test Menu", (menus) => {
+    this.addOption("Options", (menus) => {
 
-      const newMenu = new TestMenu()
+      const newMenu = new OptionsMenu()
       menus.push(newMenu)
       config.stage.addChild(newMenu)
 
@@ -149,16 +195,24 @@ export class MainMenu extends Menu {
     this.addChild(this._splash)
   }
 
-  update(delta) {
-    super.update(delta)
+  update(now, delta) {
+    super.update(now, delta)
 
-    if ((delta / 2000) % 1 <= 0.5) {
-      this._splash.scale.x = 1.5 - (delta / 2000) % 1
-      this._splash.scale.y = 1.5 - (delta / 2000) % 1
+    if ((now / 2000) % 1 <= 0.5) {
+      this._splash.scale.x = 1.5 - (now / 2000) % 1
+      this._splash.scale.y = 1.5 - (now / 2000) % 1
     } else {
-      this._splash.scale.x = 0.5 + (delta / 2000) % 1
-      this._splash.scale.y = 0.5 + (delta / 2000) % 1
+      this._splash.scale.x = 0.5 + (now / 2000) % 1
+      this._splash.scale.y = 0.5 + (now / 2000) % 1
     }
   }
+}
 
+// Let the compiler optimize a bit
+function Option(callback, onInputChange, update, state) {
+  this.callback = callback
+  this.onInputChange = onInputChange
+  this.update = update
+  this.state = state
+  this.textObj = null
 }

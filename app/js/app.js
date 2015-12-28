@@ -104,12 +104,15 @@ function init(){
   requestAnimationFrame(animate);
 }
 
+var lastTime = 0
 // Animation loop
-function animate(delta) {
+function animate(now) {
+  const delta = now - lastTime
+  lastTime = now
 
   // Only update the topmost (last) (currently "active") menu layer
   if (menus.length > 0) {
-    menus[menus.length - 1].update(delta)
+    menus[menus.length - 1].update(now, delta)
   }
 
   //TODO: Have a gameloop function. Maybe have a seperate one for each gametype

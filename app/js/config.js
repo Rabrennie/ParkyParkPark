@@ -12,5 +12,8 @@ export default {
     }),
     renderer: PIXI.autoDetectRenderer(800, 600),
     stage: new PIXI.Container(),
-    container: new PIXI.Container()
+    container: new PIXI.Container(),
+
+    // user options
+    screenShake: 1,
 };
