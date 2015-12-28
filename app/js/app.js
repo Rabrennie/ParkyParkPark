@@ -108,7 +108,7 @@ function init(){
     }
   }
 
-  animate(1);
+  requestAnimationFrame(animate);
 }
 
 // Animation loop
