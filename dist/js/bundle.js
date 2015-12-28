@@ -493,10 +493,31 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Menu = (function (_PIXI$Container) {
   _inherits(Menu, _PIXI$Container);
 
+  _createClass(Menu, [{
+    key: 'addOption',
+    value: function addOption(text, callback) {
+      var i = this._options.length;
+
+      this._options.push({
+        text: text,
+        callback: callback
+      });
+      this._options[i].textObj = new PIXI.Text(this._options[i].text, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+      this._options[i].textObj.x = _config2.default.renderer.width / 2 - this._options[i].textObj.width / 2;
+      this._options[i].textObj.y = 400 + 50 * i;
+      this.addChild(this._options[i].textObj);
+    }
+  }]);
+
   function Menu() {
     _classCallCheck(this, Menu);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
+
+    _this._options = [];
+    _this.active = true;
+    _this.selectedOption = 0;
+    return _this;
   }
 
   // Implement these in subclasses
@@ -507,67 +528,6 @@ var Menu = (function (_PIXI$Container) {
       var delta = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
     }
   }, {
-    key: 'onInputChange',
-    value: function onInputChange() {
-      var keys = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-      var menus = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
-
-      return { skip: true };
-    }
-  }]);
-
-  return Menu;
-})(PIXI.Container);
-
-var TestMenu = exports.TestMenu = (function (_Menu) {
-  _inherits(TestMenu, _Menu);
-
-  function TestMenu(parent) {
-    _classCallCheck(this, TestMenu);
-
-    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(TestMenu).call(this));
-
-    var renderer = _config2.default.renderer;
-
-    _this2.active = true;
-
-    _this2._text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-    _this2._text.x = 20;
-    _this2._text.y = 20;
-    _this2.addChild(_this2._text);
-
-    _this2._options = [];
-    _this2._options.push({
-      text: "Back",
-      callback: function callback(menus) {
-        menus.splice(menus.indexOf(_this2));
-        _config2.default.stage.removeChild(_this2);
-        parent.active = true;
-        parent.visible = true;
-        return { override: true };
-      }
-    });
-
-    for (var i = 0; i < _this2._options.length; i++) {
-      _this2._options[i].textObj = new PIXI.Text(_this2._options[i].text, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-      _this2._options[i].textObj.x = renderer.width / 2 - _this2._options[i].textObj.width / 2;
-      _this2._options[i].textObj.y = 400 + 50 * i;
-      _this2.addChild(_this2._options[i].textObj);
-    }
-
-    _this2.selectedOption = 0;
-
-    _this2._sprite = new PIXI.Sprite(_loader2.default.MenuArrow.texture);
-    _this2._sprite.width = 16;
-    _this2._sprite.height = 16;
-    _this2._sprite.x = _this2._options[0].textObj.x - 20;
-    _this2.menuSpriteY = _this2._sprite.y = _this2._options[0].textObj.y + 5;
-    _this2.addChild(_this2._sprite);
-
-    return _this2;
-  }
-
-  _createClass(TestMenu, [{
     key: 'onInputChange',
     value: function onInputChange(keys, menus) {
       if (this.active) {
@@ -602,6 +562,56 @@ var TestMenu = exports.TestMenu = (function (_Menu) {
     }
   }]);
 
+  return Menu;
+})(PIXI.Container);
+
+var TestMenu = exports.TestMenu = (function (_Menu) {
+  _inherits(TestMenu, _Menu);
+
+  function TestMenu(parent) {
+    _classCallCheck(this, TestMenu);
+
+    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(TestMenu).call(this));
+
+    var renderer = _config2.default.renderer;
+
+    _this2._text = new PIXI.Text('MEGA ALPHA EDITION', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+    _this2._text.x = 20;
+    _this2._text.y = 20;
+    _this2.addChild(_this2._text);
+    _this2.addOption('Back', function (menus) {
+      menus.splice(menus.indexOf(_this2));
+      _config2.default.stage.removeChild(_this2);
+      parent.active = true;
+      parent.visible = true;
+      return { override: true };
+    });
+
+    _this2._sprite = new PIXI.Sprite(_loader2.default.MenuArrow.texture);
+    _this2._sprite.width = 16;
+    _this2._sprite.height = 16;
+    _this2._sprite.x = _this2._options[0].textObj.x - 20;
+    _this2.menuSpriteY = _this2._sprite.y = _this2._options[0].textObj.y + 5;
+    _this2.addChild(_this2._sprite);
+
+    return _this2;
+  }
+
+  _createClass(TestMenu, [{
+    key: 'update',
+    value: function update(delta) {
+      var menuSpriteThing = delta / 25 % 28;
+
+      if (menuSpriteThing < 14) {
+        this._sprite.height = 16 - menuSpriteThing;
+        this._sprite.y = this.menuSpriteY + menuSpriteThing / 2;
+      } else {
+        this._sprite.height = 2 + menuSpriteThing - 14;
+        this._sprite.y = this.menuSpriteY + 14 - menuSpriteThing / 2;
+      }
+    }
+  }]);
+
   return TestMenu;
 })(Menu);
 
@@ -623,43 +633,22 @@ var MainMenu = exports.MainMenu = (function (_Menu2) {
     _this3.addChild(_this3._text);
 
     _this3._options = [];
-    _this3._options.push({
-      text: "Play",
-      callback: function callback(menus) {
-        menus.splice(menus.indexOf(_this3));
-        _config2.default.stage.removeChild(_this3);
-
-        _levels.levels.test.load(_levels.levels.test.texture);
-
-        return { p: true };
-      }
-    });
-
-    _this3._options.push({
-      text: "Test Menu",
-      callback: function callback(menus) {
-        _this3.active = false;
-        _this3.visible = false;
-        return { newMenu: new TestMenu(_this3) };
-      }
-    });
-
-    _this3._options.push({
-      text: "Callback Example",
-      callback: function callback(menus) {
-        alert("Wow So Good");
-        return { override: true };
-      }
-    });
-
-    for (var i = 0; i < _this3._options.length; i++) {
-      _this3._options[i].textObj = new PIXI.Text(_this3._options[i].text, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-      _this3._options[i].textObj.x = renderer.width / 2 - _this3._options[i].textObj.width / 2;
-      _this3._options[i].textObj.y = 400 + 50 * i;
-      _this3.addChild(_this3._options[i].textObj);
-    }
-
     _this3.selectedOption = 0;
+
+    _this3.addOption("Play", function (menus) {
+      menus.splice(menus.indexOf(_this3));
+      _config2.default.stage.removeChild(_this3);
+
+      _levels.levels.test.load(_levels.levels.test.texture);
+
+      return { p: true };
+    });
+
+    _this3.addOption("Test Menu", function (menus) {
+      _this3.active = false;
+      _this3.visible = false;
+      return { newMenu: new TestMenu(_this3) };
+    });
 
     _this3._sprite = new PIXI.Sprite(_loader2.default.MenuArrow.texture);
     _this3._sprite.width = 16;
@@ -701,39 +690,6 @@ var MainMenu = exports.MainMenu = (function (_Menu2) {
       } else {
         this._sprite.height = 2 + menuSpriteThing - 14;
         this._sprite.y = this.menuSpriteY + 14 - menuSpriteThing / 2;
-      }
-    }
-  }, {
-    key: 'onInputChange',
-    value: function onInputChange(keys, menus) {
-      if (this.active) {
-
-        if (keys[13]) {
-          return this._options[this.selectedOption].callback(menus);
-        }
-        if (keys[40]) {
-          this.selectedOption += 1;
-          if (this.selectedOption == this._options.length) {
-            this.selectedOption = 0;
-          }
-          this._sprite.x = this._options[this.selectedOption].textObj.x - 20;
-          this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5;
-          return { override: true };
-        }
-
-        if (keys[38]) {
-          this.selectedOption -= 1;
-          if (this.selectedOption == -1) {
-            this.selectedOption = this._options.length - 1;
-          }
-          this._sprite.x = this._options[this.selectedOption].textObj.x - 20;
-          this.menuSpriteY = this._sprite.y = this._options[this.selectedOption].textObj.y + 5;
-          return { override: true };
-        }
-
-        return { override: true };
-      } else {
-        return { skip: true };
       }
     }
   }]);
