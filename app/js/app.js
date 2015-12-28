@@ -5,6 +5,7 @@ import resources from './loader.js';
 import {Explosion} from './Explosion.js'
 import {Bomb} from './Bomb.js'
 import {MainMenu} from './Menu.js'
+import {key, setKey} from './Input.js'
 
 var _ = require('lodash');
 var world = config.world,
@@ -63,41 +64,29 @@ function init(){
     }
   });
 
-
-  //INPUT STUFF
-  // TODO: Add gamepad support
-  var keys = {
-    '37': 0, // left
-    '39': 0, // right
-    '38': 0, // up
-    '40': 0, // down
-    '13': 0, // enter
-    '27': 0, // escape
-  };
-
-  window.addEventListener("keydown",function (evt){
-    keys[evt.keyCode] = 1;
+  window.addEventListener('keydown', evt => {
+    setKey(evt.keyCode, 1)
     onInputChange();
   });
-  window.addEventListener("keyup",function (evt){
-    keys[evt.keyCode] = 0;
+  window.addEventListener('keyup', evt => {
+    setKey(evt.keyCode, 0)
     onInputChange();
   });
 
   function onInputChange(){
 
-    if (keys[27]) {
+    if (key['escape']) {
       // TODO: Toggle the menu
       return
     }
 
     if (playing) {
-      player.onInput(keys);
+      player.onInput();
       return
     }
 
     for (let i = menus.length - 1; i > -1; i--) {
-      let { p, skip, override, newMenu } = menus[i].onInputChange(keys, menus)
+      let { p, skip, override, newMenu } = menus[i].onInputChange(menus)
       if (skip) continue
 
       if (p) {

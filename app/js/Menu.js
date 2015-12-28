@@ -2,6 +2,7 @@ import resources from './loader.js'
 import config from './config.js'
 import {levels} from './levels.js'
 import * as Cars from './Cars.js';
+import {key} from './Input.js'
 
 //TODO: Refactor this so there is less repeated text
 class Menu extends PIXI.Container {
@@ -27,13 +28,13 @@ class Menu extends PIXI.Container {
 
   // Implement these in subclasses
   update(delta = 1) {}
-  onInputChange(keys, menus){
+  onInputChange(menus){
     if (this.active) {
 
-      if(keys[13]){
+      if (key('enter')) {
         return this._options[this.selectedOption].callback(menus);
       }
-      if(keys[40]){
+      if(key('down')){
         this.selectedOption += 1;
         if(this.selectedOption == this._options.length){
           this.selectedOption = 0;
@@ -43,7 +44,7 @@ class Menu extends PIXI.Container {
         return {override:true}
       }
 
-      if(keys[38]){
+      if(key('up')){
         this.selectedOption -= 1;
         if(this.selectedOption == -1){
           this.selectedOption = this._options.length-1;
