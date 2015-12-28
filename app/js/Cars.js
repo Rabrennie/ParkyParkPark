@@ -1,6 +1,7 @@
 import config from './config.js';
 import resources from './loader.js';
 import {Explosion} from './Explosion.js'
+import {key} from './Input.js'
 
 var _ = require('lodash');
 
@@ -42,12 +43,15 @@ class BaseCar {
     this.chassisBody.backWheel.setSideFriction(back);
   }
 
-  onInput(keys){
+  onInput() {
     const maxSteer = 20000;
-    this.chassisBody.frontWheel.steerValue = maxSteer * (keys[37] - keys[39]);
-    this.wheelSprite[0].rotation = this.wheelSprite[1].rotation = 0.5*(keys[37] - keys[39]);
+    const left = key('left')
+    const right = key('right')
+
+    this.chassisBody.frontWheel.steerValue = maxSteer * (left - right);
+    this.wheelSprite[0].rotation = this.wheelSprite[1].rotation = 0.5 * (left - right);
     this.chassisBody.backWheel.setBrakeForce(0);
-    if(keys[40]){
+    if (key('down')) {
       if(this.chassisBody.backWheel.getSpeed() > 0.1){
         // Moving forward - add some brake force to slow down
         this.chassisBody.backWheel.setBrakeForce(2);
