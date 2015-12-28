@@ -139,7 +139,7 @@ export class OptionsMenu extends Menu {
           if ((config.screenShake += 0.05) > 2) config.screenShake = 2
 
           if (config.screenShake === 2) {
-            this.textObj.text = 'Screen Shake: Nuclear Throne'
+            this.textObj.text = 'Screen Shake: Vlambeer'
           } else {
             this.textObj.text = `Screen Shake: ${Math.round(config.screenShake * 100)}%`
           }
