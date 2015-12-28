@@ -97,14 +97,21 @@ function init(){
     }
 
     for (let i = menus.length - 1; i > -1; i--) {
-      let { p, skip, override, newMenu, remove } = menus[i].onInputChange(keys, menus)
+      let { p, skip, override, newMenu } = menus[i].onInputChange(keys, menus)
       if (skip) continue
 
-      if (p) playing = p;
+      if (p) {
+        playing = p;
+        break;
+      }
 
       if (override) break
 
-      if (newMenu) menus.push(newMenu); stage.addChild(newMenu);
+      if (newMenu) {
+        menus.push(newMenu);
+        stage.addChild(newMenu);
+      }
+
     }
 
     if (menus.length === 0) {

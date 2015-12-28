@@ -927,15 +927,20 @@ function init() {
       var skip = _menus$i$onInputChang.skip;
       var override = _menus$i$onInputChang.override;
       var newMenu = _menus$i$onInputChang.newMenu;
-      var remove = _menus$i$onInputChang.remove;
 
       if (skip) continue;
 
-      if (p) playing = p;
+      if (p) {
+        playing = p;
+        break;
+      }
 
       if (override) break;
 
-      if (newMenu) menus.push(newMenu);stage.addChild(newMenu);
+      if (newMenu) {
+        menus.push(newMenu);
+        stage.addChild(newMenu);
+      }
     }
 
     if (menus.length === 0) {
