@@ -34,7 +34,7 @@ function init(){
     }
   };
   renderer.backgroundColor = 0x040404;
-  PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
+  PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 
   stage.addChild(container);
   document.body.appendChild(renderer.view);
