@@ -1,12 +1,17 @@
 import resources from './loader.js'
 import config from './config.js'
+import {levels} from './levels.js'
 
 class Menu extends PIXI.Container {
   constructor() {
     super()
   }
 
-  update(delta) {} // Implement this in subclasses
+  // Implement these in subclasses
+  update(delta = 1) {}
+  onInputChange(keys = [], menus = []) {
+    return { skip: true }
+  }
 }
 
 export class MainMenu extends Menu {
@@ -62,5 +67,14 @@ export class MainMenu extends Menu {
       this._sprite.height = 2 + menuSpriteThing - 14
       this._sprite.y = this.menuSpriteY + 14 - menuSpriteThing / 2
     }
+  }
+
+  onInputChange(keys, menus) {
+    menus.splice(menus.indexOf(this))
+    config.stage.removeChild(this)
+
+    levels.test.load(levels.test.texture);
+
+    return { p: true }
   }
 }
