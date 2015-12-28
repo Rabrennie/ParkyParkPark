@@ -114,6 +114,8 @@ export class MainMenu extends Menu {
   constructor() {
     super()
 
+    const renderer = config.renderer
+
     this._options = [];
     this.selectedOption = 0;
 
