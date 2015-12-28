@@ -135,6 +135,6 @@ function animate(delta) {
   }
 
   requestAnimationFrame(animate);
-  world.step(1/60);
+  if (playing) world.step(1/60);
   renderer.render(stage);
 }

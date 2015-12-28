@@ -11,6 +11,6 @@ export default {
       gravity : [0,0]
     }),
     renderer: PIXI.autoDetectRenderer(800, 600),
-    stage: new PIXI.Stage(0x282B2A),
+    stage: new PIXI.Stage(),
     container: new PIXI.Container()
 };
