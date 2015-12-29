@@ -3,6 +3,7 @@ import config from './config.js'
 import {levels} from './levels.js'
 import * as Cars from './Cars.js';
 import {key} from './Input.js'
+import {screenShake} from './ScreenShake.js'
 
 //TODO: Refactor this so there is less repeated text
 class Menu extends PIXI.Container {
@@ -134,6 +135,7 @@ export class OptionsMenu extends Menu {
           } else {
             this.textObj.text = `Screen Shake: ${Math.round(config.screenShake * 100)}%`
           }
+          screenShake()
         }
         if (key('right')) {
           if ((config.screenShake += 0.05) > 2) config.screenShake = 2
@@ -143,6 +145,7 @@ export class OptionsMenu extends Menu {
           } else {
             this.textObj.text = `Screen Shake: ${Math.round(config.screenShake * 100)}%`
           }
+          screenShake()
         }
       }
     })
