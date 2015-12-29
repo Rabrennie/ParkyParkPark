@@ -30,8 +30,7 @@ class Level {
   }
 }
 
-const levels = {};
-levels.test = new Level("Test",[
+export const test = new Level("Test",[
   new Wall(800,-300,20,600,0,config.container,config.world),
   new Wall(400,0,800,20,0,config.container,config.world),
   new Wall(400,-600,800,20,0,config.container,config.world),
@@ -40,5 +39,3 @@ levels.test = new Level("Test",[
   new Wall(101,-35,199,70,0,config.container,config.world),
   new Wall(101,-300,203,333,0,config.container,config.world)
 ], 'TestLevel',[{x:-20,y:-95}, {x:-20,y:-500}]);
-
-export {levels}
