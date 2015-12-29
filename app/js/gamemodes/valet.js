@@ -1,17 +1,16 @@
+import GameMode from './_gamemode'
+import config from '../config'
+import gamestate from '../gamestate'
+import { shakeUpdate } from '../ScreenShake.js'
+import * as Cars from '../Cars.js'
 
-import GameMode from './_gamemode';
-import config from '../config';
-import gamestate from '../gamestate';
-import {shakeUpdate} from '../ScreenShake.js'
-import * as Cars from '../Cars.js';
+import _ from 'lodash'
 
-import _ from 'lodash';
-
-let lastTime = 0;
+let lastTime = 0
 
 export default class Valet {
   static loop(now) {
-    const delta = now - lastTime;
+    const delta = now - lastTime
     lastTime = now
 
     // Only update the topmost (last) (currently "active") menu layer
@@ -21,24 +20,24 @@ export default class Valet {
 
     shakeUpdate()
 
-    //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
+    // TODO: Have a gameloop function. Maybe have a seperate one for each gametype
     if (gamestate.playing) {
       // TODO: do initialization better somehow?
       if (!gamestate.player) {
-        var car = _.sample(Cars);
-        let spawn = _.sample(gamestate.level.spawnPoints);
+        var car = _.sample(Cars)
+        let spawn = _.sample(gamestate.level.spawnPoints)
 
-        gamestate.player =  new car(spawn);
+        gamestate.player = new car(spawn)
       }
-      gamestate.player.update();
+      gamestate.player.update()
 
       if (p2.vec2.length(gamestate.player.chassisBody.velocity) <= 0.05) {
-        gamestate.player.chassisBody.backWheel.setBrakeForce(2);
-        gamestate.player.boxShape.collisionGroup = config.CAR;
-        gamestate.cars.push(gamestate.player);
-        var car = _.sample(Cars);
-        let spawn = _.sample(gamestate.level.spawnPoints);
-        gamestate.player =  new car(spawn);
+        gamestate.player.chassisBody.backWheel.setBrakeForce(2)
+        gamestate.player.boxShape.collisionGroup = config.CAR
+        gamestate.cars.push(gamestate.player)
+        var car = _.sample(Cars)
+        let spawn = _.sample(gamestate.level.spawnPoints)
+        gamestate.player = new car(spawn)
       }
 
       for (let i = gamestate.cars.length - 1; i >= 0; i--) {
@@ -46,8 +45,8 @@ export default class Valet {
       }
     }
 
-    requestAnimationFrame(Valet.loop);
-    if (gamestate.playing) config.world.step(1/60);
-    config.renderer.render(config.stage);
+    requestAnimationFrame(Valet.loop)
+    if (gamestate.playing) config.world.step(1 / 60)
+    config.renderer.render(config.stage)
   }
 }
