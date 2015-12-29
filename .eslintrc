@@ -1,0 +1,30 @@
+{
+  "extends": "kellyirc",
+  "parser": "babel-eslint",
+  "ecmaFeatures": {
+    "modules": true
+  },
+  "env": {
+    "node": true,
+    "es6": true,
+    "browser": true,
+    "commonjs": true
+  },
+  "globals": {
+    "PIXI": true,
+    "p2": true
+  },
+  "rules": {
+    "semi": 0,
+    "no-extra-semi": 2,
+    "prefer-const": 2,
+    "no-sparse-arrays": 0,
+    "object-shorthand": [2, "always"],
+    "indent": [2, 2, {"SwitchCase": 2}],
+    "no-unused-vars": [2, {"vars": "all", "args": "after-used"}],
+    "brace-style": [2, "1tbs", { "allowSingleLine": true }],
+    "eqeqeq": [2, "smart"],
+    "comma-dangle": 0,
+    "eol-last": 2
+  }
+}
