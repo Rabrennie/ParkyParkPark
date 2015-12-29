@@ -66,9 +66,7 @@ class BaseCar {
   constructor(opts = {}) {
     //fix so wheels show
     defaults.wheelTexture = resources.wheel.texture;
-
     opts = _.defaults(opts, defaults);
-
     this.chassisBody = new p2.Body({
       position: [opts.x/config.zoom,opts.y/config.zoom],
       mass: opts.mass,
@@ -223,47 +221,47 @@ class BaseTruck extends BaseCar {
 export class RedCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.RedCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
+    let options = _.defaults(opts, defaults);
+    super(options)
   }
 }
 
 export class BlueCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.BlueCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
+    let options = _.defaults(opts, defaults);
+    super(options)
   }
 }
 
 export class GreenCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.GreenCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
+    let options = _.defaults(opts, defaults);
+    super(options)
   }
 }
 
 export class OrangeCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.OrangeCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
+    let options = _.defaults(opts, defaults);
+    super(options)
   }
 }
 
 export class RedStripeCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.RedStripeCar.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
+    let options = _.defaults(opts, defaults);
+    super(options)
   }
 }
 
 export class OrangeTruck extends BaseTruck {
   constructor(opts={}) {
     const defaults = {texture:resources.OrangeTruck.texture};
-    opts = _.defaults(opts, defaults);
-    super(opts)
+    let options = _.defaults(opts, defaults);
+    super(options)
   }
 }

@@ -126,8 +126,9 @@ function animate(now) {
     // TODO: do initialization better somehow?
     if (!player) {
       var car = _.sample(Cars);
-      console.log(level.spawnPoints)
-      player =  new car(_.sample(level.spawnPoints));
+      let spawn = _.sample(level.spawnPoints)
+      spawn = {x:spawn.x,y:spawn.y}
+      player =  new car(spawn);
     }
     player.update();
 
@@ -136,7 +137,9 @@ function animate(now) {
       player.boxShape.collisionGroup = config.CAR;
       cars.push(player);
       var car = _.sample(Cars);
-      player =  new car(_.sample(level.spawnPoints));
+      let spawn = _.sample(level.spawnPoints)
+      spawn = {x:spawn.x,y:spawn.y}
+      player =  new car(spawn);
     }
 
     for (let i = cars.length - 1; i >= 0; i--) {
