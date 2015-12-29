@@ -2,6 +2,7 @@ import config from './config.js';
 import resources from './loader.js';
 import {Explosion} from './Explosion.js'
 import {key} from './Input.js'
+import {screenShake} from './ScreenShake.js'
 
 var _ = require('lodash');
 
@@ -77,6 +78,11 @@ class BaseCar {
 
     this.chassisBody.onCollision = (body, otherShape, playerHit) => {
       this.setSideFriction(3,3);
+
+      if (playerHit) {
+        screenShake(6, 6)
+      }
+
       if(body.shapes[0].collisionGroup == config.WALL){
         window.setTimeout(() => this.setSideFriction(200,200), 100)
       } else if (playerHit) {
@@ -179,12 +185,15 @@ class BaseTruck extends BaseCar {
     this.boxShapeBack.position[1] = -0.2
 
     // this.graphics.drawRect(this.boxShapeBack.position[0]-this.boxShapeBack.width/2, this.boxShapeBack.position[1]-this.boxShapeBack.height/2, this.boxShapeBack.width, this.boxShapeBack.height);
-    console.log(this.sprite.texture)
 
     this.chassisBody.onCollision = (body, shape, playerHit) => {
       const bodyMomentum = [body.velocity[0] * body.mass, body.velocity[1] * body.mass]
       const thisMomentum = [this.chassisBody.velocity[0] * this.chassisBody.mass,
                             this.chassisBody.velocity[1] * this.chassisBody.mass]
+
+      if (playerHit) {
+        screenShake(6, 8)
+      }
 
       // Explosion tigger sensitivity
       if (shape.collisionGroup == config.TRUCKBACK && this.exploded == false &&

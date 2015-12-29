@@ -1,4 +1,5 @@
 import config from './config.js';
+import {screenShake} from './ScreenShake.js'
 
 export function Explosion(point, force, radius){
   this.point = [];
@@ -37,6 +38,9 @@ export function Explosion(point, force, radius){
   this.explode = () => {
     config.world.addBody(this.body);
     config.container.addChild(this.graphics);
+
+    screenShake()
+
     window.setTimeout(() => {
       config.world.removeBody(this.body);
       config.container.removeChild(this.graphics);}, 33)
