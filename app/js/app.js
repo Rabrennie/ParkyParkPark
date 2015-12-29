@@ -6,6 +6,7 @@ import {Explosion} from './Explosion.js'
 import {Bomb} from './Bomb.js'
 import {MainMenu} from './Menu.js'
 import {key, setKey} from './Input.js'
+import {shakeUpdate} from './ScreenShake.js'
 
 var _ = require('lodash');
 var world = config.world,
@@ -114,6 +115,8 @@ function animate(now) {
   if (menus.length > 0) {
     menus[menus.length - 1].update(now, delta)
   }
+
+  shakeUpdate()
 
   //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
   if (playing) {
