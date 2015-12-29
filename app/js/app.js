@@ -1,12 +1,12 @@
 import config from './config.js';
 import {Wall} from './Wall.js';
-import * as Cars from './Cars.js';
 import resources from './loader.js';
 import {Explosion} from './Explosion.js'
 import {Bomb} from './Bomb.js'
 import {MainMenu} from './Menu.js'
 import {key, setKey} from './Input.js'
-import {shakeUpdate} from './ScreenShake.js'
+import gamestate from './gamestate';
+import Valet from './gamemodes/valet';
 
 var _ = require('lodash');
 var world = config.world,
@@ -17,13 +17,7 @@ container = config.container;
 var carTexture,
 wheelTexture,
 graphics,
-chassisBody,
-player,
-cars=[],
-level;
-const menus = []
-
-var playing = false;
+chassisBody;
 
 //only initialize when all textures are loaded
 PIXI.loader.once('complete',init);
@@ -31,7 +25,7 @@ PIXI.loader.once('complete',init);
 function init(){
   let test = renderer.view;
   test.onclick = e => {
-    if(playing) {
+    if(gamestate.playing) {
       new Bomb(e.offsetX,-e.offsetY)
     }
   };
@@ -47,7 +41,7 @@ function init(){
   container.scale.y = -config.zoom; // Note: we flip the y axis to make "up" the physics "up"
 
   const menu = new MainMenu()
-  menus.push(menu)
+  gamestate.menus.push(menu)
   stage.addChild(menu)
 
 
@@ -59,10 +53,10 @@ function init(){
         shapeB = evt.shapeB;
 
     if(bodyA.onCollision){
-      bodyA.onCollision(bodyB, shapeA, bodyB === player.chassisBody);
+      bodyA.onCollision(bodyB, shapeA, bodyB === gamestate.player.chassisBody);
     }
     if(bodyB.onCollision){
-      bodyB.onCollision(bodyA, shapeB, bodyA === player.chassisBody);
+      bodyB.onCollision(bodyA, shapeB, bodyA === gamestate.player.chassisBody);
     }
   });
 
@@ -82,71 +76,28 @@ function init(){
       return
     }
 
-    if (playing) {
-      player.onInput();
+    if (gamestate.playing) {
+      gamestate.player.onInput();
       return
     }
 
-    for (let i = menus.length - 1; i > -1; i--) {
-      let { _playing, done, _level } = menus[i].onInputChange(menus) || {}
+    for (let i = gamestate.menus.length - 1; i > -1; i--) {
+      let { _playing, done, _level } = gamestate.menus[i].onInputChange(gamestate.menus) || {}
 
       if (_playing !== undefined) {
-        playing = _playing;
-        level = _level;
-        level.load();
+        gamestate.playing = _playing;
+        gamestate.level = _level;
+        gamestate.level.load();
         break;
       }
 
       if (done) break
     }
 
-    if (menus.length === 0) {
-      playing = true
+    if (gamestate.menus.length === 0) {
+      gamestate.playing = true
     }
   }
 
-  requestAnimationFrame(animate);
-}
-
-var lastTime = 0
-// Animation loop
-function animate(now) {
-  const delta = now - lastTime
-  lastTime = now
-
-  // Only update the topmost (last) (currently "active") menu layer
-  if (menus.length > 0) {
-    menus[menus.length - 1].update(now, delta)
-  }
-
-  shakeUpdate()
-
-  //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
-  if (playing) {
-    // TODO: do initialization better somehow?
-    if (!player) {
-      var car = _.sample(Cars);
-      let spawn = _.sample(level.spawnPoints);
-
-      player =  new car(spawn);
-    }
-    player.update();
-
-    if (p2.vec2.length(player.chassisBody.velocity) <= 0.05) {
-      player.chassisBody.backWheel.setBrakeForce(2);
-      player.boxShape.collisionGroup = config.CAR;
-      cars.push(player);
-      var car = _.sample(Cars);
-      let spawn = _.sample(level.spawnPoints);
-      player =  new car(spawn);
-    }
-
-    for (let i = cars.length - 1; i >= 0; i--) {
-      cars[i].update()
-    }
-  }
-
-  requestAnimationFrame(animate);
-  if (playing) world.step(1/60);
-  renderer.render(stage);
+  requestAnimationFrame(Valet.loop);
 }
