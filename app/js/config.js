@@ -16,4 +16,5 @@ export default {
 
     // user options
     screenShake: 1,
+    masterVolume: 1
 };
