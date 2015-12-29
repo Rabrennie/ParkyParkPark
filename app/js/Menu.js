@@ -190,7 +190,7 @@ export class OptionsMenu extends Menu {
       menus.push(newMenu)
       config.stage.addChild(newMenu)
 
-      return
+      return { done: true }
     })
 
     this.addOption('Back', (menus) => {
