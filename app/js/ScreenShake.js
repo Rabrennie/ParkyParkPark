@@ -4,12 +4,13 @@ const mt = Random.engines.mt19937()
 mt.autoSeed()
 
 
-var shakeStrength = 20
+var shakeStrength = 0
 var shakeFrames = 0
 
 export function screenShake(frames, strength) {
-  shakeFrames = frames || 20
-  shakeStrength = strength || 20
+  shakeFrames = frames || 12
+  shakeFrames = (shakeFrames / 4) * 3 + (shakeFrames / 4) * config.screenShake
+  shakeStrength = strength || 16
 }
 
 export function shakeUpdate() {
