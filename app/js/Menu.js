@@ -128,16 +128,16 @@ export class KeyMapMenu extends Menu {
 export class OptionsMenu extends Menu {
   constructor(){
     super()
-    this.addOption(`Master Volume: ${config.masterVolume * 100}%`, {
+    this.addOption(`Master Volume: ${Math.round(config.masterVolume * 100)}%`, {
       state: {
         accumulator: 0
       },
       update(now, delta) {
+        // "this" scope is the actual Option
         this.state.accumulator += delta
         if (this.state.accumulator < 100) return
         this.state.accumulator = 0
 
-        /// "this" scope is the actual Option
         if (key('left')) {
           if ((config.masterVolume -= 0.05) < 0) config.masterVolume = 0
 
@@ -153,16 +153,16 @@ export class OptionsMenu extends Menu {
         }
       }
     })
-    this.addOption(`Screen Shake: ${config.screenShake * 100}%`, {
+    this.addOption(`Screen Shake: ${Math.round(config.screenShake * 100)}%`, {
       state: {
         accumulator: 0
       },
       update(now, delta) {
+        // "this" scope is the actual Option
         this.state.accumulator += delta
         if (this.state.accumulator < 100) return
         this.state.accumulator = 0
 
-        /// "this" scope is the actual Option
         if (key('left')) {
           if ((config.screenShake -= 0.05) < 0) config.screenShake = 0
 
@@ -197,7 +197,7 @@ export class OptionsMenu extends Menu {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
 
-      return { done: true };
+      return { done: true }
     })
   }
 }
@@ -214,8 +214,6 @@ export class MainMenu extends Menu {
     this.addOption("Play", (menus) => {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
-
-
 
       return { _playing: true, _level: levels.test };
     });
