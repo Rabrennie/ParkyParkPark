@@ -1,6 +1,6 @@
 import resources from './loader.js'
 import config from './config.js'
-import {levels} from './levels.js'
+import * as levels from './levels.js'
 import * as Cars from './Cars.js';
 import {key} from './Input.js'
 import {screenShake} from './ScreenShake.js'
