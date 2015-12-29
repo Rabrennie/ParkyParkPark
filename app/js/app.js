@@ -19,7 +19,8 @@ wheelTexture,
 graphics,
 chassisBody,
 player,
-cars=[]
+cars=[],
+level;
 const menus = []
 
 var playing = false;
@@ -87,10 +88,12 @@ function init(){
     }
 
     for (let i = menus.length - 1; i > -1; i--) {
-      let { _playing, done } = menus[i].onInputChange(menus) || {}
+      let { _playing, done, _level } = menus[i].onInputChange(menus) || {}
 
       if (_playing !== undefined) {
         playing = _playing;
+        level = _level;
+        level.load();
         break;
       }
 
@@ -123,7 +126,8 @@ function animate(now) {
     // TODO: do initialization better somehow?
     if (!player) {
       var car = _.sample(Cars);
-      player =  new car();
+      console.log(level.spawnPoints)
+      player =  new car(_.sample(level.spawnPoints));
     }
     player.update();
 
@@ -132,7 +136,7 @@ function animate(now) {
       player.boxShape.collisionGroup = config.CAR;
       cars.push(player);
       var car = _.sample(Cars);
-      player =  new car();
+      player =  new car(_.sample(level.spawnPoints));
     }
 
     for (let i = cars.length - 1; i >= 0; i--) {

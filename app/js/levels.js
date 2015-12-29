@@ -3,7 +3,7 @@ import {Wall} from './Wall.js';
 import resources from './loader.js';
 
 class Level {
-  constructor(name,walls,texture) {
+  constructor(name,walls,texture, spawnPoints) {
     this.name = name;
     this.walls = walls;
     this.graphics = new PIXI.Graphics();
@@ -11,6 +11,7 @@ class Level {
     this.graphics.width = 800;
     this.graphics.height = 600;
     this.texture = texture;
+    this.spawnPoints = spawnPoints;
   }
 
   load(){
@@ -38,6 +39,6 @@ levels.test = new Level("Test",[
   new Wall(101,-565,199,70,0,config.container,config.world),
   new Wall(101,-35,199,70,0,config.container,config.world),
   new Wall(101,-300,203,333,0,config.container,config.world)
-], 'TestLevel');
+], 'TestLevel',[{x:-20,y:-95}, {x:-20,y:-500}]);
 
 export {levels}

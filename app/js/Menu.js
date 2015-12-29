@@ -172,9 +172,9 @@ export class MainMenu extends Menu {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
 
-      levels.test.load(levels.test.texture);
 
-      return { _playing: true };
+
+      return { _playing: true, _level: levels.test };
     });
 
     this.addOption("Options", (menus) => {
