@@ -1,4 +1,5 @@
 import config from './config.js';
+import {screenShake} from './ScreenShake.js'
 
 //TODO make this a class
 
@@ -10,8 +11,10 @@ export class Wall {
       angle: angle
     });
 
-    this.wallBody.onCollision = body => {
-      let a = body;
+    this.wallBody.onCollision = (body, otherShape, playerHit) => {
+      if (playerHit) {
+        screenShake(6, 6)
+      }
     };
 
     this.world = world;
