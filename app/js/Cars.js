@@ -20,9 +20,14 @@ const defaults = {
   collisionGroup:config.PLAYER,
   stage:config.stage,
   texture:resources.RedCar.texture,
-  collisionMask:config.PLAYER | config.CAR | config.TRUCKBACK |config.WALL | config.BOMB | config.EXPLOSION,
+  collisionMask:config.PLAYER | config.CAR | config.TRUCKBACK | config.WALL | config.BOMB | config.EXPLOSION,
   wheelTexture:resources.wheel.texture,
-  wheelPositions: [{x:-0.25, y:0.15}, {x:0.4-0.048, y:0.15},{x:-0.25, y:-0.35}, {x:0.4-0.048, y:-0.35}]
+  wheelPositions: [
+    {x:-0.22, y:0.24},
+    {x:0.4-0.098, y:0.24},
+    {x:-0.22, y:-0.30},
+    {x:0.4-0.098, y:-0.3}
+  ]
 };
 
 class BaseCar {
@@ -159,8 +164,14 @@ class BaseTruck extends BaseCar {
     const defaults = {texture:resources.OrangeTruck.texture,
       w:0.7,
       h:1.075,
-      //TODO: fix wheel positions
-      wheelPositions: [{x:-0.26, y:0.32}, {x:0.40-0.058, y:0.32},{x:-0.35, y:0}, {x:0.5-0.058, y:0},{x:-0.35, y:-0.38}, {x:0.5-0.058, y:-0.38}],
+      wheelPositions: [
+        {x:-0.24, y:0.32},
+        {x:0.40-0.078, y:0.32},
+        {x:-0.30, y:0},
+        {x:0.5-0.108, y:0},
+        {x:-0.30, y:-0.38},
+        {x:0.5-0.108, y:-0.38}
+      ],
       mass: 5,
       collisionGroup: config.PLAYER};
     opts = _.defaults(opts, defaults);
