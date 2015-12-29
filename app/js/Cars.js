@@ -221,7 +221,7 @@ class BaseTruck extends BaseCar {
 export class RedCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.RedCar.texture};
-    let options = _.defaults(opts, defaults);
+    let options = _.defaults(_.clone(opts, true), defaults);
     super(options)
   }
 }
@@ -229,7 +229,7 @@ export class RedCar extends BaseCar {
 export class BlueCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.BlueCar.texture};
-    let options = _.defaults(opts, defaults);
+    let options = _.defaults(_.clone(opts, true), defaults);
     super(options)
   }
 }
@@ -237,7 +237,7 @@ export class BlueCar extends BaseCar {
 export class GreenCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.GreenCar.texture};
-    let options = _.defaults(opts, defaults);
+    let options = _.defaults(_.clone(opts, true), defaults);
     super(options)
   }
 }
@@ -245,7 +245,7 @@ export class GreenCar extends BaseCar {
 export class OrangeCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.OrangeCar.texture};
-    let options = _.defaults(opts, defaults);
+    let options = _.defaults(_.clone(opts, true), defaults);
     super(options)
   }
 }
@@ -253,7 +253,7 @@ export class OrangeCar extends BaseCar {
 export class RedStripeCar extends BaseCar {
   constructor(opts={}) {
     const defaults = {texture:resources.RedStripeCar.texture};
-    let options = _.defaults(opts, defaults);
+    let options = _.defaults(_.clone(opts, true), defaults);
     super(options)
   }
 }
@@ -261,7 +261,7 @@ export class RedStripeCar extends BaseCar {
 export class OrangeTruck extends BaseTruck {
   constructor(opts={}) {
     const defaults = {texture:resources.OrangeTruck.texture};
-    let options = _.defaults(opts, defaults);
+    let options = _.defaults(_.clone(opts, true), defaults);
     super(options)
   }
 }
