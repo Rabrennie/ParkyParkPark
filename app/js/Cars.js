@@ -7,8 +7,8 @@ import {screenShake} from './ScreenShake.js'
 var _ = require('lodash');
 
 const defaults = {
-  x:50,
-  y:-50,
+  x:-20,
+  y:-95,
   w:0.5,
   h:0.875,
   angle:-1.5708,
