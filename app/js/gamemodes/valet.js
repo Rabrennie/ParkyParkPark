@@ -10,10 +10,8 @@ let lastTime = 0;
 
 export default class Valet extends GameMode {
   static loop(now) {
+    const delta = now - lastTime;
     lastTime = now
-
-    // Only update the topmost (last) (currently "active") menu layer
-
 
     shakeUpdate()
 

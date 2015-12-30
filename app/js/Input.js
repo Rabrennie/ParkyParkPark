@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 const _keys = {
   37: 0, // left
   39: 0, // right
@@ -24,6 +26,20 @@ export function key(name) {
 
 export function setKey(code, val) {
   _keys[code] = val
+}
+
+export function getKeysDown() {
+  const downKeys = [];
+  _.forOwn(_keys, (value,key) => {
+    if(value === 1) {
+      downKeys.push(key);
+    }
+  })
+  return downKeys;
+}
+
+export function bindKey(name, code) {
+  keymap[name] = code;
 }
 
 // TODO: Add gamepad support

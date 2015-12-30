@@ -1,10 +1,12 @@
 import resources from './loader.js'
 import config from './config.js'
 import * as levels from './levels.js'
-import { key } from './Input.js'
+import { key, keymap, bindKey, getKeysDown } from './Input.js'
 import { screenShake } from './ScreenShake.js'
 import gamestate from './gamestate.js'
 import Valet from './gamemodes/valet.js'
+
+const keycode = require('keycode');
 
 // TODO: Refactor this so there is less repeated text
 class Menu extends PIXI.Container {
@@ -12,6 +14,7 @@ class Menu extends PIXI.Container {
     super()
     this._options = [];
     this.selectedOption = 0;
+    this.overrideDefaults = false;
 
     this._background = new PIXI.Sprite(resources.Default.texture)
     this._background.width = config.renderer.width
@@ -62,36 +65,37 @@ class Menu extends PIXI.Container {
   // Tell the game it should (Boolean) playing: `return { _playing: <boolean> }`
   //
   onInputChange(menus) {
-    if (key('down')) {
-      this.selectedOption += 1;
-      if(this.selectedOption === this._options.length) {
-        this.selectedOption = 0;
-      }
-      const option = this._options[this.selectedOption]
-      this._pointer.x = option.textObj.x - 20
-      this.menuSpriteY = this._pointer.y = option.textObj.y + 5
-      return { done: true }
-    }
 
-    if (key('up')) {
-      this.selectedOption -= 1;
-      if(this.selectedOption === -1) {
-        this.selectedOption = this._options.length-1;
-      }
-      const option = this._options[this.selectedOption]
-      this._pointer.x = option.textObj.x - 20
-      this.menuSpriteY = this._pointer.y = option.textObj.y + 5
-      return { done: true }
-    }
-
-    const option = this._options[this.selectedOption]
-    if (key('enter') && option.callback) {
-      return option.callback(menus);
-    }
-
+    let option = this._options[this.selectedOption]
+    // if option.onInputChange returns true then the rest of the input change stuff doesn't get run. Used for keybinding
     if (option.onInputChange) {
-      option.onInputChange()
+      this.overrideDefaults = option.onInputChange()
     }
+    if(!this.overrideDefaults) {
+      if (key('down')) {
+        this.selectedOption += 1;
+        if(this.selectedOption === this._options.length) {
+          this.selectedOption = 0;
+        }
+        return { done: true }
+      }
+
+      if (key('up')) {
+        this.selectedOption -= 1;
+        if(this.selectedOption === -1) {
+          this.selectedOption = this._options.length-1;
+        }
+        return { done: true }
+      }
+
+      const option = this._options[this.selectedOption]
+      if (key('enter') && option.callback) {
+        return option.callback(menus);
+      }
+    }
+    option = this._options[this.selectedOption]
+    this._pointer.x = option.textObj.x - 20
+    this.menuSpriteY = this._pointer.y = option.textObj.y + 5
 
     return
   }
@@ -117,6 +121,101 @@ class Menu extends PIXI.Container {
 export class KeyMapMenu extends Menu {
   constructor() {
     super()
+    // TODO: don't allow same key to be bound twice
+    const left = keycode(keymap['left']);
+    const down = keycode(keymap['down']);
+    const right = keycode(keymap['right']);
+
+    this.addOption(`Left: ${left}`, {
+      state: {
+        active: false
+      },
+      update() {
+        if(this.state.active) {
+          this.textObj.text = 'Press any key';
+        } else {
+          const code = parseInt(keymap['left']);
+          const left = keycode(code);
+          this.textObj.text = `Left: ${left}`;
+        }
+        this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
+      },
+      onInputChange() {
+        const downKeys = getKeysDown();
+        if(key('enter') && !this.state.active) {
+          this.state.active = true;
+        } else if(downKeys.length > 0  && !key('enter') && this.state.active) {
+          bindKey('left', downKeys[0])
+          const code = parseInt(keymap['left']);
+          const left = keycode(code);
+          this.textObj.text = `Left: ${left}`;
+          this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
+          this.state.active = false;
+        }
+        return this.state.active
+      }
+    })
+
+    this.addOption(`Right: ${right}`, {
+      state: {
+        active: false
+      },
+      update() {
+        if(this.state.active) {
+          this.textObj.text = 'Press any key';
+        } else {
+          const code = parseInt(keymap['right']);
+          const right = keycode(code);
+          this.textObj.text = `Right: ${right}`;
+        }
+        this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
+      },
+      onInputChange() {
+        const downKeys = getKeysDown();
+        if(key('enter') && !this.state.active) {
+          this.state.active = true;
+        } else if(downKeys.length > 0  && !key('enter') && this.state.active) {
+          bindKey('right', downKeys[0])
+          const code = parseInt(keymap['right']);
+          const right = keycode(code);
+          this.textObj.text = `Right: ${right}`;
+          this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
+          this.state.active = false;
+        }
+        return this.state.active
+      }
+    })
+
+    this.addOption(`Down: ${down}`, {
+      state: {
+        active: false
+      },
+      update() {
+        if(this.state.active) {
+          this.textObj.text = 'Press any key';
+        } else {
+          const code = parseInt(keymap['down']);
+          const down = keycode(code);
+          this.textObj.text = `Down: ${down}`;
+        }
+        this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
+      },
+      onInputChange() {
+        const downKeys = getKeysDown();
+        if(key('enter') && !this.state.active) {
+          this.state.active = true;
+        } else if(downKeys.length > 0  && !key('enter') && this.state.active) {
+          bindKey('down', downKeys[0])
+          const code = parseInt(keymap['down']);
+          const down = keycode(code);
+          this.textObj.text = `Down: ${down}`;
+          this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
+          this.state.active = false;
+        }
+        return this.state.active
+      }
+    })
+
     this.addOption('Back', (menus) => {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)

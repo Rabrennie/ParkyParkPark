@@ -72,17 +72,12 @@ function init() {
       return
     }
 
-    for (let i = gamestate.menus.length - 1; i > -1; i--) {
-      const { _playing, done, _level } = gamestate.menus[i].onInputChange(gamestate.menus) || {}
+    const { _playing, _level } = gamestate.menus[gamestate.menus.length - 1].onInputChange(gamestate.menus) || {}
 
-      if (_playing !== undefined) {
-        gamestate.playing = _playing;
-        gamestate.level = _level;
-        gamestate.level.load();
-        break;
-      }
-
-      if (done) break
+    if (_playing !== undefined) {
+      gamestate.playing = _playing;
+      gamestate.level = _level;
+      gamestate.level.load();
     }
 
     if (gamestate.menus.length === 0) {
