@@ -6,12 +6,8 @@ import * as Cars from '../Cars.js';
 
 import _ from 'lodash';
 
-let lastTime = 0;
-
 export default class Valet extends GameMode {
   static loop(now) {
-    const delta = now - lastTime;
-    lastTime = now
 
     shakeUpdate()
 
