@@ -114,13 +114,13 @@ export default class Car extends Entity {
 
   onInput() {
     const maxSteer = 20000;
-    const left = key('left')
-    const right = key('right')
+    const left = key('steerLeft')
+    const right = key('steerRight')
 
     this.body.frontWheel.steerValue = maxSteer * (left - right);
     this.wheelSprite[0].rotation = this.wheelSprite[1].rotation = 0.5 * (left - right);
     this.body.backWheel.setBrakeForce(0);
-    if (key('down')) {
+    if (key('brake')) {
       if(this.body.backWheel.getSpeed() > 0.1) {
         // Moving forward - add some brake force to slow down
         this.body.backWheel.setBrakeForce(2);

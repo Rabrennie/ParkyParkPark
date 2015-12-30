@@ -19,11 +19,11 @@ export default class KeyMapMenu extends Menu {
     this.addChild(this._title)
 
     // TODO: don't allow same key to be bound twice
-    const left = keycode(keymap['left']);
-    const down = keycode(keymap['down']);
-    const right = keycode(keymap['right']);
+    const left = keycode(keymap['steerLeft']);
+    const down = keycode(keymap['brake']);
+    const right = keycode(keymap['steerRight']);
 
-    this.addOption(`Left: ${left}`, {
+    this.addOption(`Steer Left: ${left}`, {
       state: {
         active: false
       },
@@ -31,9 +31,9 @@ export default class KeyMapMenu extends Menu {
         if(this.state.active) {
           this.textObj.text = 'Press any key';
         } else {
-          const code = parseInt(keymap['left']);
+          const code = parseInt(keymap['steerLeft']);
           const left = keycode(code);
-          this.textObj.text = `Left: ${left}`;
+          this.textObj.text = `Steer Left: ${left}`;
         }
       },
       onInputChange() {
@@ -41,17 +41,17 @@ export default class KeyMapMenu extends Menu {
         if(key('enter') && !this.state.active) {
           this.state.active = true;
         } else if(downKeys.length > 0  && !key('enter') && this.state.active) {
-          bindKey('left', downKeys[0])
-          const code = parseInt(keymap['left']);
+          bindKey('steerLeft', downKeys[0])
+          const code = parseInt(keymap['steerLeft']);
           const left = keycode(code);
-          this.textObj.text = `Left: ${left}`;
+          this.textObj.text = `Steer Left: ${left}`;
           this.state.active = false;
         }
         return this.state.active
       }
     })
 
-    this.addOption(`Right: ${right}`, {
+    this.addOption(`Steer Right: ${right}`, {
       state: {
         active: false
       },
@@ -59,9 +59,9 @@ export default class KeyMapMenu extends Menu {
         if(this.state.active) {
           this.textObj.text = 'Press any key';
         } else {
-          const code = parseInt(keymap['right']);
+          const code = parseInt(keymap['steerRight']);
           const right = keycode(code);
-          this.textObj.text = `Right: ${right}`;
+          this.textObj.text = `Steer Right: ${right}`;
         }
       },
       onInputChange() {
@@ -69,17 +69,17 @@ export default class KeyMapMenu extends Menu {
         if(key('enter') && !this.state.active) {
           this.state.active = true;
         } else if(downKeys.length > 0  && !key('enter') && this.state.active) {
-          bindKey('right', downKeys[0])
-          const code = parseInt(keymap['right']);
+          bindKey('steerRight', downKeys[0])
+          const code = parseInt(keymap['steerRight']);
           const right = keycode(code);
-          this.textObj.text = `Right: ${right}`;
+          this.textObj.text = `Steer Right: ${right}`;
           this.state.active = false;
         }
         return this.state.active
       }
     })
 
-    this.addOption(`Down: ${down}`, {
+    this.addOption(`Brake: ${down}`, {
       state: {
         active: false
       },
@@ -87,9 +87,9 @@ export default class KeyMapMenu extends Menu {
         if(this.state.active) {
           this.textObj.text = 'Press any key';
         } else {
-          const code = parseInt(keymap['down']);
+          const code = parseInt(keymap['brake']);
           const down = keycode(code);
-          this.textObj.text = `Down: ${down}`;
+          this.textObj.text = `Brake: ${down}`;
         }
       },
       onInputChange() {
@@ -97,10 +97,10 @@ export default class KeyMapMenu extends Menu {
         if(key('enter') && !this.state.active) {
           this.state.active = true;
         } else if(downKeys.length > 0  && !key('enter') && this.state.active) {
-          bindKey('down', downKeys[0])
-          const code = parseInt(keymap['down']);
+          bindKey('brake', downKeys[0])
+          const code = parseInt(keymap['brake']);
           const down = keycode(code);
-          this.textObj.text = `Down: ${down}`;
+          this.textObj.text = `Brake: ${down}`;
           this.state.active = false;
         }
         return this.state.active
