@@ -3,7 +3,6 @@ import { Bomb } from './Bomb.js'
 import { MainMenu } from './Menu.js'
 import { key, setKey } from './Input.js'
 import gamestate from './gamestate';
-import Valet from './gamemodes/valet';
 
 var world = config.world,
   renderer = config.renderer,
@@ -79,6 +78,7 @@ function init() {
         gamestate.playing = _playing;
         gamestate.level = _level;
         gamestate.level.load();
+        console.log(gamestate.mode)
         break;
       }
 
@@ -89,6 +89,25 @@ function init() {
       gamestate.playing = true
     }
   }
+  if(gamestate.mode !== null) {
+    requestAnimationFrame(gamestate.mode.loop);
+  } else {
+    requestAnimationFrame(menuLoop);
+  }
+}
 
-  requestAnimationFrame(Valet.loop);
+let lastTime = 0;
+
+function menuLoop(now) {
+  const delta = now - lastTime;
+  lastTime = now
+  if (gamestate.menus.length > 0) {
+    gamestate.menus[gamestate.menus.length - 1].update(now, delta)
+  }
+  config.renderer.render(config.stage);
+  if(gamestate.mode !== null) {
+    requestAnimationFrame(gamestate.mode.loop);
+  } else {
+    requestAnimationFrame(menuLoop);
+  }
 }

@@ -3,6 +3,8 @@ import config from './config.js'
 import * as levels from './levels.js'
 import { key } from './Input.js'
 import { screenShake } from './ScreenShake.js'
+import gamestate from './gamestate.js'
+import Valet from './gamemodes/valet.js'
 
 // TODO: Refactor this so there is less repeated text
 class Menu extends PIXI.Container {
@@ -213,7 +215,7 @@ export class MainMenu extends Menu {
     this.addOption('Play', (menus) => {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
-
+      gamestate.mode = Valet;
       return { _playing: true, _level: levels.test };
     });
 
