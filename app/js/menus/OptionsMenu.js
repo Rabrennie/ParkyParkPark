@@ -6,7 +6,18 @@ import KeyMapMenu from './KeyMapMenu.js'
 
 export default class OptionsMenu extends Menu {
   constructor() {
-    super()
+    super({
+      optsOffset: 200,
+      optsAlign: 'left',
+    })
+
+    const renderer = config.renderer
+
+    this._title = new PIXI.Text('Options',{ font : '24px Arial', fill : 0xFFFFFF, align : 'center' })
+    this._title.x = renderer.width/2 - this._title.width/2
+    this._title.y = 100
+    this.addChild(this._title)
+
     this.addOption(`Master Volume: ${Math.round(config.masterVolume * 100)}%`, {
       state: {
         accumulator: 0

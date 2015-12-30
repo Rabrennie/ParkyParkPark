@@ -2,8 +2,8 @@ import resources from '../loader.js'
 import config from '../config.js'
 import { key } from '../Input.js'
 
-  constructor() {
 export default class Menu extends PIXI.Container {
+  constructor(opts={}) {
     super()
     this._options = [];
     this.selectedOption = 0;
@@ -25,6 +25,10 @@ export default class Menu extends PIXI.Container {
     this._pointer.height = 16
     this._pointer.visible = false
     this.addChild(this._pointer)
+
+    this.optsOffset = opts.optsOffset || 400
+    this.optsAlign = opts.optsAlign || 'center'
+    console.log(this.optsAlign)
   }
 
   addOption(text, opts={}) {
@@ -35,9 +39,16 @@ export default class Menu extends PIXI.Container {
     }
 
     this._options.push(new Option(opts.callback, opts.onInputChange, opts.update, opts.state));
-    this._options[i].textObj = new PIXI.Text(text,{ font : '24px Arial', fill : 0xFFFFFF, align : 'center' });
-    this._options[i].textObj.x = config.renderer.width/2 - this._options[i].textObj.width/2;
-    this._options[i].textObj.y = 400 + 50*i;
+    this._options[i].textObj = new PIXI.Text(text,{
+      font : '24px Arial',
+      fill : 0xFFFFFF,
+      align : opts.optsAlign });
+    if (this.optsAlign === 'left') {
+      this._options[i].textObj.x = config.renderer.width/4;
+    } else { // i.e. 'center'
+      this._options[i].textObj.x = config.renderer.width/2 - this._options[i].textObj.width/2;
+    }
+    this._options[i].textObj.y = this.optsOffset + 50*i;
     this.addChild(this._options[i].textObj);
 
     // Load pointer

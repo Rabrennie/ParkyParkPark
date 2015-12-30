@@ -6,7 +6,18 @@ const keycode = require('keycode');
 
 export default class KeyMapMenu extends Menu {
   constructor() {
-    super()
+    super({
+      optsOffset: 200,
+      optsAlign: 'left',
+    })
+
+    const renderer = config.renderer
+
+    this._title = new PIXI.Text('Key Bindings',{ font : '24px Arial', fill : 0xFFFFFF, align : 'center' })
+    this._title.x = renderer.width/2 - this._title.width/2
+    this._title.y = 100
+    this.addChild(this._title)
+
     // TODO: don't allow same key to be bound twice
     const left = keycode(keymap['left']);
     const down = keycode(keymap['down']);
@@ -24,7 +35,6 @@ export default class KeyMapMenu extends Menu {
           const left = keycode(code);
           this.textObj.text = `Left: ${left}`;
         }
-        this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
       },
       onInputChange() {
         const downKeys = getKeysDown();
@@ -35,7 +45,6 @@ export default class KeyMapMenu extends Menu {
           const code = parseInt(keymap['left']);
           const left = keycode(code);
           this.textObj.text = `Left: ${left}`;
-          this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
           this.state.active = false;
         }
         return this.state.active
@@ -54,7 +63,6 @@ export default class KeyMapMenu extends Menu {
           const right = keycode(code);
           this.textObj.text = `Right: ${right}`;
         }
-        this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
       },
       onInputChange() {
         const downKeys = getKeysDown();
@@ -65,7 +73,6 @@ export default class KeyMapMenu extends Menu {
           const code = parseInt(keymap['right']);
           const right = keycode(code);
           this.textObj.text = `Right: ${right}`;
-          this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
           this.state.active = false;
         }
         return this.state.active
@@ -84,7 +91,6 @@ export default class KeyMapMenu extends Menu {
           const down = keycode(code);
           this.textObj.text = `Down: ${down}`;
         }
-        this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
       },
       onInputChange() {
         const downKeys = getKeysDown();
@@ -95,7 +101,6 @@ export default class KeyMapMenu extends Menu {
           const code = parseInt(keymap['down']);
           const down = keycode(code);
           this.textObj.text = `Down: ${down}`;
-          this.textObj.x = config.renderer.width/2 - this.textObj.width/2;
           this.state.active = false;
         }
         return this.state.active
