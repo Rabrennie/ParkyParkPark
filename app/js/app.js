@@ -1,6 +1,6 @@
 import config from './config.js';
 import { Bomb } from './Bomb.js'
-import { MainMenu } from './Menu.js'
+import MainMenu from './menus/MainMenu.js'
 import { key, setKey } from './Input.js'
 import gamestate from './gamestate'
 import { shakeUpdate } from './ScreenShake.js'
