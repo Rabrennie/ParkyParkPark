@@ -13,6 +13,7 @@ node_modules
 
 # Build files
 dist
+release
 
 # Editor stuff people should locally ignore
 .idea

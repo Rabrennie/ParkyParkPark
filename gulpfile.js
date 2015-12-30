@@ -1,17 +1,19 @@
-var gulp        = require('gulp');
-var copy        = require('gulp-copy');
-var gutil       = require('gulp-util');
-var watch       = require('gulp-watch');
-var ghPages     = require('gulp-gh-pages');
-var source      = require('vinyl-source-stream');
-var del         = require('del');
-var path        = require('path');
-var runSeq      = require('run-sequence');
-var babelify    = require('babelify');
-var watchify    = require('watchify');
-var exorcist    = require('exorcist');
-var browserify  = require('browserify');
-var browserSync = require('browser-sync').create();
+var gulp              = require('gulp');
+var copy              = require('gulp-copy');
+var gutil             = require('gulp-util');
+var watch             = require('gulp-watch');
+var ghPages           = require('gulp-gh-pages');
+var source            = require('vinyl-source-stream');
+var del               = require('del');
+var path              = require('path');
+var runSeq            = require('run-sequence');
+var babelify          = require('babelify');
+var watchify          = require('watchify');
+var exorcist          = require('exorcist');
+var browserify        = require('browserify');
+var browserSync       = require('browser-sync').create();
+var pkg               = require('./package.json');
+var electronPackager  = require('electron-packager');
 
 function bundle(shouldWatch) {
     // Input file.
@@ -68,7 +70,7 @@ function buildHTML(shouldWatch) {
 }
 
 gulp.task('clean', function() {
-  return del(['dist']);
+  return del(['dist', 'release']);
 })
 
 gulp.task('watch:css', function() {
@@ -116,7 +118,36 @@ gulp.task('browser', function() {
 });
 
 gulp.task('build', function(cb) {
-  return runSeq('clean', ['build:all', 'copy:assets'])
+  return runSeq('clean', ['build:all', 'copy:assets'], cb)
+})
+
+gulp.task('copy:electron', function() {
+    return gulp.src(['package.json', 'main.js'])
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('build-standalone', function(cb) {
+  runSeq('build', 'copy:electron', function() {
+    var opts = {
+      dir: 'dist',
+      name: pkg.productName,
+      all: true,
+      version: '0.36.2',
+      asar: true,
+      out: 'release'
+      // TODO: add more executable metadata. See https://github.com/maxogden/electron-packager#opts
+    }
+
+    electronPackager(opts, function(err, appPath) {
+      if (err) {
+        gutil.log(err);
+        cb(err)
+      }
+
+      gutil.log('Standalone builds created at ', appPath);
+      cb();
+    });
+  })
 })
 
 /**

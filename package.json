@@ -1,5 +1,6 @@
 {
   "name": "parkyparkpark",
+  "productName": "Parky Park Park",
   "version": "1.0.0",
   "description": "A game",
   "main": "main.js",
@@ -29,6 +30,7 @@
     "browserify": "^12.0.1",
     "connect-history-api-fallback": "^1.1.0",
     "del": "^2.2.0",
+    "electron-packager": "^5.2.0",
     "eslint": "^1.10.3",
     "eslint-config-kellyirc": "3.1.0",
     "exorcist": "^0.4.0",
