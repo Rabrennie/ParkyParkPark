@@ -19,7 +19,6 @@ export function shakeUpdate() {
     const magnitude = (shakeFrames / shakeStrength) * shakeStrength * config.screenShake
     const x = Random.integer(-magnitude, magnitude)(mt)
     const y = Random.integer(-magnitude, magnitude)(mt)
-    console.log(x, y)
 
     config.stage.position.x = x
     config.stage.position.y = y
