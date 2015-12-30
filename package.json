@@ -37,7 +37,8 @@
     "gulp-notify": "^2.2.0",
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.5",
-    "lodash": "^3.10.1",
+    "keycode": "^2.1.0"
+,   "lodash": "^3.10.1",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.6.1"
   }
