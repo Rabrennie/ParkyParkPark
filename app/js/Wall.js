@@ -11,7 +11,7 @@ export class Wall {
 
     this.wallBody.onCollision = (body, otherShape, playerHit) => {
       if (playerHit) {
-        screenShake(6, 6)
+        screenShake(2, 1)
       }
     };
 
