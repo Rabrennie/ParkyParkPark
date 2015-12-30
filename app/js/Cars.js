@@ -1,8 +1,8 @@
 import config from './config.js';
 import resources from './loader.js';
-import {Explosion} from './Explosion.js'
-import {key} from './Input.js'
-import {screenShake} from './ScreenShake.js'
+import { Explosion } from './Explosion.js'
+import { key } from './Input.js'
+import { screenShake } from './ScreenShake.js'
 
 var _ = require('lodash');
 
@@ -23,10 +23,10 @@ const defaults = {
   collisionMask:config.PLAYER | config.CAR | config.TRUCKBACK | config.WALL | config.BOMB | config.EXPLOSION,
   wheelTexture:resources.wheel.texture,
   wheelPositions: [
-    {x:-0.22, y:0.24},
-    {x:0.4-0.098, y:0.24},
-    {x:-0.22, y:-0.30},
-    {x:0.4-0.098, y:-0.3}
+    { x:-0.22, y:0.24 },
+    { x:0.4-0.098, y:0.24 },
+    { x:-0.22, y:-0.30 },
+    { x:0.4-0.098, y:-0.3 }
   ]
 };
 
@@ -42,7 +42,7 @@ class BaseCar {
       this.hitFrames--
       this.hitSprite.alpha = this.hitFrames > 0 ? (this.hitFrames / 10) + 0.6 : 0
     }
-  };
+  }
 
   setSideFriction(front, back) {
     this.chassisBody.frontWheel.setSideFriction(front);
@@ -58,7 +58,7 @@ class BaseCar {
     this.wheelSprite[0].rotation = this.wheelSprite[1].rotation = 0.5 * (left - right);
     this.chassisBody.backWheel.setBrakeForce(0);
     if (key('down')) {
-      if(this.chassisBody.backWheel.getSpeed() > 0.1){
+      if(this.chassisBody.backWheel.getSpeed() > 0.1) {
         // Moving forward - add some brake force to slow down
         this.chassisBody.backWheel.setBrakeForce(2);
       } else {
@@ -69,7 +69,7 @@ class BaseCar {
   }
 
   constructor(opts = {}) {
-    //fix so wheels show
+    // fix so wheels show
     defaults.wheelTexture = resources.wheel.texture;
     opts = _.defaults(opts, defaults);
     this.chassisBody = new p2.Body({
@@ -86,7 +86,7 @@ class BaseCar {
         screenShake(6, 6)
       }
 
-      if(body.shapes[0].collisionGroup == config.WALL){
+      if(body.shapes[0].collisionGroup === config.WALL) {
         window.setTimeout(() => this.setSideFriction(200,200), 100)
       } else if (playerHit) {
         // Display the hit effect
@@ -135,7 +135,7 @@ class BaseCar {
     this.graphics.addChild(this.sprite);
     this.sprite.width = -this.boxShape.width;
     this.sprite.height = -this.boxShape.height;
-    this.sprite.position={x:-this.boxShape.width/2, y:this.boxShape.height/2};
+    this.sprite.position={ x:-this.boxShape.width/2, y:this.boxShape.height/2 };
     this.sprite.scale.x = -this.sprite.scale.x;
 
 
@@ -149,7 +149,7 @@ class BaseCar {
     this.graphics.addChild(this.hitSprite);
     this.hitSprite.width = -this.boxShape.width;
     this.hitSprite.height = -this.boxShape.height;
-    this.hitSprite.position={x:-this.boxShape.width/2, y:this.boxShape.height/2};
+    this.hitSprite.position={ x:-this.boxShape.width/2, y:this.boxShape.height/2 };
     this.hitSprite.scale.x = -this.hitSprite.scale.x;
     this.hitSprite.alpha = 0
 
@@ -161,19 +161,19 @@ class BaseCar {
 
 class BaseTruck extends BaseCar {
   constructor(opts={}) {
-    const defaults = {texture:resources.OrangeTruck.texture,
+    const defaults = { texture:resources.OrangeTruck.texture,
       w:0.7,
       h:1.075,
       wheelPositions: [
-        {x:-0.24, y:0.32},
-        {x:0.40-0.078, y:0.32},
-        {x:-0.30, y:0},
-        {x:0.5-0.108, y:0},
-        {x:-0.30, y:-0.38},
-        {x:0.5-0.108, y:-0.38}
+        { x:-0.24, y:0.32 },
+        { x:0.40-0.078, y:0.32 },
+        { x:-0.30, y:0 },
+        { x:0.5-0.108, y:0 },
+        { x:-0.30, y:-0.38 },
+        { x:0.5-0.108, y:-0.38 }
       ],
       mass: 5,
-      collisionGroup: config.PLAYER};
+      collisionGroup: config.PLAYER };
     opts = _.defaults(opts, defaults);
     super(opts)
     this.exploded = false;
@@ -186,7 +186,7 @@ class BaseTruck extends BaseCar {
     this.boxShape.position[0] = 0
     this.boxShape.position[1] = 0.3
 
-    this.boxShapeBack = new p2.Box({ width: opts.w * 0.9, height: (opts.h-0.4) * 0.92});
+    this.boxShapeBack = new p2.Box({ width: opts.w * 0.9, height: (opts.h-0.4) * 0.92 });
     this.boxShapeBack.collisionGroup = config.TRUCKBACK;
     this.boxShapeBack.collisionMask = opts.collisionMask;
     this.chassisBody.addShape(this.boxShapeBack);
@@ -205,7 +205,7 @@ class BaseTruck extends BaseCar {
       }
 
       // Explosion tigger sensitivity
-      if (shape.collisionGroup == config.TRUCKBACK && this.exploded == false &&
+      if (shape.collisionGroup === config.TRUCKBACK && this.exploded === false &&
            (p2.vec2.length(bodyMomentum) > 6.1 ||
             p2.vec2.length(thisMomentum) > 6.1)) {
         this.explosion = new Explosion([this.chassisBody.position[0]*config.zoom,this.chassisBody.position[1]*config.zoom], 8, 2);
@@ -218,7 +218,7 @@ class BaseTruck extends BaseCar {
       }
 
       this.setSideFriction(3,3);
-      if(body.shapes[0].collisionGroup == config.WALL){
+      if(body.shapes[0].collisionGroup === config.WALL) {
         window.setTimeout(() => this.setSideFriction(200,200), 100)
       } else if (playerHit) {
         // Display the hit effect
@@ -231,48 +231,42 @@ class BaseTruck extends BaseCar {
 
 export class RedCar extends BaseCar {
   constructor(opts={}) {
-    const defaults = {texture:resources.RedCar.texture};
-    let options = _.defaults(_.clone(opts, true), defaults);
-    super(options)
+    const defaults = { texture:resources.RedCar.texture };
+    super(_.defaults(_.clone(opts, true), defaults))
   }
 }
 
 export class BlueCar extends BaseCar {
   constructor(opts={}) {
-    const defaults = {texture:resources.BlueCar.texture};
-    let options = _.defaults(_.clone(opts, true), defaults);
-    super(options)
+    const defaults = { texture:resources.BlueCar.texture };
+    super(_.defaults(_.clone(opts, true), defaults))
   }
 }
 
 export class GreenCar extends BaseCar {
   constructor(opts={}) {
-    const defaults = {texture:resources.GreenCar.texture};
-    let options = _.defaults(_.clone(opts, true), defaults);
-    super(options)
+    const defaults = { texture:resources.GreenCar.texture };
+    super(_.defaults(_.clone(opts, true), defaults))
   }
 }
 
 export class OrangeCar extends BaseCar {
   constructor(opts={}) {
-    const defaults = {texture:resources.OrangeCar.texture};
-    let options = _.defaults(_.clone(opts, true), defaults);
-    super(options)
+    const defaults = { texture:resources.OrangeCar.texture };
+    super(_.defaults(_.clone(opts, true), defaults))
   }
 }
 
 export class RedStripeCar extends BaseCar {
   constructor(opts={}) {
-    const defaults = {texture:resources.RedStripeCar.texture};
-    let options = _.defaults(_.clone(opts, true), defaults);
-    super(options)
+    const defaults = { texture:resources.RedStripeCar.texture };
+    super(_.defaults(_.clone(opts, true), defaults))
   }
 }
 
 export class OrangeTruck extends BaseTruck {
   constructor(opts={}) {
-    const defaults = {texture:resources.OrangeTruck.texture};
-    let options = _.defaults(_.clone(opts, true), defaults);
-    super(options)
+    const defaults = { texture:resources.OrangeTruck.texture };
+    super(_.defaults(_.clone(opts, true), defaults))
   }
 }

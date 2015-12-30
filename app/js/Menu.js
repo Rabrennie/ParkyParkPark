@@ -1,11 +1,10 @@
 import resources from './loader.js'
 import config from './config.js'
 import * as levels from './levels.js'
-import * as Cars from './Cars.js';
-import {key} from './Input.js'
-import {screenShake} from './ScreenShake.js'
+import { key } from './Input.js'
+import { screenShake } from './ScreenShake.js'
 
-//TODO: Refactor this so there is less repeated text
+// TODO: Refactor this so there is less repeated text
 class Menu extends PIXI.Container {
   constructor() {
     super()
@@ -18,7 +17,7 @@ class Menu extends PIXI.Container {
     this._background.tint = 0x040404
     this.addChild(this._background)
 
-    this._text = new PIXI.Text('MEGA ALPHA EDITION',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'})
+    this._text = new PIXI.Text('MEGA ALPHA EDITION',{ font : '24px Arial', fill : 0xFFFFFF, align : 'center' })
     this._text.x = 20
     this._text.y = 20
     this.addChild(this._text)
@@ -31,15 +30,15 @@ class Menu extends PIXI.Container {
   }
 
   // XXX(Fishrock123) onInputChange MUST be a *regular* function so it can inherit scope
-  addOption(text, opts={}){
-    let i = this._options.length;
+  addOption(text, opts={}) {
+    const i = this._options.length;
 
     if (typeof opts === 'function') {
       opts = { callback: opts }
     }
 
     this._options.push(new Option(opts.callback, opts.onInputChange, opts.update, opts.state));
-    this._options[i].textObj = new PIXI.Text(text,{font : '24px Arial', fill : 0xFFFFFF, align : 'center'});
+    this._options[i].textObj = new PIXI.Text(text,{ font : '24px Arial', fill : 0xFFFFFF, align : 'center' });
     this._options[i].textObj.x = config.renderer.width/2 - this._options[i].textObj.width/2;
     this._options[i].textObj.y = 400 + 50*i;
     this.addChild(this._options[i].textObj);
@@ -60,10 +59,10 @@ class Menu extends PIXI.Container {
   //   `return { done: true }``
   // Tell the game it should (Boolean) playing: `return { _playing: <boolean> }`
   //
-  onInputChange(menus){
+  onInputChange(menus) {
     if (key('down')) {
       this.selectedOption += 1;
-      if(this.selectedOption == this._options.length){
+      if(this.selectedOption === this._options.length) {
         this.selectedOption = 0;
       }
       const option = this._options[this.selectedOption]
@@ -74,7 +73,7 @@ class Menu extends PIXI.Container {
 
     if (key('up')) {
       this.selectedOption -= 1;
-      if(this.selectedOption == -1){
+      if(this.selectedOption === -1) {
         this.selectedOption = this._options.length-1;
       }
       const option = this._options[this.selectedOption]
@@ -114,7 +113,7 @@ class Menu extends PIXI.Container {
 }
 
 export class KeyMapMenu extends Menu {
-  constructor(){
+  constructor() {
     super()
     this.addOption('Back', (menus) => {
       menus.splice(menus.indexOf(this))
@@ -126,7 +125,7 @@ export class KeyMapMenu extends Menu {
 }
 
 export class OptionsMenu extends Menu {
-  constructor(){
+  constructor() {
     super()
     this.addOption(`Master Volume: ${Math.round(config.masterVolume * 100)}%`, {
       state: {
@@ -149,7 +148,7 @@ export class OptionsMenu extends Menu {
         }
         if (key('right')) {
           if ((config.masterVolume += 0.05) > 1) config.masterVolume = 1
-            this.textObj.text = `Master Volume: ${Math.round(config.masterVolume * 100)}%`
+          this.textObj.text = `Master Volume: ${Math.round(config.masterVolume * 100)}%`
         }
       }
     })
@@ -211,14 +210,14 @@ export class MainMenu extends Menu {
     this._options = [];
     this.selectedOption = 0;
 
-    this.addOption("Play", (menus) => {
+    this.addOption('Play', (menus) => {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
 
       return { _playing: true, _level: levels.test };
     });
 
-    this.addOption("Options", (menus) => {
+    this.addOption('Options', (menus) => {
 
       const newMenu = new OptionsMenu()
       menus.push(newMenu)
@@ -227,12 +226,12 @@ export class MainMenu extends Menu {
       return
     });
 
-    this._title = new PIXI.Text('Parky Park Park',{font : '24px Arial', fill : 0xFFFFFF, align : 'center'})
+    this._title = new PIXI.Text('Parky Park Park',{ font : '24px Arial', fill : 0xFFFFFF, align : 'center' })
     this._title.x = renderer.width/2 - this._title.width/2
     this._title.y = 200
     this.addChild(this._title)
 
-    this._splash = new PIXI.Text('Wow',{font : '30px Arial', fill : 0xFFFF00, align : 'center'})
+    this._splash = new PIXI.Text('Wow',{ font : '30px Arial', fill : 0xFFFF00, align : 'center' })
     this._splash.x = this._title.x + this._title.width - this._splash.width/2
     this._splash.y = this._title.y + this._title.height
     this._splash.rotation = 100
