@@ -1,5 +1,4 @@
 var gulp              = require('gulp');
-var copy              = require('gulp-copy');
 var gutil             = require('gulp-util');
 var watch             = require('gulp-watch');
 var ghPages           = require('gulp-gh-pages');
@@ -16,57 +15,57 @@ var pkg               = require('./package.json');
 var electronPackager  = require('electron-packager');
 
 function bundle(shouldWatch) {
-    // Input file.
-    var bundler = browserify('./app/js/app.js', { debug: shouldWatch });
+  // Input file.
+  var bundler = browserify('./app/js/app.js', { debug: shouldWatch });
 
-    // Babel transform
-    bundler.transform(babelify.configure({
-        sourceMapRelative: 'app/js',
-        presets: ["es2015"]
-    }));
+  // Babel transform
+  bundler.transform(babelify.configure({
+    sourceMapRelative: 'app/js',
+    presets: ['es2015']
+  }));
 
-    function rebundle() {
-        return bundler.bundle()
-            .on('error', function (err) {
-                gutil.log(err.message);
-                browserSync.notify("Browserify Error!");
-                this.emit("end");
-            })
-            .pipe(shouldWatch ? exorcist('/dist/js/bundle.js.map') : gutil.noop())
-            .pipe(source('bundle.js'))
-            .pipe(gulp.dest('./dist/js'))
-            .pipe(browserSync.stream({once: true}));
-    }
+  function rebundle() {
+    return bundler.bundle()
+      .on('error', function(err) {
+        gutil.log(err.message);
+        browserSync.notify('Browserify Error!');
+        this.emit('end');
+      })
+      .pipe(shouldWatch ? exorcist('/dist/js/bundle.js.map') : gutil.noop())
+      .pipe(source('bundle.js'))
+      .pipe(gulp.dest('./dist/js'))
+      .pipe(browserSync.stream({ once: true }));
+  }
 
-    if(shouldWatch) {
-      bundler = watchify(bundler);
+  if (shouldWatch) {
+    bundler = watchify(bundler);
 
-      // On updates recompile
-      bundler.on('update', function(files) {
-        gutil.log('Changed files: ' + files.map(path.relative.bind(path, process.cwd())).join(', '));
-        gutil.log('Recompiling JS...');
-        rebundle();
-      });
-    }
-
-    bundler.on('log', function(msg) {
-      gutil.log(msg)
+    // On updates recompile
+    bundler.on('update', function(files) {
+      gutil.log('Changed files: ' + files.map(path.relative.bind(path, process.cwd())).join(', '));
+      gutil.log('Recompiling JS...');
+      rebundle();
     });
+  }
 
-    gutil.log('Compiling JS...');
-    return rebundle();
+  bundler.on('log', function(msg) {
+    gutil.log(msg)
+  });
+
+  gutil.log('Compiling JS...');
+  return rebundle();
 }
 
 function buildCSS(shouldWatch) {
-    return gulp.src('app/css/style.css')
-      .pipe(shouldWatch ? watch('app/css/style.css') : gutil.noop())
-      .pipe(gulp.dest('dist/css'));
+  return gulp.src('app/css/style.css')
+    .pipe(shouldWatch ? watch('app/css/style.css') : gutil.noop())
+    .pipe(gulp.dest('dist/css'));
 }
 
 function buildHTML(shouldWatch) {
-    return gulp.src('app/index.html')
-        .pipe(shouldWatch ? watch('app/index.html') : gutil.noop())
-        .pipe(gulp.dest('dist'));
+  return gulp.src('app/index.html')
+    .pipe(shouldWatch ? watch('app/index.html') : gutil.noop())
+    .pipe(gulp.dest('dist'));
 }
 
 gulp.task('clean', function() {
@@ -78,11 +77,11 @@ gulp.task('watch:css', function() {
 });
 
 gulp.task('watch:html', function() {
-    return buildHTML(true);
+  return buildHTML(true);
 });
 
-gulp.task('watch:js', function () {
-    return bundle(true);
+gulp.task('watch:js', function() {
+  return bundle(true);
 });
 
 gulp.task('watch:all', ['watch:css', 'watch:html', 'watch:js']);
@@ -102,19 +101,19 @@ gulp.task('build:js', function() {
 gulp.task('build:all', ['build:css', 'build:html', 'build:js']);
 
 gulp.task('copy:assets', function() {
-    return gulp.src('app/assets/**/*')
-        .pipe(gulp.dest('dist/assets'));
+  return gulp.src('app/assets/**/*')
+    .pipe(gulp.dest('dist/assets'));
 });
 
 gulp.task('deploy', function() {
-    return gulp.src(`dist/**/*`, { base: 'dist' })
-        .pipe(ghPages());
+  return gulp.src(`dist/**/*`, { base: 'dist' })
+    .pipe(ghPages());
 });
 
 gulp.task('browser', function() {
-    browserSync.init({
-        server: './dist'
-    });
+  browserSync.init({
+    server: './dist'
+  });
 });
 
 gulp.task('build', function(cb) {
@@ -122,8 +121,8 @@ gulp.task('build', function(cb) {
 })
 
 gulp.task('copy:electron', function() {
-    return gulp.src(['package.json', 'main.js'])
-        .pipe(gulp.dest('dist'));
+  return gulp.src(['package.json', 'main.js'])
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('build-standalone', function(cb) {

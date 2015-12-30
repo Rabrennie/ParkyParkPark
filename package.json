@@ -6,7 +6,7 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint app/**/*.js app/**/**/*.js",
+    "lint": "eslint app/**/*.js app/**/**/*.js gulpfile.js",
     "format": "eslint --fix app/**/*.js app/**/**/*.js"
   },
   "repository": {
@@ -35,7 +35,6 @@
     "eslint-config-kellyirc": "3.1.0",
     "exorcist": "^0.4.0",
     "gulp": "^3.9.0",
-    "gulp-copy": "0.0.2",
     "gulp-gh-pages": "^0.5.4",
     "gulp-notify": "^2.2.0",
     "gulp-util": "^3.0.7",
