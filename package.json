@@ -28,6 +28,7 @@
     "browser-sync": "^2.10.1",
     "browserify": "^12.0.1",
     "connect-history-api-fallback": "^1.1.0",
+    "del": "^2.2.0",
     "eslint": "^1.10.3",
     "eslint-config-kellyirc": "3.1.0",
     "exorcist": "^0.4.0",
@@ -37,8 +38,9 @@
     "gulp-notify": "^2.2.0",
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.5",
-    "keycode": "^2.1.0"
-,   "lodash": "^3.10.1",
+    "keycode": "^2.1.0",
+    "lodash": "^3.10.1",
+    "run-sequence": "^1.1.5",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.6.1"
   }

@@ -4,52 +4,100 @@ var gutil       = require('gulp-util');
 var watch       = require('gulp-watch');
 var ghPages     = require('gulp-gh-pages');
 var source      = require('vinyl-source-stream');
+var del         = require('del');
+var path        = require('path');
+var runSeq      = require('run-sequence');
 var babelify    = require('babelify');
 var watchify    = require('watchify');
 var exorcist    = require('exorcist');
 var browserify  = require('browserify');
 var browserSync = require('browser-sync').create();
 
-// Input file.
-watchify.args.debug = true;
-var bundler = watchify(browserify('./app/js/app.js', watchify.args));
+function bundle(shouldWatch) {
+    // Input file.
+    var bundler = browserify('./app/js/app.js', { debug: shouldWatch });
 
-// Babel transform
-bundler.transform(babelify.configure({
-    sourceMapRelative: 'app/js',
-    presets: ["es2015"]
-}));
+    // Babel transform
+    bundler.transform(babelify.configure({
+        sourceMapRelative: 'app/js',
+        presets: ["es2015"]
+    }));
 
-// On updates recompile
-bundler.on('update', bundle);
+    function rebundle() {
+        return bundler.bundle()
+            .on('error', function (err) {
+                gutil.log(err.message);
+                browserSync.notify("Browserify Error!");
+                this.emit("end");
+            })
+            .pipe(shouldWatch ? exorcist('/dist/js/bundle.js.map') : gutil.noop())
+            .pipe(source('bundle.js'))
+            .pipe(gulp.dest('./dist/js'))
+            .pipe(browserSync.stream({once: true}));
+    }
 
-function bundle() {
+    if(shouldWatch) {
+      bundler = watchify(bundler);
+
+      // On updates recompile
+      bundler.on('update', function(files) {
+        gutil.log('Changed files: ' + files.map(path.relative.bind(path, process.cwd())).join(', '));
+        gutil.log('Recompiling JS...');
+        rebundle();
+      });
+    }
+
+    bundler.on('log', function(msg) {
+      gutil.log(msg)
+    });
 
     gutil.log('Compiling JS...');
-
-    return bundler.bundle()
-        .on('error', function (err) {
-            gutil.log(err.message);
-            browserSync.notify("Browserify Error!");
-            this.emit("end");
-        })
-        .pipe(exorcist('./dist/js/bundle.js.map'))
-        .pipe(source('bundle.js'))
-        .pipe(gulp.dest('./dist/js'))
-        .pipe(browserSync.stream({once: true}));
+    return rebundle();
 }
 
-gulp.task('watch:css', function() {
+function buildCSS(shouldWatch) {
     return gulp.src('app/css/style.css')
-        .pipe(watch('app/css/style.css'))
-        .pipe(gulp.dest('dist/css'));
+      .pipe(shouldWatch ? watch('app/css/style.css') : gutil.noop())
+      .pipe(gulp.dest('dist/css'));
+}
+
+function buildHTML(shouldWatch) {
+    return gulp.src('app/index.html')
+        .pipe(shouldWatch ? watch('app/index.html') : gutil.noop())
+        .pipe(gulp.dest('dist'));
+}
+
+gulp.task('clean', function() {
+  return del(['dist']);
+})
+
+gulp.task('watch:css', function() {
+  return buildCSS(true);
 });
 
 gulp.task('watch:html', function() {
-    return gulp.src('app/index.html')
-        .pipe(watch('app/index.html'))
-        .pipe(gulp.dest('dist'));
+    return buildHTML(true);
 });
+
+gulp.task('watch:js', function () {
+    return bundle(true);
+});
+
+gulp.task('watch:all', ['watch:css', 'watch:html', 'watch:js']);
+
+gulp.task('build:css', function() {
+  return buildCSS(false);
+});
+
+gulp.task('build:html', function() {
+  return buildHTML(false);
+});
+
+gulp.task('build:js', function() {
+  return bundle(false);
+});
+
+gulp.task('build:all', ['build:css', 'build:html', 'build:js']);
 
 gulp.task('copy:assets', function() {
     return gulp.src('app/assets/**/*')
@@ -61,22 +109,17 @@ gulp.task('deploy', function() {
         .pipe(ghPages());
 });
 
-/**
- * Gulp task alias
- */
-gulp.task('bundle', function () {
-    return bundle();
-});
-
-gulp.task('watch:all', ['watch:css', 'watch:html']);
-
 gulp.task('browser', function() {
     browserSync.init({
         server: './dist'
     });
 });
 
+gulp.task('build', function(cb) {
+  return runSeq('clean', ['build:all', 'copy:assets'])
+})
+
 /**
  * First bundle, then serve from the ./app directory
  */
-gulp.task('default', ['watch:all', 'copy:assets', 'bundle', 'browser']);
+gulp.task('default', ['watch:all', 'copy:assets', 'browser']);
