@@ -1,29 +1,20 @@
 import config from './config.js';
-import {Wall} from './Wall.js';
-import resources from './loader.js';
-import {Explosion} from './Explosion.js'
-import {Bomb} from './Bomb.js'
-import {MainMenu} from './Menu.js'
-import {key, setKey} from './Input.js'
+import { Bomb } from './Bomb.js'
+import { MainMenu } from './Menu.js'
+import { key, setKey } from './Input.js'
 import gamestate from './gamestate';
 import Valet from './gamemodes/valet';
 
-var _ = require('lodash');
 var world = config.world,
-renderer = config.renderer,
-stage = config.stage,
-container = config.container;
+  renderer = config.renderer,
+  stage = config.stage,
+  container = config.container;
 
-var carTexture,
-wheelTexture,
-graphics,
-chassisBody;
-
-//only initialize when all textures are loaded
+// only initialize when all textures are loaded
 PIXI.loader.once('complete',init);
 
-function init(){
-  let test = renderer.view;
+function init() {
+  const test = renderer.view;
   test.onclick = e => {
     if(gamestate.playing) {
       new Bomb(e.offsetX,-e.offsetY)
@@ -37,7 +28,7 @@ function init(){
   // Add transform to the container
   container.position.x =  0; // center at origin
   container.position.y =  0;
-  container.scale.x =  config.zoom;  // zoom in
+  container.scale.x =  config.zoom; // zoom in
   container.scale.y = -config.zoom; // Note: we flip the y axis to make "up" the physics "up"
 
   const menu = new MainMenu()
@@ -46,16 +37,16 @@ function init(){
 
 
   // TODO: give everything onCollision functions
-  world.on("impact",function(evt){
-    let bodyA = evt.bodyA,
-        bodyB = evt.bodyB,
-        shapeA = evt.shapeA,
-        shapeB = evt.shapeB;
+  world.on('impact',function(evt) {
+    const bodyA = evt.bodyA
+    const bodyB = evt.bodyB
+    const shapeA = evt.shapeA
+    const shapeB = evt.shapeB
 
-    if(bodyA.onCollision){
+    if(bodyA.onCollision) {
       bodyA.onCollision(bodyB, shapeA, bodyB === gamestate.player.chassisBody);
     }
-    if(bodyB.onCollision){
+    if(bodyB.onCollision) {
       bodyB.onCollision(bodyA, shapeB, bodyA === gamestate.player.chassisBody);
     }
   });
@@ -69,7 +60,7 @@ function init(){
     onInputChange();
   });
 
-  function onInputChange(){
+  function onInputChange() {
 
     if (key['escape']) {
       // TODO: Toggle the menu
@@ -82,7 +73,7 @@ function init(){
     }
 
     for (let i = gamestate.menus.length - 1; i > -1; i--) {
-      let { _playing, done, _level } = gamestate.menus[i].onInputChange(gamestate.menus) || {}
+      const { _playing, done, _level } = gamestate.menus[i].onInputChange(gamestate.menus) || {}
 
       if (_playing !== undefined) {
         gamestate.playing = _playing;
