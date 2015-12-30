@@ -1,15 +1,14 @@
-
 import GameMode from './_gamemode';
 import config from '../config';
 import gamestate from '../gamestate';
-import {shakeUpdate} from '../ScreenShake.js'
+import { shakeUpdate } from '../ScreenShake.js'
 import * as Cars from '../Cars.js';
 
 import _ from 'lodash';
 
 let lastTime = 0;
 
-export default class Valet {
+export default class Valet extends GameMode {
   static loop(now) {
     const delta = now - lastTime;
     lastTime = now
@@ -21,12 +20,12 @@ export default class Valet {
 
     shakeUpdate()
 
-    //TODO: Have a gameloop function. Maybe have a seperate one for each gametype
+    // TODO: Have a gameloop function. Maybe have a seperate one for each gametype
     if (gamestate.playing) {
       // TODO: do initialization better somehow?
       if (!gamestate.player) {
-        var car = _.sample(Cars);
-        let spawn = _.sample(gamestate.level.spawnPoints);
+        const car = _.sample(Cars);
+        const spawn = _.sample(gamestate.level.spawnPoints);
 
         gamestate.player =  new car(spawn);
       }
@@ -36,8 +35,8 @@ export default class Valet {
         gamestate.player.chassisBody.backWheel.setBrakeForce(2);
         gamestate.player.boxShape.collisionGroup = config.CAR;
         gamestate.cars.push(gamestate.player);
-        var car = _.sample(Cars);
-        let spawn = _.sample(gamestate.level.spawnPoints);
+        const car = _.sample(Cars);
+        const spawn = _.sample(gamestate.level.spawnPoints);
         gamestate.player =  new car(spawn);
       }
 
