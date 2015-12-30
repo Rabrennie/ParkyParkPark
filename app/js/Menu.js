@@ -34,7 +34,6 @@ class Menu extends PIXI.Container {
     this.addChild(this._pointer)
   }
 
-  // XXX(Fishrock123) onInputChange MUST be a *regular* function so it can inherit scope
   addOption(text, opts={}) {
     const i = this._options.length;
 
@@ -64,6 +63,7 @@ class Menu extends PIXI.Container {
   //   `return { done: true }``
   // Tell the game it should (Boolean) playing: `return { _playing: <boolean> }`
   //
+  // XXX(Fishrock123) onInputChange MUST be a *regular* function so it can inherit scope
   onInputChange(menus) {
 
     let option = this._options[this.selectedOption]
