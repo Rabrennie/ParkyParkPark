@@ -2,7 +2,7 @@ import GameMode from './_gamemode';
 import config from '../config';
 import gamestate from '../gamestate';
 import { shakeUpdate } from '../ScreenShake.js'
-import * as Cars from '../Cars.js';
+import * as Cars from '../entities/Vehicles.js';
 
 import _ from 'lodash';
 
@@ -15,20 +15,20 @@ export default class Valet extends GameMode {
     if (gamestate.playing) {
       // TODO: do initialization better somehow?
       if (!gamestate.player) {
-        const car = _.sample(Cars);
+        const Car = _.sample(Cars);
         const spawn = _.sample(gamestate.level.spawnPoints);
 
-        gamestate.player =  new car(spawn);
+        gamestate.player = new Car(spawn);
       }
       gamestate.player.update();
 
-      if (p2.vec2.length(gamestate.player.chassisBody.velocity) <= 0.05) {
-        gamestate.player.chassisBody.backWheel.setBrakeForce(2);
+      if (p2.vec2.length(gamestate.player.body.velocity) <= 0.05) {
+        gamestate.player.body.backWheel.setBrakeForce(2);
         gamestate.player.boxShape.collisionGroup = config.CAR;
         gamestate.cars.push(gamestate.player);
-        const car = _.sample(Cars);
+        const Car = _.sample(Cars);
         const spawn = _.sample(gamestate.level.spawnPoints);
-        gamestate.player =  new car(spawn);
+        gamestate.player = new Car(spawn);
       }
 
       for (let i = gamestate.cars.length - 1; i >= 0; i--) {
