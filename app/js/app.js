@@ -2,7 +2,8 @@ import config from './config.js';
 import { Bomb } from './Bomb.js'
 import { MainMenu } from './Menu.js'
 import { key, setKey } from './Input.js'
-import gamestate from './gamestate';
+import gamestate from './gamestate'
+import { shakeUpdate } from './ScreenShake.js'
 
 var world = config.world,
   renderer = config.renderer,
@@ -78,7 +79,6 @@ function init() {
         gamestate.playing = _playing;
         gamestate.level = _level;
         gamestate.level.load();
-        console.log(gamestate.mode)
         break;
       }
 
@@ -101,6 +101,7 @@ let lastTime = 0;
 function menuLoop(now) {
   const delta = now - lastTime;
   lastTime = now
+  shakeUpdate()
   if (gamestate.menus.length > 0) {
     gamestate.menus[gamestate.menus.length - 1].update(now, delta)
   }
