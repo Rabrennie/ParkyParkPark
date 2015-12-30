@@ -18,6 +18,9 @@ export const keymap = {
   enter     : 13,
   escape    : 27,
   backspace : 8,
+  steerLeft : 37,
+  steerRight: 39,
+  brake     : 40
 }
 
 export function key(name) {
