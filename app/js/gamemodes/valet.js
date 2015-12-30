@@ -7,7 +7,7 @@ import * as Cars from '../Cars.js';
 import _ from 'lodash';
 
 export default class Valet extends GameMode {
-  static loop(now) {
+  static loop() {
 
     shakeUpdate()
 
