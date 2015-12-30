@@ -5,21 +5,22 @@ import { screenShake } from '../ScreenShake.js'
 import Car from './Car.js'
 const _ = require('lodash');
 
+const defaults = { texture:resources.OrangeTruck.texture,
+  w:0.7,
+  h:1.075,
+  wheelPositions: [
+    { x:-0.24, y:0.32 },
+    { x:0.40-0.078, y:0.32 },
+    { x:-0.30, y:0 },
+    { x:0.5-0.108, y:0 },
+    { x:-0.30, y:-0.38 },
+    { x:0.5-0.108, y:-0.38 }
+  ],
+  mass: 5,
+  collisionGroup: config.PLAYER };
+
 export default class Truck extends Car {
   constructor(opts={}) {
-    const defaults = { texture:resources.OrangeTruck.texture,
-      w:0.7,
-      h:1.075,
-      wheelPositions: [
-        { x:-0.24, y:0.32 },
-        { x:0.40-0.078, y:0.32 },
-        { x:-0.30, y:0 },
-        { x:0.5-0.108, y:0 },
-        { x:-0.30, y:-0.38 },
-        { x:0.5-0.108, y:-0.38 }
-      ],
-      mass: 5,
-      collisionGroup: config.PLAYER };
     opts = _.defaults(opts, defaults);
     super(opts)
     this.exploded = false;
