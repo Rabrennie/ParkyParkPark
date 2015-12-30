@@ -44,10 +44,10 @@ function init() {
     const shapeB = evt.shapeB
 
     if(bodyA.onCollision) {
-      bodyA.onCollision(bodyB, shapeA, bodyB === gamestate.player.chassisBody);
+      bodyA.onCollision(bodyB, shapeA, bodyB === gamestate.player.body);
     }
     if(bodyB.onCollision) {
-      bodyB.onCollision(bodyA, shapeB, bodyA === gamestate.player.chassisBody);
+      bodyB.onCollision(bodyA, shapeB, bodyA === gamestate.player.body);
     }
   });
 
