@@ -28,7 +28,6 @@ export default class Menu extends PIXI.Container {
 
     this.optsOffset = opts.optsOffset || 400
     this.optsAlign = opts.optsAlign || 'center'
-    console.log(this.optsAlign)
   }
 
   addOption(text, opts={}) {
