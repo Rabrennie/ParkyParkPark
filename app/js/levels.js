@@ -1,17 +1,24 @@
 import config from './config.js';
 import { Wall } from './Wall.js';
 import resources from './loader.js';
+import { ParkingSpace } from './ParkingSpace.js'
 
 class Level {
-  constructor(name,walls,texture, spawnPoints) {
+  constructor(name,texture) {
     this.name = name;
-    this.walls = walls;
+    this.walls = [];
     this.graphics = new PIXI.Graphics();
     this.graphics.beginFill(0xff0000);
     this.graphics.width = 800;
     this.graphics.height = 600;
     this.texture = texture;
-    this.spawnPoints = spawnPoints;
+    this.spawnPoints = [];
+    this.parkingSpaces = []
+
+    for (var i = 0; i < 24; i++) {
+      this.parkingSpaces.push(new ParkingSpace({ x:Math.floor(Math.random() * 700) + 300, y:Math.floor(Math.random() * -500) -50  , angle: Math.floor(Math.random() * (Math.PI*2)) }))
+
+    }
   }
 
   load() {
@@ -24,18 +31,35 @@ class Level {
     this.graphics.addChild(this.sprite);
     config.container.addChild(this.graphics);
 
-    for (var i = 0; i < this.walls.length; i++) {
+    for (let i = 0; i < this.walls.length; i++) {
       this.walls[i].load();
     }
+    for (let i = 0; i < this.parkingSpaces.length; i++) {
+      this.parkingSpaces[i].load();
+    }
+  }
+
+  addWall(x,y,w,h,angle,container = config.container,world = config.world) {
+    this.walls.push(new Wall(x,y,w,h,angle,container,world));
+  }
+
+  addSpawn(x,y,velX = 15,velY = 0) {
+    this.spawnPoints.push({ x, y, velX, velY })
   }
 }
 
-export const test = new Level('Test',[
-  new Wall(800,-300,20,600,0,config.container,config.world),
-  new Wall(400,0,800,20,0,config.container,config.world),
-  new Wall(400,-600,800,20,0,config.container,config.world),
-  new Wall(400,-600,800,20,0,config.container,config.world),
-  new Wall(101,-565,199,70,0,config.container,config.world),
-  new Wall(101,-35,199,70,0,config.container,config.world),
-  new Wall(101,-300,203,333,0,config.container,config.world)
-], 'TestLevel',[{ x:-20,y:-95 }, { x:-20,y:-500 }]);
+export class test extends Level {
+  constructor() {
+    super('Test', 'TestLevel')
+    this.addWall(800,-300,20,600,0);
+    this.addWall(400,0,800,20,0);
+    this.addWall(400,-600,800,20,0);
+    this.addWall(400,-600,800,20,0);
+    this.addWall(101,-565,199,70,0);
+    this.addWall(101,-35,199,70,0);
+    this.addWall(101,-300,203,333,0);
+
+    this.addSpawn(-20, -95);
+    this.addSpawn(-20, -500)
+  }
+}

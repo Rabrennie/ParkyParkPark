@@ -12,5 +12,6 @@ export default PIXI.loader
     .add('wheel', 'assets/wheel.png')
     .add('CarHit', 'assets/CarHit.png')
     .add('TruckHit', 'assets/Truckhit.png')
+    .add('ParkingSpace', 'assets/ParkingSpace.png')
     .load()
     .resources;
