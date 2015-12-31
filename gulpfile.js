@@ -13,6 +13,7 @@ var browserify        = require('browserify');
 var browserSync       = require('browser-sync').create();
 var pkg               = require('./package.json');
 var electronPackager  = require('electron-packager');
+var _                 = require('lodash');
 
 function bundle(shouldWatch) {
   // Input file.
@@ -120,33 +121,44 @@ gulp.task('build', function(cb) {
   return runSeq('clean', ['build:all', 'copy:assets'], cb)
 })
 
-gulp.task('copy:electron', function() {
-  return gulp.src(['package.json', 'main.js'])
-    .pipe(gulp.dest('dist'));
-});
+gulp.task('build-standalone', ['build'], function(cb) {
+  // Files to ignore in standalone build
+  var blacklist = _([
+    'app',
+    'release',
+    'node_modules',
+    'gulpfile.js',
+    '.editorconfig',
+    '.eslintrc',
+    '.gitignore',
+    '.travis.yml'
+  ])
+  .map(_.escapeRegExp)
+  .map(function(path) {
+    return '/' + path + '($|/)';
+  })
+  .join('|')
 
-gulp.task('build-standalone', function(cb) {
-  runSeq('build', 'copy:electron', function() {
-    var opts = {
-      dir: 'dist',
-      name: pkg.productName,
-      all: true,
-      version: '0.36.2',
-      asar: true,
-      out: 'release'
-      // TODO: add more executable metadata. See https://github.com/maxogden/electron-packager#opts
+  var opts = {
+    dir: '.',
+    name: pkg.productName,
+    all: true,
+    version: '0.36.2',
+    asar: true,
+    ignore: new RegExp(blacklist),
+    out: 'release'
+    // TODO: add more executable metadata. See https://github.com/maxogden/electron-packager#opts
+  }
+
+  electronPackager(opts, function(err, appPath) {
+    if (err) {
+      gutil.log(err);
+      cb(err)
     }
 
-    electronPackager(opts, function(err, appPath) {
-      if (err) {
-        gutil.log(err);
-        cb(err)
-      }
-
-      gutil.log('Standalone builds created at ', appPath);
-      cb();
-    });
-  })
+    gutil.log('Standalone builds created at ', appPath);
+    cb();
+  });
 })
 
 /**
