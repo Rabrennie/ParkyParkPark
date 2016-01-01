@@ -2,3 +2,10 @@ ParkyParkPark [![Build Status](https://travis-ci.org/Rabrennie/ParkyParkPark.svg
 ====
 
 A game where you park cars.
+
+# Installation & Running
+
+```
+npm install
+gulp
+```
