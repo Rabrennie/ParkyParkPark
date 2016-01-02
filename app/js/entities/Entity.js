@@ -45,4 +45,5 @@ export default class Entity {
 
   // Implement in subclasses
   onInput() {}
+
 }

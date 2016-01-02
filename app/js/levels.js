@@ -25,7 +25,6 @@ class Level {
 
     this.sprite = new PIXI.Sprite(resources[this.texture].texture);
     this.sprite.position.x = 0/config.zoom;
-    console.log(config.H)
     this.sprite.position.y = -config.H/config.zoom;
     this.sprite.scale.x = config.scaleFactorX*1/config.zoom;
     this.sprite.scale.y = config.scaleFactorY*1/config.zoom;

@@ -56,4 +56,9 @@ export class ParkingSpace {
   getParked() {
     this.opts.world.addBody(this.body);
   }
+
+  // TODO: make this return an actual score based on the percentage overlap
+  getScore() {
+    return 1;
+  }
 }

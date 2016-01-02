@@ -3,7 +3,7 @@ import { Bomb } from './Bomb.js'
 import MainMenu from './menus/MainMenu.js'
 import { key, setKey } from './Input.js'
 import gamestate from './gamestate'
-import { shakeUpdate } from './ScreenShake.js'
+import menuLoop from './menuLoop.js'
 
 var world = config.world,
   renderer = config.renderer,
@@ -84,23 +84,6 @@ function init() {
       gamestate.playing = true
     }
   }
-  if(gamestate.mode !== null) {
-    requestAnimationFrame(gamestate.mode.loop);
-  } else {
-    requestAnimationFrame(menuLoop);
-  }
-}
-
-let lastTime = 0;
-
-function menuLoop(now) {
-  const delta = now - lastTime;
-  lastTime = now
-  shakeUpdate()
-  if (gamestate.menus.length > 0) {
-    gamestate.menus[gamestate.menus.length - 1].update(now, delta)
-  }
-  config.renderer.render(config.stage);
   if(gamestate.mode !== null) {
     requestAnimationFrame(gamestate.mode.loop);
   } else {
