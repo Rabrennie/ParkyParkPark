@@ -25,14 +25,14 @@ class Level {
 
     this.sprite = new PIXI.Sprite(resources[this.texture].texture);
     this.sprite.position.x = 0/config.zoom;
-    this.sprite.position.y = -600/config.zoom;
-    this.sprite.scale.x = 1/config.zoom;
-    this.sprite.scale.y = 1/config.zoom;
+    this.sprite.position.y = -config.H/config.zoom;
+    this.sprite.scale.x = config.scaleFactorX*1/config.zoom;
+    this.sprite.scale.y = config.scaleFactorY*1/config.zoom;
     this.graphics.addChild(this.sprite);
     config.container.addChild(this.graphics);
 
     for (let i = 0; i < this.walls.length; i++) {
-      this.walls[i].load();
+      this.walls[i].load(true);
     }
     for (let i = 0; i < this.parkingSpaces.length; i++) {
       this.parkingSpaces[i].load();
@@ -59,7 +59,7 @@ export class test extends Level {
     this.addWall(101,-35,199,70,0);
     this.addWall(101,-300,203,333,0);
 
-    this.addSpawn(-20, -95);
-    this.addSpawn(-20, -500)
+    this.addSpawn(config.scaleFactorX*-20, config.scaleFactorY*-95);
+    this.addSpawn(config.scaleFactorX*-20, config.scaleFactorY*-500)
   }
 }

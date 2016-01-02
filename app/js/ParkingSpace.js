@@ -30,8 +30,8 @@ export class ParkingSpace {
     this.graphics = new PIXI.Graphics();
     this.graphics.beginFill(0xff0000);
     this.sprite = new PIXI.Sprite(this.texture);
-    this.sprite.scale.x = opts.scaleX/config.zoom;
-    this.sprite.scale.y = opts.scaleY/config.zoom;
+    this.sprite.scale.x = config.scaleFactorX * opts.scaleX/config.zoom;
+    this.sprite.scale.y = config.scaleFactorY * opts.scaleY/config.zoom;
     this.sprite.x = this.sprite.x + this.sprite.width/2
     this.sprite.y = this.sprite.y + this.sprite.height/2
     this.sprite.rotation =3.14159

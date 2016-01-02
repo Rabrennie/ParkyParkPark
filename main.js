@@ -1,4 +1,4 @@
-'use strict';
+'use strict';  // eslint-disable-line strict
 
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.

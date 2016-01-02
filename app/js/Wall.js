@@ -4,7 +4,7 @@ import { screenShake } from './ScreenShake.js'
 export class Wall {
   constructor(x,y,w,h,angle,container,world) {
     this.wallBody = new p2.Body({
-      position: [x / config.zoom, y / config.zoom],
+      position: [config.scaleFactorX * x / config.zoom, config.scaleFactorY * y / config.zoom],
       mass: 0,
       angle
     });
@@ -18,7 +18,7 @@ export class Wall {
     this.world = world;
     this.container = container;
 
-    this.boxShape = new p2.Box({ width: w / config.zoom, height: h / config.zoom });
+    this.boxShape = new p2.Box({ width: config.scaleFactorX * w / config.zoom, height: config.scaleFactorY * h / config.zoom });
     this.boxShape.collisionGroup = config.WALL;
     this.boxShape.collisionMask = config.PLAYER | config.CAR | config.TRUCKBACK;
     this.wallBody.addShape(this.boxShape);
