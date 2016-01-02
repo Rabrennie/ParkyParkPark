@@ -1,5 +1,5 @@
-const W = 1200;
-const H = 900;
+const W = 800;
+const H = W/4*3;
 
 export default {
   zoom: 0.0625*W,

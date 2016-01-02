@@ -14,7 +14,7 @@ export class Wall {
         screenShake(2, 1)
       }
     };
-
+    
     this.world = world;
     this.container = container;
 

@@ -2,6 +2,7 @@ import config from '../config.js';
 import Menu from './Menu.js'
 import { key } from '../Input.js'
 import { screenShake } from '../ScreenShake.js'
+import { resizeGame } from '../resizeGame.js'
 import KeyMapMenu from './KeyMapMenu.js'
 
 export default class OptionsMenu extends Menu {
@@ -75,6 +76,39 @@ export default class OptionsMenu extends Menu {
         }
       }
     })
+    this.addOption(`Resolution ${config.W + 'x' + config.H}`, {
+      state: {
+        accumulator: 0,
+        sizes: [640, 800, 1024],
+        curr: 1
+      },
+      update(now, delta) {
+        this.state.accumulator += delta
+        if (this.state.accumulator < 50) return
+        this.state.accumulator = 0
+
+        this.textObj.text = `Resolution ${config.W + 'x' + config.H}`;
+        if (key('left')) {
+          if(this.state.curr===0) {
+            this.state.curr = this.state.sizes.length-1;
+            resizeGame(this.state.sizes[this.state.curr]);
+          } else {
+            this.state.curr -= 1;
+            resizeGame(this.state.sizes[this.state.curr]);
+          }
+        }
+        if (key('right')) {
+          if(this.state.curr===this.state.sizes.length-1) {
+            this.state.curr = 0;
+            resizeGame(this.state.sizes[this.state.curr]);
+          } else {
+            this.state.curr += 1;
+            resizeGame(this.state.sizes[this.state.curr]);
+          }
+        }
+      }
+    })
+
     this.addOption('Key Mapping', (menus) => {
       const newMenu = new KeyMapMenu()
       menus.push(newMenu)
@@ -82,6 +116,7 @@ export default class OptionsMenu extends Menu {
 
       return { done: true }
     })
+
 
     this.addOption('Back', (menus) => {
       menus.splice(menus.indexOf(this))
