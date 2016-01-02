@@ -28,7 +28,6 @@ export class ParkingSpace {
 
     this.texture = opts.texture;
     this.graphics = new PIXI.Graphics();
-    this.graphics.beginFill(0xff0000);
     this.sprite = new PIXI.Sprite(this.texture);
     this.sprite.scale.x = config.scaleFactorX * opts.scaleX/config.zoom;
     this.sprite.scale.y = config.scaleFactorY * opts.scaleY/config.zoom;
@@ -48,8 +47,20 @@ export class ParkingSpace {
     this.graphics.position.x = this.body.position[0];
     this.graphics.position.y = this.body.position[1];
     this.graphics.rotation =   this.body.angle;
-    // Uncomment below for debug graphics m8
-    // this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
+  }
+
+  debug(toggle) {
+    if (!this.graphics) return console.log('no this.graphics')
+
+    if (!toggle) {
+      this.graphics.clear()
+      this.sprite.alpha = 1
+      return
+    }
+
+    this.graphics.beginFill(0xff0000);
+    this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
+    this.sprite.alpha = 0.6
   }
 
   // TODO: add functionality to calculate what car is parked and by how much

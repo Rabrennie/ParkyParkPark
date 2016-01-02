@@ -32,7 +32,7 @@ class Level {
     config.container.addChild(this.graphics);
 
     for (let i = 0; i < this.walls.length; i++) {
-      this.walls[i].load();
+      this.walls[i].load(true);
     }
     for (let i = 0; i < this.parkingSpaces.length; i++) {
       this.parkingSpaces[i].load();
@@ -47,6 +47,11 @@ class Level {
     this.spawnPoints.push({ x, y, velX, velY })
   }
 
+  debug(toggle) {
+    for (let i = 0; i < this.walls.length; i++) {
+      this.walls[i].debug(toggle)
+    }
+  }
 }
 
 export class test extends Level {

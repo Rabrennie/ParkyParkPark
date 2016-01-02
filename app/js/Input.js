@@ -8,6 +8,16 @@ const _keys = {
   13: 0, // enter
   27: 0, // escape
   8 : 0, // backspace
+  32: 0, // spacebar
+  17: 0, // ctrl
+  18: 0, // alt
+  91: 0, // Windows Key / Left Command
+  93: 0, // Windows Menu / Right Command
+  16: 0, // shift
+  9 : 0, // tab
+  20: 0, // caps lock
+  192: 0, // backtick / tilde ("grave accent")
+  220: 0, // back slash
 };
 
 export const keymap = {
@@ -20,7 +30,8 @@ export const keymap = {
   backspace : 8,
   steerLeft : 37,
   steerRight: 39,
-  brake     : 40
+  brake     : 40,
+  debug     : 192,
 }
 
 export function key(name) {

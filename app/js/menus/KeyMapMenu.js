@@ -21,6 +21,7 @@ export default class KeyMapMenu extends Menu {
     this.addKeyBind('Steer Left', 'steerLeft')
     this.addKeyBind('Steer Right', 'steerRight')
     this.addKeyBind('Brake', 'brake')
+    this.addKeyBind('Toggle Debug', 'debug')
 
     this.addOption('Back', (menus) => {
       menus.splice(menus.indexOf(this))

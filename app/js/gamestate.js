@@ -4,5 +4,6 @@ export default {
   player: null,
   menus: [],
   cars: [],
-  mode: null
+  mode: null,
+  debug: false
 };

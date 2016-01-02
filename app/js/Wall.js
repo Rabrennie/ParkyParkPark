@@ -14,7 +14,7 @@ export class Wall {
         screenShake(2, 1)
       }
     };
-    
+
     this.world = world;
     this.container = container;
 
@@ -32,10 +32,16 @@ export class Wall {
     this.graphics.position.y = this.wallBody.position[1];
   }
 
-  load(debug) {
+  load() {
     this.world.addBody(this.wallBody);
-    if (debug) {
-      this.container.addChild(this.graphics);
+  }
+
+  debug(toggle) {
+    if (!toggle && this.container.getChildIndex(this.graphics) !== -1) {
+      this.container.removeChild(this.graphics);
+      return
     }
+
+    this.container.addChild(this.graphics);
   }
 }
