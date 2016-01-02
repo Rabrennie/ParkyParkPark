@@ -130,4 +130,19 @@ export default class Car extends Entity {
       }
     }
   }
+
+  debug(toggle) {
+    if (!this.graphics) return console.log('no this.graphics')
+    console.log('car debug', toggle)
+
+    if (!toggle) {
+      this.graphics.clear()
+      this.sprite.alpha = 1
+      return
+    }
+
+    this.graphics.beginFill(0xFF0000)
+    this.graphics.drawRect(-this.boxShape.width / 2, -this.boxShape.height / 2, this.boxShape.width, this.boxShape.height);
+    this.sprite.alpha = 0.6
+  }
 }

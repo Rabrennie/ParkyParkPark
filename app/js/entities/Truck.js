@@ -40,8 +40,6 @@ export default class Truck extends Car {
     this.boxShapeBack.position[0] = 0
     this.boxShapeBack.position[1] = -0.2
 
-    // this.graphics.drawRect(this.boxShapeBack.position[0]-this.boxShapeBack.width/2, this.boxShapeBack.position[1]-this.boxShapeBack.height/2, this.boxShapeBack.width, this.boxShapeBack.height);
-
     this.body.onCollision = (body, shape, playerHit) => {
       const bodyMomentum = [body.velocity[0] * body.mass, body.velocity[1] * body.mass]
       const thisMomentum = [this.body.velocity[0] * this.body.mass,
@@ -73,5 +71,21 @@ export default class Truck extends Car {
       }
     };
 
+  }
+
+  debug(toggle) {
+    if (!this.graphics) return console.log('no this.graphics')
+    console.log('truck debug', toggle)
+
+    if (!toggle) {
+      this.graphics.clear()
+      this.sprite.alpha = 1
+      return
+    }
+
+    this.graphics.beginFill(0xFF0000)
+    this.graphics.drawRect(this.boxShape.position[0]-this.boxShape.width/2, this.boxShape.position[1]-this.boxShape.height/2, this.boxShape.width, this.boxShape.height);
+    this.graphics.drawRect(this.boxShapeBack.position[0]-this.boxShapeBack.width/2, this.boxShapeBack.position[1]-this.boxShapeBack.height/2, this.boxShapeBack.width, this.boxShapeBack.height);
+    this.sprite.alpha = 0.6
   }
 }

@@ -60,11 +60,18 @@ function init() {
     onInputChange();
   });
 
+
+  var wasDebug = false
   function onInputChange() {
 
     if (key['escape']) {
       // TODO: Toggle the menu
       return
+    }
+
+    if (key('debug') && gamestate.mode !== null) {
+      wasDebug = !wasDebug
+      gamestate.mode.debug(wasDebug)
     }
 
     if (gamestate.playing) {

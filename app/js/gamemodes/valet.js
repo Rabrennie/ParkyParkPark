@@ -61,4 +61,16 @@ export default class Valet extends GameMode {
     if (gamestate.playing) config.world.step(1/60);
     config.renderer.render(config.stage);
   }
+
+  static debug(toggle) {
+    gamestate.level.debug(toggle)
+    if (gamestate.player) gamestate.player.debug(toggle)
+
+    for (let i = 0; i < gamestate.cars.length; i++) {
+      gamestate.cars[i].debug(toggle)
+    }
+    for (let i = 0; i < gamestate.level.parkingSpaces.length; i++) {
+      gamestate.level.parkingSpaces[i].debug(toggle)
+    }
+  }
 }
