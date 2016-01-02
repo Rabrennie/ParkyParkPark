@@ -32,7 +32,7 @@ class Level {
     config.container.addChild(this.graphics);
 
     for (let i = 0; i < this.walls.length; i++) {
-      this.walls[i].load(true);
+      this.walls[i].load();
     }
     for (let i = 0; i < this.parkingSpaces.length; i++) {
       this.parkingSpaces[i].load();
