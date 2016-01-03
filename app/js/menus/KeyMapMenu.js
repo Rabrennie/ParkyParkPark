@@ -50,7 +50,6 @@ export default class KeyMapMenu extends Menu {
             this.textObj.text = `${name}: ${key}`;
           }
         } else if (downKeys.length > 0 && this.state.active) {
-          console.log('3')
           bindKey(binding, downKeys[0])
           const code = parseInt(keymap[binding]);
           const key = keycode(code);

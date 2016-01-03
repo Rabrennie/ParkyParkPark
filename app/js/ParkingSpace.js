@@ -50,8 +50,6 @@ export class ParkingSpace {
   }
 
   debug(toggle) {
-    if (!this.graphics) return console.log('no this.graphics')
-
     if (!toggle) {
       this.graphics.clear()
       this.sprite.alpha = 1
