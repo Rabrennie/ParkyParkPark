@@ -1,7 +1,6 @@
 import GameMode from './_gamemode';
 import config from '../config';
 import gamestate from '../gamestate';
-import { shakeUpdate } from '../ScreenShake.js'
 import * as Cars from '../entities/Vehicles.js';
 import MainMenu from '../menus/MainMenu.js'
 import menuLoop from '../menuLoop.js'
@@ -9,11 +8,8 @@ import menuLoop from '../menuLoop.js'
 import _ from 'lodash';
 
 export default class Valet extends GameMode {
-  static loop() {
+  static loop(now, _loop) {
 
-    shakeUpdate()
-
-    // TODO: Have a gameloop function. Maybe have a seperate one for each gametype
     if (gamestate.playing) {
       // TODO: do initialization better somehow?
       if (!gamestate.player) {
@@ -57,7 +53,7 @@ export default class Valet extends GameMode {
       }
     }
 
-    requestAnimationFrame(Valet.loop);
+    requestAnimationFrame(_loop);
     if (gamestate.playing) config.world.step(1/60);
     config.renderer.render(config.stage);
   }

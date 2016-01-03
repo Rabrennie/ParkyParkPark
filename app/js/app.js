@@ -4,6 +4,7 @@ import MainMenu from './menus/MainMenu.js'
 import { key, setKey } from './Input.js'
 import gamestate from './gamestate'
 import menuLoop from './menuLoop.js'
+import { shakeUpdate } from './ScreenShake.js'
 
 var world = config.world,
   renderer = config.renderer,
@@ -93,9 +94,19 @@ function init() {
       gamestate.playing = true
     }
   }
-  if(gamestate.mode !== null) {
-    requestAnimationFrame(gamestate.mode.loop);
+
+  // Start up the renderer
+  requestAnimationFrame(loop)
+}
+
+// Top-level game loop
+// You *must* request an animation frome of this loop() from loops you pass this to.
+function loop(now) {
+  shakeUpdate()
+
+  if (gamestate.mode !== null) {
+    gamestate.mode.loop(now, loop)
   } else {
-    requestAnimationFrame(menuLoop);
+    menuLoop(now, loop)
   }
 }
