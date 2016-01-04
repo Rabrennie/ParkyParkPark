@@ -4,8 +4,14 @@ ParkyParkPark [![Build Status](https://travis-ci.org/Rabrennie/ParkyParkPark.svg
 A game where you park cars.
 
 # Installation & Running
+### browser
 
 ```
 npm install
 gulp
+```
+### electron
+```
+npm install
+npm run electron
 ```
