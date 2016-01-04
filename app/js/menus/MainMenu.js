@@ -45,6 +45,12 @@ export default class MainMenu extends Menu {
 
   update(now, delta) {
     super.update(now, delta)
+    this._title.x = config.renderer.width/2 - this._title.width/2;
+    this._title.y = 200*config.scaleFactorY;
+    this._title.style = { font : 24*config.scaleFactorX + 'px Arial', fill : 0xFFFFFF, align : 'center' };
+
+    this._splash.x = this._title.x + this._title.width - this._splash.width/2
+    this._splash.y = this._title.y + this._title.height
 
     if ((now / 2000) % 1 <= 0.5) {
       this._splash.scale.x = 1.5 - (now / 2000) % 1

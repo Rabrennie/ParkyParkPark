@@ -79,7 +79,7 @@ export default class OptionsMenu extends Menu {
     this.addOption(`Resolution ${config.W + 'x' + config.H}`, {
       state: {
         accumulator: 0,
-        sizes: [640, 800, 1024],
+        sizes: [800, 1024, 1200],
         curr: 1
       },
       update(now, delta) {
@@ -124,5 +124,11 @@ export default class OptionsMenu extends Menu {
 
       return { done: true }
     })
+  }
+  update(now, delta) {
+    super.update(now,delta);
+    this._title.x = config.renderer.width/2 - this._title.width/2;
+    this._title.style = { font : 24*config.scaleFactorX + 'px Arial', fill : 0xFFFFFF, align : 'center' }
+
   }
 }

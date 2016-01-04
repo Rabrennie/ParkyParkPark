@@ -47,7 +47,7 @@ export default class Menu extends PIXI.Container {
     } else { // i.e. 'center'
       this._options[i].textObj.x = config.renderer.width/2 - this._options[i].textObj.width/2;
     }
-    this._options[i].textObj.y = this.optsOffset + 50*i;
+    this._options[i].textObj.y = this.optsOffset + 50*i*config.scaleFactorY;
     this.addChild(this._options[i].textObj);
 
     // Load pointer
@@ -104,6 +104,18 @@ export default class Menu extends PIXI.Container {
   }
 
   update(now, delta) {
+
+    for (var i = 0; i < this._options.length; i++) {
+      this._options[i].textObj.style = { font : 24*config.scaleFactorX + 'px Arial', fill : 0xFFFFFF, align : 'center' }
+      if (this.optsAlign === 'left') {
+        this._options[i].textObj.x = config.renderer.width/4;
+      } else { // i.e. 'center'
+        this._options[i].textObj.x = config.renderer.width/2 - this._options[i].textObj.width/2;
+      }
+      this._options[i].textObj.y = this.optsOffset + (50*config.scaleFactorY)*i;
+
+    }
+
     const option = this._options[this.selectedOption]
     if (option.update) {
       option.update(now, delta)
