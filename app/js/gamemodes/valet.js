@@ -36,7 +36,8 @@ export default class Valet extends GameMode {
         for (let i = 0; i < gamestate.level.parkingSpaces.length; i++) {
           gamestate.score += gamestate.level.parkingSpaces[i].getScore();
         }
-        config.world.clear()
+        config.world.clear();
+        config.world.gravity = [0,0];
         gamestate.player = null;
         gamestate.menus = [];
         gamestate.cars = []
