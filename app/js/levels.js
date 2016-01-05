@@ -2,6 +2,10 @@ import config from './config.js';
 import { Wall } from './Wall.js';
 import resources from './loader.js';
 import { ParkingSpace } from './ParkingSpace.js'
+const Random = require('random-js')
+const mt = Random.engines.mt19937()
+mt.autoSeed()
+
 
 class Level {
   constructor(name,texture) {
@@ -16,7 +20,7 @@ class Level {
     this.parkingSpaces = []
 
     for (var i = 0; i < 24; i++) {
-      this.parkingSpaces.push(new ParkingSpace({ x:Math.floor(Math.random() * 700) + 300, y:Math.floor(Math.random() * -500) -50  , angle: Math.floor(Math.random() * (Math.PI*2)) }))
+      this.parkingSpaces.push(new ParkingSpace({ x:Random.integer(1,600)(mt) + 250, y:Random.integer(-400,-1)(mt) -40 , angle: Math.floor(Math.random() * (Math.PI*2)) }))
 
     }
   }
