@@ -57,10 +57,10 @@ class Level {
 export class test extends Level {
   constructor() {
     super('Test', 'TestLevel')
-    this.addWall(800,-300,20,600,0);
-    this.addWall(400,0,800,20,0);
-    this.addWall(400,-600,800,20,0);
-    this.addWall(400,-600,800,20,0);
+    this.addWall(1067,-300,20,600,0);
+    this.addWall(583,0,1067,20,0);
+    this.addWall(583,-600,1067,20,0);
+    this.addWall(583,-600,1067,20,0);
     this.addWall(101,-565,199,70,0);
     this.addWall(101,-35,199,70,0);
     this.addWall(101,-300,203,333,0);

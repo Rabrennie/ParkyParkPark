@@ -1,8 +1,8 @@
-const W = 800;
-const H = W/4*3;
+const W = 1067;
+const H = W/16*9;
 
 export default {
-  zoom: 0.0625*W,
+  zoom: 0.05*W,
   W,
   H,
   PLAYER: Math.pow(2,1),
@@ -18,7 +18,7 @@ export default {
   stage: new PIXI.Container(),
   container: new PIXI.Container(),
   // not sure if this is a dirty hack but it works
-  scaleFactorX:W/800,
+  scaleFactorX:W/1067,
   scaleFactorY:H/600,
   // user options
   screenShake: 1,
