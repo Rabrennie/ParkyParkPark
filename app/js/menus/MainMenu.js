@@ -17,7 +17,7 @@ export default class MainMenu extends Menu {
     this.addOption('Play', (menus) => {
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
-      gamestate.mode = Valet;
+      gamestate.mode = new Valet();
       gamestate.carsLeft = 24;
       return { _playing: true, _level: new levels.test() };
     });

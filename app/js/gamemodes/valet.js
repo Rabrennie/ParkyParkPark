@@ -8,10 +8,18 @@ import menuLoop from '../menuLoop.js'
 import _ from 'lodash';
 
 export default class Valet extends GameMode {
-  static loop(now, _loop) {
+  constructor() {
+    super()
+    this.carsLeft = new PIXI.Text('Cars Left: 24',{ font : '24px Arial', fill : 0xFFFFFF, align : 'center' })
+    this.carsLeft.x = 0
+    this.carsLeft.y = 0
+    config.stage.addChildAt(this.carsLeft, config.stage.children.length)
 
+  }
+  loop(now, _loop) {
     if (gamestate.playing) {
       // TODO: do initialization better somehow?
+
       if (!gamestate.player) {
         const Car = _.sample(Cars);
         const spawn = _.sample(gamestate.level.spawnPoints);
@@ -28,6 +36,7 @@ export default class Valet extends GameMode {
         const spawn = _.sample(gamestate.level.spawnPoints);
         gamestate.player = new Car(spawn);
         gamestate.carsLeft -= 1;
+        this.carsLeft.text = 'Cars Left: ' + gamestate.carsLeft
       }
 
       if(gamestate.carsLeft === 0) {
@@ -59,7 +68,7 @@ export default class Valet extends GameMode {
     config.renderer.render(config.stage);
   }
 
-  static debug(toggle) {
+  debug(toggle) {
     gamestate.level.debug(toggle)
     if (gamestate.player) gamestate.player.debug(toggle)
 

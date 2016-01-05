@@ -1,4 +1,4 @@
-const W = 1067;
+const W = 940;
 const H = W/16*9;
 
 export default {
