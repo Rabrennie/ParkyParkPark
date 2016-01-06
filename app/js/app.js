@@ -11,7 +11,8 @@ var world = config.world,
   stage = config.stage,
   container = config.container;
 
-world.sleepMode = p2.World.BODY_SLEEPING
+// Cant do this because explosions don't work on sleeping bodies
+// world.sleepMode = p2.World.BODY_SLEEPING
 
 // only initialize when all textures are loaded
 PIXI.loader.once('complete',init);
