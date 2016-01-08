@@ -58,7 +58,7 @@ class Level {
   }
 }
 
-export class test extends Level {
+export class TestLevel extends Level {
   constructor() {
     super('Test', 'TestLevel')
     this.addWall(1067,-300,20,600,0);

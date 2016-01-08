@@ -1,13 +1,14 @@
 import config from '../config.js';
 import Menu from './Menu.js'
 import gamestate from '../gamestate.js'
-import * as levels from '../levels.js'
 import Valet from '../gamemodes/valet.js'
 import OptionsMenu from './OptionsMenu.js'
+import VariantMenu from './VariantMenu.js'
+import variant from '../variants.js'
 
 export default class MainMenu extends Menu {
   constructor() {
-    super()
+    super({ optsOffset:300 })
 
     const renderer = config.renderer
 
@@ -19,8 +20,18 @@ export default class MainMenu extends Menu {
       config.stage.removeChild(this)
       gamestate.mode = new Valet();
       gamestate.carsLeft = 24;
-      return { _playing: true, _level: new levels.test() };
+      return { _playing: true, _level: new variant.level() };
     });
+
+    this.addOption('Change Variants', (menus) => {
+
+      const newMenu = new VariantMenu()
+      menus.push(newMenu)
+      config.stage.addChild(newMenu)
+
+      return
+    });
+
 
     this.addOption('Options', (menus) => {
 
