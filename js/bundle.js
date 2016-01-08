@@ -185,7 +185,7 @@ function bindKey(name, code) {
 // TODO: Add gamepad support
 function gamepad() {}
 
-},{"lodash":25}],4:[function(require,module,exports){
+},{"lodash":27}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -293,7 +293,7 @@ var ParkingSpace = exports.ParkingSpace = (function () {
   return ParkingSpace;
 })();
 
-},{"./config.js":8,"./loader.js":17,"lodash":25}],5:[function(require,module,exports){
+},{"./config.js":8,"./loader.js":17,"lodash":27}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -337,7 +337,7 @@ function shakeUpdate() {
   }
 }
 
-},{"./config.js":8,"random-js":26}],6:[function(require,module,exports){
+},{"./config.js":8,"random-js":28}],6:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -758,7 +758,7 @@ var Car = (function (_Entity) {
 
 exports.default = Car;
 
-},{"../Input.js":3,"../ScreenShake.js":5,"../config.js":8,"../loader.js":17,"./Entity.js":10,"lodash":25}],10:[function(require,module,exports){
+},{"../Input.js":3,"../ScreenShake.js":5,"../config.js":8,"../loader.js":17,"./Entity.js":10,"lodash":27}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -836,7 +836,7 @@ var Entity = (function () {
 
 exports.default = Entity;
 
-},{"../config.js":8,"lodash":25}],11:[function(require,module,exports){
+},{"../config.js":8,"lodash":27}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -961,7 +961,7 @@ var Truck = (function (_Car) {
 
 exports.default = Truck;
 
-},{"../Explosion.js":2,"../ScreenShake.js":5,"../config.js":8,"../loader.js":17,"./Car.js":9,"lodash":25}],12:[function(require,module,exports){
+},{"../Explosion.js":2,"../ScreenShake.js":5,"../config.js":8,"../loader.js":17,"./Car.js":9,"lodash":27}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1081,7 +1081,7 @@ var OrangeTruck = exports.OrangeTruck = (function (_Truck) {
   return OrangeTruck;
 })(_Truck3.default);
 
-},{"../loader.js":17,"./Car.js":9,"./Truck.js":11,"lodash":25}],13:[function(require,module,exports){
+},{"../loader.js":17,"./Car.js":9,"./Truck.js":11,"lodash":27}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -1249,7 +1249,7 @@ var Valet = (function (_GameMode) {
 
 exports.default = Valet;
 
-},{"../config":8,"../entities/Vehicles.js":12,"../gamestate":15,"../menuLoop.js":18,"../menus/MainMenu.js":20,"./_gamemode":13,"lodash":25}],15:[function(require,module,exports){
+},{"../config":8,"../entities/Vehicles.js":12,"../gamestate":15,"../menuLoop.js":18,"../menus/MainMenu.js":20,"./_gamemode":13,"lodash":27}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1272,7 +1272,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.test = undefined;
+exports.TestLevel = undefined;
 
 var _config = require('./config.js');
 
@@ -1364,13 +1364,13 @@ var Level = (function () {
   return Level;
 })();
 
-var test = exports.test = (function (_Level) {
-  _inherits(test, _Level);
+var TestLevel = exports.TestLevel = (function (_Level) {
+  _inherits(TestLevel, _Level);
 
-  function test() {
-    _classCallCheck(this, test);
+  function TestLevel() {
+    _classCallCheck(this, TestLevel);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(test).call(this, 'Test', 'TestLevel'));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TestLevel).call(this, 'Test', 'TestLevel'));
 
     _this.addWall(1067, -300, 20, 600, 0);
     _this.addWall(583, 0, 1067, 20, 0);
@@ -1384,10 +1384,10 @@ var test = exports.test = (function (_Level) {
     return _this;
   }
 
-  return test;
+  return TestLevel;
 })(Level);
 
-},{"./ParkingSpace.js":4,"./Wall.js":6,"./config.js":8,"./loader.js":17,"random-js":26}],17:[function(require,module,exports){
+},{"./ParkingSpace.js":4,"./Wall.js":6,"./config.js":8,"./loader.js":17,"random-js":28}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1527,7 +1527,7 @@ var KeyMapMenu = (function (_Menu) {
 
 exports.default = KeyMapMenu;
 
-},{"../Input.js":3,"../config.js":8,"./Menu.js":21,"keycode":24}],20:[function(require,module,exports){
+},{"../Input.js":3,"../config.js":8,"./Menu.js":21,"keycode":26}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -1550,10 +1550,6 @@ var _gamestate = require('../gamestate.js');
 
 var _gamestate2 = _interopRequireDefault(_gamestate);
 
-var _levels = require('../levels.js');
-
-var levels = _interopRequireWildcard(_levels);
-
 var _valet = require('../gamemodes/valet.js');
 
 var _valet2 = _interopRequireDefault(_valet);
@@ -1562,7 +1558,13 @@ var _OptionsMenu = require('./OptionsMenu.js');
 
 var _OptionsMenu2 = _interopRequireDefault(_OptionsMenu);
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _VariantMenu = require('./VariantMenu.js');
+
+var _VariantMenu2 = _interopRequireDefault(_VariantMenu);
+
+var _variants = require('../variants.js');
+
+var _variants2 = _interopRequireDefault(_variants);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1578,7 +1580,7 @@ var MainMenu = (function (_Menu) {
     function MainMenu() {
         _classCallCheck(this, MainMenu);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainMenu).call(this));
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainMenu).call(this, { optsOffset: 300 }));
 
         var renderer = _config2.default.renderer;
 
@@ -1590,7 +1592,16 @@ var MainMenu = (function (_Menu) {
             _config2.default.stage.removeChild(_this);
             _gamestate2.default.mode = new _valet2.default();
             _gamestate2.default.carsLeft = 24;
-            return { _playing: true, _level: new levels.test() };
+            return { _playing: true, _level: new _variants2.default.level() };
+        });
+
+        _this.addOption('Change Variants', function (menus) {
+
+            var newMenu = new _VariantMenu2.default();
+            menus.push(newMenu);
+            _config2.default.stage.addChild(newMenu);
+
+            return;
         });
 
         _this.addOption('Options', function (menus) {
@@ -1641,7 +1652,7 @@ var MainMenu = (function (_Menu) {
 
 exports.default = MainMenu;
 
-},{"../config.js":8,"../gamemodes/valet.js":14,"../gamestate.js":15,"../levels.js":16,"./Menu.js":21,"./OptionsMenu.js":22}],21:[function(require,module,exports){
+},{"../config.js":8,"../gamemodes/valet.js":14,"../gamestate.js":15,"../variants.js":25,"./Menu.js":21,"./OptionsMenu.js":22,"./VariantMenu.js":23}],21:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -2006,7 +2017,89 @@ var OptionsMenu = (function (_Menu) {
 
 exports.default = OptionsMenu;
 
-},{"../Input.js":3,"../ScreenShake.js":5,"../config.js":8,"../resizeGame.js":23,"./KeyMapMenu.js":19,"./Menu.js":21}],23:[function(require,module,exports){
+},{"../Input.js":3,"../ScreenShake.js":5,"../config.js":8,"../resizeGame.js":24,"./KeyMapMenu.js":19,"./Menu.js":21}],23:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _config = require('../config.js');
+
+var _config2 = _interopRequireDefault(_config);
+
+var _Menu2 = require('./Menu.js');
+
+var _Menu3 = _interopRequireDefault(_Menu2);
+
+var _Input = require('../Input.js');
+
+var _variants = require('../variants.js');
+
+var _variants2 = _interopRequireDefault(_variants);
+
+var _levels = require('../levels.js');
+
+var levels = _interopRequireWildcard(_levels);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var VariantMenu = (function (_Menu) {
+  _inherits(VariantMenu, _Menu);
+
+  function VariantMenu() {
+    _classCallCheck(this, VariantMenu);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(VariantMenu).call(this, {
+      optsOffset: 200,
+      optsAlign: 'left'
+    }));
+
+    var renderer = _config2.default.renderer;
+
+    _this._title = new PIXI.Text('Options', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+    _this._title.x = renderer.width / 2 - _this._title.width / 2;
+    _this._title.y = 100;
+    _this.addChild(_this._title);
+
+    _this.addOption('Level: ' + _variants2.default.level.name);
+
+    _this.addOption('Back', function (menus) {
+      menus.splice(menus.indexOf(_this));
+      _config2.default.stage.removeChild(_this);
+
+      return { done: true };
+    });
+    return _this;
+  }
+
+  _createClass(VariantMenu, [{
+    key: 'update',
+    value: function update(now, delta) {
+      _get(Object.getPrototypeOf(VariantMenu.prototype), 'update', this).call(this, now, delta);
+      this._title.x = _config2.default.renderer.width / 2 - this._title.width / 2;
+      this._title.style = { font: 24 * _config2.default.scaleFactorX + 'px Arial', fill: 0xFFFFFF, align: 'center' };
+    }
+  }]);
+
+  return VariantMenu;
+})(_Menu3.default);
+
+exports.default = VariantMenu;
+
+},{"../Input.js":3,"../config.js":8,"../levels.js":16,"../variants.js":25,"./Menu.js":21}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2032,7 +2125,24 @@ function resizeGame(W) {
   _config2.default.container.scale.y = -_config2.default.zoom;
 }
 
-},{"./config.js":8}],24:[function(require,module,exports){
+},{"./config.js":8}],25:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _levels = require('./levels.js');
+
+var levels = _interopRequireWildcard(_levels);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+  level: levels.TestLevel
+};
+
+},{"./levels.js":16}],26:[function(require,module,exports){
 // Source: http://jsfiddle.net/vWx8V/
 // http://stackoverflow.com/questions/5603195/full-list-of-javascript-keycodes
 
@@ -2181,7 +2291,7 @@ for (var alias in aliases) {
   codes[alias] = aliases[alias]
 }
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -14537,7 +14647,7 @@ for (var alias in aliases) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*jshint eqnull:true*/
 (function (root) {
   "use strict";
