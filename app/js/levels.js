@@ -58,7 +58,7 @@ class Level {
   }
 }
 
-export class TestLevel extends Level {
+export class Test extends Level {
   constructor() {
     super('Test', 'TestLevel')
     this.addWall(1067,-300,20,600,0);
@@ -68,6 +68,15 @@ export class TestLevel extends Level {
     this.addWall(101,-565,199,70,0);
     this.addWall(101,-35,199,70,0);
     this.addWall(101,-300,203,333,0);
+    this.addSpawn(config.scaleFactorX*-20, config.scaleFactorY*-95);
+    this.addSpawn(config.scaleFactorX*-20, config.scaleFactorY*-500)
+  }
+}
+
+export class Another extends Level {
+  constructor() {
+    super('Another', '')
+    this.addWall(1067,-300,20,600,0);
     this.addSpawn(config.scaleFactorX*-20, config.scaleFactorY*-95);
     this.addSpawn(config.scaleFactorX*-20, config.scaleFactorY*-500)
   }

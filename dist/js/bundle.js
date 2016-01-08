@@ -1272,7 +1272,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TestLevel = undefined;
+exports.Another = exports.Test = undefined;
 
 var _config = require('./config.js');
 
@@ -1364,13 +1364,13 @@ var Level = (function () {
   return Level;
 })();
 
-var TestLevel = exports.TestLevel = (function (_Level) {
-  _inherits(TestLevel, _Level);
+var Test = exports.Test = (function (_Level) {
+  _inherits(Test, _Level);
 
-  function TestLevel() {
-    _classCallCheck(this, TestLevel);
+  function Test() {
+    _classCallCheck(this, Test);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TestLevel).call(this, 'Test', 'TestLevel'));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Test).call(this, 'Test', 'TestLevel'));
 
     _this.addWall(1067, -300, 20, 600, 0);
     _this.addWall(583, 0, 1067, 20, 0);
@@ -1384,7 +1384,24 @@ var TestLevel = exports.TestLevel = (function (_Level) {
     return _this;
   }
 
-  return TestLevel;
+  return Test;
+})(Level);
+
+var Another = exports.Another = (function (_Level2) {
+  _inherits(Another, _Level2);
+
+  function Another() {
+    _classCallCheck(this, Another);
+
+    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Another).call(this, 'Another', ''));
+
+    _this2.addWall(1067, -300, 20, 600, 0);
+    _this2.addSpawn(_config2.default.scaleFactorX * -20, _config2.default.scaleFactorY * -95);
+    _this2.addSpawn(_config2.default.scaleFactorX * -20, _config2.default.scaleFactorY * -500);
+    return _this2;
+  }
+
+  return Another;
 })(Level);
 
 },{"./ParkingSpace.js":4,"./Wall.js":6,"./config.js":8,"./loader.js":17,"random-js":28}],17:[function(require,module,exports){
@@ -2056,6 +2073,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var _ = require('lodash');
+
 var VariantMenu = (function (_Menu) {
   _inherits(VariantMenu, _Menu);
 
@@ -2073,8 +2092,40 @@ var VariantMenu = (function (_Menu) {
     _this._title.x = renderer.width / 2 - _this._title.width / 2;
     _this._title.y = 100;
     _this.addChild(_this._title);
+    _this.levels = [];
 
-    _this.addOption('Level: ' + _variants2.default.level.name);
+    _.forOwn(levels, function (value, key) {
+      _this.levels.push(key);
+    });
+
+    _this.curLevel = _.indexOf(_this.levels, _variants2.default.level.name);
+
+    var tLevels = _this.levels;
+    var curLevel = _this.curLevel;
+
+    _this.addOption('Level: ' + _this.levels[_this.curLevel], {
+      state: {
+        active: false
+      },
+      onInputChange: function onInputChange() {
+
+        console.log(tLevels);
+        if ((0, _Input.key)('right')) {
+          curLevel += 1;
+          if (curLevel === tLevels.length) {
+            curLevel = 0;
+          }
+        }
+        if ((0, _Input.key)('left')) {
+          curLevel -= 1;
+          if (curLevel === -1) {
+            curLevel = tLevels.length - 1;
+          }
+        }
+        _variants2.default.level = levels[tLevels[curLevel]];
+        this.textObj.text = 'Level: ' + tLevels[curLevel];
+      }
+    });
 
     _this.addOption('Back', function (menus) {
       menus.splice(menus.indexOf(_this));
@@ -2099,7 +2150,7 @@ var VariantMenu = (function (_Menu) {
 
 exports.default = VariantMenu;
 
-},{"../Input.js":3,"../config.js":8,"../levels.js":16,"../variants.js":25,"./Menu.js":21}],24:[function(require,module,exports){
+},{"../Input.js":3,"../config.js":8,"../levels.js":16,"../variants.js":25,"./Menu.js":21,"lodash":27}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2139,7 +2190,7 @@ var levels = _interopRequireWildcard(_levels);
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 exports.default = {
-  level: levels.TestLevel
+  level: levels.Test
 };
 
 },{"./levels.js":16}],26:[function(require,module,exports){

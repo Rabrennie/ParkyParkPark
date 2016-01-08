@@ -3,6 +3,9 @@ import Menu from './Menu.js'
 import { key } from '../Input.js'
 import variant from '../variants.js'
 import * as levels from '../levels.js'
+
+var _ = require('lodash');
+
 export default class VariantMenu extends Menu {
   constructor() {
     super({
@@ -16,8 +19,40 @@ export default class VariantMenu extends Menu {
     this._title.x = renderer.width/2 - this._title.width/2
     this._title.y = 100
     this.addChild(this._title)
+    this.levels = []
 
-    this.addOption(`Level: ${variant.level.name}`)
+    _.forOwn(levels, (value, key) => {
+      this.levels.push(key);
+    });
+
+    this.curLevel = _.indexOf(this.levels, variant.level.name)
+
+    const tLevels = this.levels;
+    let curLevel = this.curLevel
+
+    this.addOption(`Level: ${this.levels[this.curLevel]}`, {
+      state: {
+        active: false
+      },
+      onInputChange() {
+
+        console.log(tLevels)
+        if(key('right')) {
+          curLevel += 1;
+          if (curLevel === tLevels.length) {
+            curLevel = 0;
+          }
+        }
+        if(key('left')) {
+          curLevel -= 1;
+          if (curLevel === -1) {
+            curLevel = tLevels.length-1;
+          }
+        }
+        variant.level = levels[tLevels[curLevel]];
+        this.textObj.text = `Level: ${tLevels[curLevel]}`;
+      }
+    })
 
 
     this.addOption('Back', (menus) => {
