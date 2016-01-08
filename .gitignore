@@ -12,7 +12,7 @@ pids
 node_modules
 
 # Build files
-dist
+# dist
 release
 
 # Editor stuff people should locally ignore
