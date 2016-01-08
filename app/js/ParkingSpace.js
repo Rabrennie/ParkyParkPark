@@ -25,6 +25,8 @@ export class ParkingSpace {
       sensor:true
     });
 
+    this.body._entity = this
+
 
     this.texture = opts.texture;
     this.graphics = new PIXI.Graphics();
@@ -35,8 +37,9 @@ export class ParkingSpace {
     this.sprite.y = this.sprite.y + this.sprite.height/2
     this.sprite.rotation =3.14159
     this.boxShape = new p2.Box({ width: this.sprite.width, height: this.sprite.height });
-    // this.boxShape.collisionGroup = config.CAR;
-    // this.boxShape.collisionMask = config.PLAYER | config.CAR | config.TRUCKBACK | config.WALL | config.BOMB | config.EXPLOSION
+    this.boxShape.collisionGroup = config.SCORE;
+    this.boxShape.collisionMask = config.CAR | config.TRUCKBACK
+    this.boxShape.collsionResponse = false
     this.body.addShape(this.boxShape);
   }
 

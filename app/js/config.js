@@ -5,6 +5,7 @@ export default {
   zoom: 0.05*W,
   W,
   H,
+  SCORE: Math.pow(2,0),
   PLAYER: Math.pow(2,1),
   CAR: Math.pow(2,2),
   WALL: Math.pow(2,3),

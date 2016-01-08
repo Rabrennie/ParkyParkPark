@@ -24,6 +24,7 @@ export default class Truck extends Car {
     opts = _.defaults(opts, defaults);
     super(opts)
     this.exploded = false;
+    this.score = 3
 
     this.body.removeShape(this.boxShape);
     this.boxShape = new p2.Box({ width: opts.w-0.1, height: opts.h-0.675 });

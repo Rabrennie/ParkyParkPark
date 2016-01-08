@@ -18,11 +18,6 @@ class Level {
     this.texture = texture;
     this.spawnPoints = [];
     this.parkingSpaces = []
-
-    for (var i = 0; i < 24; i++) {
-      this.parkingSpaces.push(new ParkingSpace({ x:Random.integer(1,600)(mt) + 250, y:Random.integer(-400,-1)(mt) -40 , angle: Math.floor(Math.random() * (Math.PI*2)) }))
-
-    }
   }
 
   load() {
@@ -51,6 +46,10 @@ class Level {
     this.spawnPoints.push({ x, y, velX, velY })
   }
 
+  addParkingSpace(x, y, angle) {
+    this.parkingSpaces.push(new ParkingSpace({ x, y, angle }))
+  }
+
   debug(toggle) {
     for (let i = 0; i < this.walls.length; i++) {
       this.walls[i].debug(toggle)
@@ -70,6 +69,22 @@ export class Test extends Level {
     this.addWall(101,-300,203,333,0);
     this.addSpawn(config.scaleFactorX*-20, config.scaleFactorY*-95);
     this.addSpawn(config.scaleFactorX*-20, config.scaleFactorY*-500)
+
+    const up = 0
+    const down = 180 * (Math.PI / 180)
+
+    this.sprite = new PIXI.Sprite(resources.ParkingSpace.texture);
+
+    var psOffsetY = this.sprite.height / 2
+    var psOffsetX = this.sprite.width / 2
+
+    for (let i = 0; i < 8; i++) {
+      this.addParkingSpace((psOffsetX * i + 360), -150, down)
+      this.addParkingSpace((psOffsetX * i + 360), -150 - psOffsetY, up)
+
+      this.addParkingSpace((psOffsetX * i + 360), -370, up)
+      this.addParkingSpace((psOffsetX * i + 360), -370 + psOffsetY, down)
+    }
   }
 }
 
