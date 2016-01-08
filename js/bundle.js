@@ -235,6 +235,8 @@ var ParkingSpace = exports.ParkingSpace = (function () {
       sensor: true
     });
 
+    this.body._entity = this;
+
     this.texture = opts.texture;
     this.graphics = new PIXI.Graphics();
     this.sprite = new PIXI.Sprite(this.texture);
@@ -244,8 +246,9 @@ var ParkingSpace = exports.ParkingSpace = (function () {
     this.sprite.y = this.sprite.y + this.sprite.height / 2;
     this.sprite.rotation = 3.14159;
     this.boxShape = new p2.Box({ width: this.sprite.width, height: this.sprite.height });
-    // this.boxShape.collisionGroup = config.CAR;
-    // this.boxShape.collisionMask = config.PLAYER | config.CAR | config.TRUCKBACK | config.WALL | config.BOMB | config.EXPLOSION
+    this.boxShape.collisionGroup = _config2.default.SCORE;
+    this.boxShape.collisionMask = _config2.default.CAR | _config2.default.TRUCKBACK;
+    this.boxShape.collsionResponse = false;
     this.body.addShape(this.boxShape);
   }
 
@@ -557,6 +560,7 @@ exports.default = {
   zoom: 0.05 * W,
   W: W,
   H: H,
+  SCORE: Math.pow(2, 0),
   PLAYER: Math.pow(2, 1),
   CAR: Math.pow(2, 2),
   WALL: Math.pow(2, 3),
@@ -626,7 +630,7 @@ var defaults = {
   collisionGroup: _config2.default.PLAYER,
   stage: _config2.default.stage,
   texture: _loader2.default.RedCar.texture,
-  collisionMask: _config2.default.PLAYER | _config2.default.CAR | _config2.default.TRUCKBACK | _config2.default.WALL | _config2.default.BOMB | _config2.default.EXPLOSION,
+  collisionMask: _config2.default.PLAYER | _config2.default.CAR | _config2.default.TRUCKBACK | _config2.default.WALL | _config2.default.BOMB | _config2.default.EXPLOSION | _config2.default.SCORE,
   wheelTexture: _loader2.default.wheel.texture,
   wheelPositions: [{ x: -0.22, y: 0.24 }, { x: 0.4 - 0.098, y: 0.24 }, { x: -0.22, y: -0.30 }, { x: 0.4 - 0.098, y: -0.3 }]
 };
@@ -644,6 +648,8 @@ var Car = (function (_Entity) {
     opts = _.defaults(opts, defaults);
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Car).call(this, opts));
+
+    _this.score = 1;
 
     _this.body.onCollision = function (body, otherShape, playerHit) {
       _this.setSideFriction(3, 3);
@@ -802,6 +808,8 @@ var Entity = (function () {
     });
     _config2.default.world.addBody(this.body);
 
+    this.body._entity = this;
+
     this.graphics = new PIXI.Graphics();
     opts.container.addChild(this.graphics);
 
@@ -891,6 +899,7 @@ var Truck = (function (_Car) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Truck).call(this, opts));
 
     _this.exploded = false;
+    _this.score = 3;
 
     _this.body.removeShape(_this.boxShape);
     _this.boxShape = new p2.Box({ width: opts.w - 0.1, height: opts.h - 0.675 });
@@ -1141,10 +1150,6 @@ var _MainMenu = require('../menus/MainMenu.js');
 
 var _MainMenu2 = _interopRequireDefault(_MainMenu);
 
-var _menuLoop = require('../menuLoop.js');
-
-var _menuLoop2 = _interopRequireDefault(_menuLoop);
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -1162,12 +1167,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Valet = (function (_GameMode) {
   _inherits(Valet, _GameMode);
 
-  function Valet() {
+  function Valet(cars) {
     _classCallCheck(this, Valet);
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Valet).call(this));
 
-    _this.carsLeft = new PIXI.Text('Cars Left: 24', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+    _gamestate2.default.carsLeft = cars;
+
+    _this.carsLeft = new PIXI.Text('Cars Left: ' + cars, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
     _this.carsLeft.x = 0;
     _this.carsLeft.y = 0;
     _config2.default.stage.addChildAt(_this.carsLeft, _config2.default.stage.children.length);
@@ -1178,6 +1185,8 @@ var Valet = (function (_GameMode) {
   _createClass(Valet, [{
     key: 'loop',
     value: function loop(now, _loop) {
+      var _this2 = this;
+
       if (_gamestate2.default.playing) {
         // TODO: do initialization better somehow?
 
@@ -1201,23 +1210,91 @@ var Valet = (function (_GameMode) {
         }
 
         if (_gamestate2.default.carsLeft === 0) {
-          _gamestate2.default.playing = false;
-          _gamestate2.default.score = 0;
-          for (var i = 0; i < _gamestate2.default.level.parkingSpaces.length; i++) {
-            _gamestate2.default.score += _gamestate2.default.level.parkingSpaces[i].getScore();
-          }
-          _config2.default.stage.removeChild(this.carsLeft);
-          _config2.default.world.clear();
-          _config2.default.world.gravity = [0, 0];
-          _gamestate2.default.player = null;
-          _gamestate2.default.menus = [];
-          _gamestate2.default.cars = [];
-          _gamestate2.default.mode = null;
-          var menu = new _MainMenu2.default();
-          _gamestate2.default.menus.push(menu);
-          _config2.default.stage.addChild(menu);
-          console.log(_gamestate2.default.score);
-          requestAnimationFrame(_menuLoop2.default);
+          (function () {
+            _gamestate2.default.playing = false;
+            // Game ends when there are no cars left.
+            // Reset the score so we can calculate it.
+            _gamestate2.default.score = 0;
+
+            // render the updated carsLeft already
+            _config2.default.renderer.render(_config2.default.stage);
+
+            // do some setup and add the parkingSpaces' bodies to the world
+            var psLookup = [];
+            var parkingSpaces = _gamestate2.default.level.parkingSpaces;
+            for (var i = 0; i < parkingSpaces.length; i++) {
+              var body = parkingSpaces[i].body;
+              body._scores = [];
+              _config2.default.world.addBody(body);
+              psLookup.push(body);
+            }
+
+            // register an on beginContact so we have have P2 tell us which spaces have cars in them
+            _config2.default.world.on('beginContact', function (payload) {
+              // because eslint no-redecale can't handle exclusive if-statement hoisting
+              var psBody;
+              var other;
+              if (_lodash2.default.contains(psLookup, payload.bodyA)) {
+                psBody = payload.bodyA;
+                other = payload.bodyB;
+              } else if (_lodash2.default.contains(psLookup, payload.bodyB)) {
+                psBody = payload.bodyB;
+                other = payload.bodyA;
+              } else {
+                console.warn('Unexpected contact');
+                console.warn('Entities', payload.bodyA._entity, payload.bodyB._entity);
+                return;
+              }
+
+              // some wild math suggested by schteppe (p2.js Author)
+              // This doesn't strictly check for overlap, but rather which body has
+              // the deepest penetration. i.e. Has the point on a shape the farthest
+              // from the farthest point on the other shape.
+              var contactEq = payload.contactEquations[0];
+              var penetrationVec = contactEq.penetrationVec;
+              p2.vec2.add(penetrationVec, contactEq.contactPointB, contactEq.bodyB.position);
+              p2.vec2.sub(penetrationVec, penetrationVec, contactEq.bodyA.position);
+              p2.vec2.sub(penetrationVec, penetrationVec, contactEq.contactPointA);
+
+              var _score = {
+                depth: p2.vec2.dot(contactEq.penetrationVec, contactEq.normalA),
+                body: other
+              };
+              psBody._scores.push(_score);
+            });
+
+            // Step the world so that P@ can update and create contacts for the parkingSpaces
+            _config2.default.world.step(1 / 60);
+
+            // Actually calculate the score based on which vehicle has the most "overlap" for each space.
+            _lodash2.default.each(psLookup, function (parkingSpace) {
+              var depth = -0.2; // minimum overlap to get score
+              var body = null;
+              _lodash2.default.each(parkingSpace._scores, function (_score) {
+                if (_score.depth >= depth) return;
+
+                depth = _score.depth;
+                body = _score.body;
+              });
+
+              if (!body) return;
+              _gamestate2.default.score += body._entity.score; // get score from the entity type
+            });
+
+            // reset everything
+            _config2.default.stage.removeChild(_this2.carsLeft);
+            _config2.default.world.clear();
+            _config2.default.world.gravity = [0, 0];
+            _gamestate2.default.player = null;
+            _gamestate2.default.menus = [];
+            _gamestate2.default.cars = [];
+            _gamestate2.default.mode = null;
+            var menu = new _MainMenu2.default();
+            _gamestate2.default.menus.push(menu);
+            _config2.default.stage.addChild(menu);
+            console.log(_gamestate2.default.score);
+            requestAnimationFrame(_loop);
+          })();
         }
 
         for (var i = _gamestate2.default.cars.length - 1; i >= 0; i--) {
@@ -1249,7 +1326,7 @@ var Valet = (function (_GameMode) {
 
 exports.default = Valet;
 
-},{"../config":8,"../entities/Vehicles.js":12,"../gamestate":15,"../menuLoop.js":18,"../menus/MainMenu.js":20,"./_gamemode":13,"lodash":27}],15:[function(require,module,exports){
+},{"../config":8,"../entities/Vehicles.js":12,"../gamestate":15,"../menus/MainMenu.js":20,"./_gamemode":13,"lodash":27}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1311,10 +1388,6 @@ var Level = (function () {
     this.texture = texture;
     this.spawnPoints = [];
     this.parkingSpaces = [];
-
-    for (var i = 0; i < 24; i++) {
-      this.parkingSpaces.push(new _ParkingSpace.ParkingSpace({ x: Random.integer(1, 600)(mt) + 250, y: Random.integer(-400, -1)(mt) - 40, angle: Math.floor(Math.random() * (Math.PI * 2)) }));
-    }
   }
 
   _createClass(Level, [{
@@ -1353,6 +1426,11 @@ var Level = (function () {
       this.spawnPoints.push({ x: x, y: y, velX: velX, velY: velY });
     }
   }, {
+    key: 'addParkingSpace',
+    value: function addParkingSpace(x, y, angle) {
+      this.parkingSpaces.push(new _ParkingSpace.ParkingSpace({ x: x, y: y, angle: angle }));
+    }
+  }, {
     key: 'debug',
     value: function debug(toggle) {
       for (var i = 0; i < this.walls.length; i++) {
@@ -1381,6 +1459,22 @@ var Test = exports.Test = (function (_Level) {
     _this.addWall(101, -300, 203, 333, 0);
     _this.addSpawn(_config2.default.scaleFactorX * -20, _config2.default.scaleFactorY * -95);
     _this.addSpawn(_config2.default.scaleFactorX * -20, _config2.default.scaleFactorY * -500);
+
+    var up = 0;
+    var down = 180 * (Math.PI / 180);
+
+    _this.sprite = new PIXI.Sprite(_loader2.default.ParkingSpace.texture);
+
+    var psOffsetY = _this.sprite.height / 2;
+    var psOffsetX = _this.sprite.width / 2;
+
+    for (var i = 0; i < 8; i++) {
+      _this.addParkingSpace(psOffsetX * i + 360, -150, down);
+      _this.addParkingSpace(psOffsetX * i + 360, -150 - psOffsetY, up);
+
+      _this.addParkingSpace(psOffsetX * i + 360, -370, up);
+      _this.addParkingSpace(psOffsetX * i + 360, -370 + psOffsetY, down);
+    }
     return _this;
   }
 
@@ -1552,7 +1646,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _config = require('../config.js');
@@ -1592,79 +1686,78 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var MainMenu = (function (_Menu) {
-    _inherits(MainMenu, _Menu);
+  _inherits(MainMenu, _Menu);
 
-    function MainMenu() {
-        _classCallCheck(this, MainMenu);
+  function MainMenu() {
+    _classCallCheck(this, MainMenu);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainMenu).call(this, { optsOffset: 300 }));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainMenu).call(this, { optsOffset: 300 }));
 
-        var renderer = _config2.default.renderer;
+    var renderer = _config2.default.renderer;
 
-        _this._options = [];
-        _this.selectedOption = 0;
+    _this._options = [];
+    _this.selectedOption = 0;
 
-        _this.addOption('Play', function (menus) {
-            menus.splice(menus.indexOf(_this));
-            _config2.default.stage.removeChild(_this);
-            _gamestate2.default.mode = new _valet2.default();
-            _gamestate2.default.carsLeft = 24;
-            return { _playing: true, _level: new _variants2.default.level() };
-        });
+    _this.addOption('Play', function (menus) {
+      menus.splice(menus.indexOf(_this));
+      _config2.default.stage.removeChild(_this);
+      _gamestate2.default.mode = new _valet2.default(4);
+      return { _playing: true, _level: new _variants2.default.level() };
+    });
 
-        _this.addOption('Change Variants', function (menus) {
+    _this.addOption('Change Variants', function (menus) {
 
-            var newMenu = new _VariantMenu2.default();
-            menus.push(newMenu);
-            _config2.default.stage.addChild(newMenu);
+      var newMenu = new _VariantMenu2.default();
+      menus.push(newMenu);
+      _config2.default.stage.addChild(newMenu);
 
-            return;
-        });
+      return;
+    });
 
-        _this.addOption('Options', function (menus) {
+    _this.addOption('Options', function (menus) {
 
-            var newMenu = new _OptionsMenu2.default();
-            menus.push(newMenu);
-            _config2.default.stage.addChild(newMenu);
+      var newMenu = new _OptionsMenu2.default();
+      menus.push(newMenu);
+      _config2.default.stage.addChild(newMenu);
 
-            return;
-        });
+      return;
+    });
 
-        _this._title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-        _this._title.x = renderer.width / 2 - _this._title.width / 2;
-        _this._title.y = 200;
-        _this.addChild(_this._title);
+    _this._title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+    _this._title.x = renderer.width / 2 - _this._title.width / 2;
+    _this._title.y = 200;
+    _this.addChild(_this._title);
 
-        _this._splash = new PIXI.Text('Wow', { font: '30px Arial', fill: 0xFFFF00, align: 'center' });
-        _this._splash.x = _this._title.x + _this._title.width - _this._splash.width / 2;
-        _this._splash.y = _this._title.y + _this._title.height;
-        _this._splash.rotation = 100;
-        _this.addChild(_this._splash);
-        return _this;
+    _this._splash = new PIXI.Text('Wow', { font: '30px Arial', fill: 0xFFFF00, align: 'center' });
+    _this._splash.x = _this._title.x + _this._title.width - _this._splash.width / 2;
+    _this._splash.y = _this._title.y + _this._title.height;
+    _this._splash.rotation = 100;
+    _this.addChild(_this._splash);
+    return _this;
+  }
+
+  _createClass(MainMenu, [{
+    key: 'update',
+    value: function update(now, delta) {
+      _get(Object.getPrototypeOf(MainMenu.prototype), 'update', this).call(this, now, delta);
+      this._title.x = _config2.default.renderer.width / 2 - this._title.width / 2;
+      this._title.y = 200 * _config2.default.scaleFactorY;
+      this._title.style = { font: 24 * _config2.default.scaleFactorX + 'px Arial', fill: 0xFFFFFF, align: 'center' };
+
+      this._splash.x = this._title.x + this._title.width - this._splash.width / 2;
+      this._splash.y = this._title.y + this._title.height;
+
+      if (now / 2000 % 1 <= 0.5) {
+        this._splash.scale.x = 1.5 - now / 2000 % 1;
+        this._splash.scale.y = 1.5 - now / 2000 % 1;
+      } else {
+        this._splash.scale.x = 0.5 + now / 2000 % 1;
+        this._splash.scale.y = 0.5 + now / 2000 % 1;
+      }
     }
+  }]);
 
-    _createClass(MainMenu, [{
-        key: 'update',
-        value: function update(now, delta) {
-            _get(Object.getPrototypeOf(MainMenu.prototype), 'update', this).call(this, now, delta);
-            this._title.x = _config2.default.renderer.width / 2 - this._title.width / 2;
-            this._title.y = 200 * _config2.default.scaleFactorY;
-            this._title.style = { font: 24 * _config2.default.scaleFactorX + 'px Arial', fill: 0xFFFFFF, align: 'center' };
-
-            this._splash.x = this._title.x + this._title.width - this._splash.width / 2;
-            this._splash.y = this._title.y + this._title.height;
-
-            if (now / 2000 % 1 <= 0.5) {
-                this._splash.scale.x = 1.5 - now / 2000 % 1;
-                this._splash.scale.y = 1.5 - now / 2000 % 1;
-            } else {
-                this._splash.scale.x = 0.5 + now / 2000 % 1;
-                this._splash.scale.y = 0.5 + now / 2000 % 1;
-            }
-        }
-    }]);
-
-    return MainMenu;
+  return MainMenu;
 })(_Menu3.default);
 
 exports.default = MainMenu;
