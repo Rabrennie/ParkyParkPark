@@ -2,7 +2,7 @@ import GameMode from './_gamemode';
 import config from '../config';
 import gamestate from '../gamestate';
 import * as Cars from '../entities/Vehicles.js';
-import MainMenu from '../menus/MainMenu.js'
+import ScoreBoard from '../menus/ScoreBoard.js'
 
 import _ from 'lodash';
 
@@ -117,13 +117,11 @@ export default class Valet extends GameMode {
         config.world.clear();
         config.world.gravity = [0,0];
         gamestate.player = null;
-        gamestate.menus = [];
         gamestate.cars = []
         gamestate.mode = null;
-        const menu = new MainMenu()
-        gamestate.menus.push(menu)
-        config.stage.addChild(menu)
-        console.log(gamestate.score)
+        const scoreboard = new ScoreBoard()
+        gamestate.menus.push(scoreboard)
+        config.stage.addChild(scoreboard)
         requestAnimationFrame(_loop);
       }
 
