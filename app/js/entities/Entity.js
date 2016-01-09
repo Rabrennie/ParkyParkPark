@@ -23,6 +23,8 @@ export default class Entity {
     });
     config.world.addBody(this.body);
 
+    this.body._entity = this
+
     this.graphics = new PIXI.Graphics();
     opts.container.addChild(this.graphics);
 

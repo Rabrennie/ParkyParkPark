@@ -19,7 +19,7 @@ const defaults = {
   collisionGroup:config.PLAYER,
   stage:config.stage,
   texture:resources.RedCar.texture,
-  collisionMask:config.PLAYER | config.CAR | config.TRUCKBACK | config.WALL | config.BOMB | config.EXPLOSION,
+  collisionMask:config.PLAYER | config.CAR | config.TRUCKBACK | config.WALL | config.BOMB | config.EXPLOSION | config.SCORE,
   wheelTexture:resources.wheel.texture,
   wheelPositions: [
     { x:-0.22, y:0.24 },
@@ -36,6 +36,8 @@ export default class Car extends Entity {
     defaults.wheelTexture = resources.wheel.texture;
     opts = _.defaults(opts, defaults);
     super(opts)
+
+    this.score = 1
 
     this.body.onCollision = (body, otherShape, playerHit) => {
       this.setSideFriction(3,3);
