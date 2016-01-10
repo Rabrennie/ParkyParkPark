@@ -52,6 +52,7 @@ export default class Valet extends GameMode {
 
         // do some setup and add the parkingSpaces' bodies to the world
         const psLookup = []
+
         const parkingSpaces = gamestate.level.parkingSpaces
         for (let i = 0; i < parkingSpaces.length; i++) {
           const body = parkingSpaces[i].body
@@ -60,8 +61,7 @@ export default class Valet extends GameMode {
           psLookup.push(body)
         }
 
-        // register an on beginContact so we have have P2 tell us which spaces have cars in them
-        config.world.on('beginContact', (payload) => {
+        const parkingSpaceCheck = (payload) => {
           // because eslint no-redecale can't handle exclusive if-statement hoisting
           var psBody
           var other
@@ -92,7 +92,9 @@ export default class Valet extends GameMode {
             body: other
           }
           psBody._scores.push(_score)
-        })
+        }
+        // register an on beginContact so we have have P2 tell us which spaces have cars in them
+        config.world.on('beginContact', parkingSpaceCheck)
 
         // Step the world so that P@ can update and create contacts for the parkingSpaces
         config.world.step(1/60)
@@ -113,6 +115,8 @@ export default class Valet extends GameMode {
         })
 
         // reset everything
+        config.world.off('beginContact', parkingSpaceCheck)
+
         config.stage.removeChild(this.carsLeft)
         config.world.clear();
         config.world.gravity = [0,0];

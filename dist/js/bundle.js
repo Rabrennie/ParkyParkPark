@@ -1221,6 +1221,7 @@ var Valet = (function (_GameMode) {
 
             // do some setup and add the parkingSpaces' bodies to the world
             var psLookup = [];
+
             var parkingSpaces = _gamestate2.default.level.parkingSpaces;
             for (var i = 0; i < parkingSpaces.length; i++) {
               var body = parkingSpaces[i].body;
@@ -1229,8 +1230,7 @@ var Valet = (function (_GameMode) {
               psLookup.push(body);
             }
 
-            // register an on beginContact so we have have P2 tell us which spaces have cars in them
-            _config2.default.world.on('beginContact', function (payload) {
+            var parkingSpaceCheck = function parkingSpaceCheck(payload) {
               // because eslint no-redecale can't handle exclusive if-statement hoisting
               var psBody;
               var other;
@@ -1261,7 +1261,9 @@ var Valet = (function (_GameMode) {
                 body: other
               };
               psBody._scores.push(_score);
-            });
+            };
+            // register an on beginContact so we have have P2 tell us which spaces have cars in them
+            _config2.default.world.on('beginContact', parkingSpaceCheck);
 
             // Step the world so that P@ can update and create contacts for the parkingSpaces
             _config2.default.world.step(1 / 60);
@@ -1282,6 +1284,8 @@ var Valet = (function (_GameMode) {
             });
 
             // reset everything
+            _config2.default.world.off('beginContact', parkingSpaceCheck);
+
             _config2.default.stage.removeChild(_this2.carsLeft);
             _config2.default.world.clear();
             _config2.default.world.gravity = [0, 0];
