@@ -3,7 +3,6 @@ import config from '../config';
 import gamestate from '../gamestate';
 import * as Cars from '../entities/Vehicles.js';
 import ScoreBoard from '../menus/ScoreBoard.js'
-import { resetContainer } from '../resetContainer.js'
 
 import _ from 'lodash';
 
@@ -117,7 +116,7 @@ export default class Valet extends GameMode {
 
         // reset everything
         config.world.off('beginContact', parkingSpaceCheck)
-        resetContainer()
+
         config.stage.removeChild(this.carsLeft)
         config.world.clear();
         config.world.gravity = [0,0];
@@ -127,7 +126,6 @@ export default class Valet extends GameMode {
         const scoreboard = new ScoreBoard()
         gamestate.menus.push(scoreboard)
         config.stage.addChild(scoreboard)
-        requestAnimationFrame(_loop);
       }
 
       for (let i = gamestate.cars.length - 1; i >= 0; i--) {

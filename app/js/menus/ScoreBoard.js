@@ -2,6 +2,8 @@ import config from '../config.js'
 import Menu from './Menu.js'
 import gamestate from '../gamestate'
 import MainMenu from './MainMenu.js'
+import { resetContainer } from '../resetContainer.js'
+
 
 export default class ScoreBoard extends Menu {
   constructor() {
@@ -17,7 +19,7 @@ export default class ScoreBoard extends Menu {
     this.addChild(this._title)
 
     this.addOption('Main Menu', (menus) => {
-
+      resetContainer()
       menus.splice(menus.indexOf(this))
       config.stage.removeChild(this)
 
