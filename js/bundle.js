@@ -1151,8 +1151,6 @@ var _ScoreBoard = require('../menus/ScoreBoard.js');
 
 var _ScoreBoard2 = _interopRequireDefault(_ScoreBoard);
 
-var _resetContainer = require('../resetContainer.js');
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -1288,7 +1286,7 @@ var Valet = (function (_GameMode) {
 
             // reset everything
             _config2.default.world.off('beginContact', parkingSpaceCheck);
-            (0, _resetContainer.resetContainer)();
+
             _config2.default.stage.removeChild(_this2.carsLeft);
             _config2.default.world.clear();
             _config2.default.world.gravity = [0, 0];
@@ -1298,7 +1296,6 @@ var Valet = (function (_GameMode) {
             var scoreboard = new _ScoreBoard2.default();
             _gamestate2.default.menus.push(scoreboard);
             _config2.default.stage.addChild(scoreboard);
-            requestAnimationFrame(_loop);
           })();
         }
 
@@ -1331,7 +1328,7 @@ var Valet = (function (_GameMode) {
 
 exports.default = Valet;
 
-},{"../config":8,"../entities/Vehicles.js":12,"../gamestate":15,"../menus/ScoreBoard.js":23,"../resetContainer.js":25,"./_gamemode":13,"lodash":29}],15:[function(require,module,exports){
+},{"../config":8,"../entities/Vehicles.js":12,"../gamestate":15,"../menus/ScoreBoard.js":23,"./_gamemode":13,"lodash":29}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2136,7 +2133,7 @@ exports.default = OptionsMenu;
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _config = require('../config.js');
@@ -2155,6 +2152,8 @@ var _MainMenu = require('./MainMenu.js');
 
 var _MainMenu2 = _interopRequireDefault(_MainMenu);
 
+var _resetContainer = require('../resetContainer.js');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2164,43 +2163,43 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var ScoreBoard = (function (_Menu) {
-    _inherits(ScoreBoard, _Menu);
+  _inherits(ScoreBoard, _Menu);
 
-    function ScoreBoard() {
-        _classCallCheck(this, ScoreBoard);
+  function ScoreBoard() {
+    _classCallCheck(this, ScoreBoard);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ScoreBoard).call(this));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ScoreBoard).call(this));
 
-        _this._background.alpha = 0.48;
-        _this.removeChild(_this._text);
+    _this._background.alpha = 0.48;
+    _this.removeChild(_this._text);
 
-        var renderer = _config2.default.renderer;
+    var renderer = _config2.default.renderer;
 
-        _this._title = new PIXI.Text('Score: ' + _gamestate2.default.score, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-        _this._title.x = renderer.width / 2 - _this._title.width / 2;
-        _this._title.y = 100;
-        _this.addChild(_this._title);
+    _this._title = new PIXI.Text('Score: ' + _gamestate2.default.score, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+    _this._title.x = renderer.width / 2 - _this._title.width / 2;
+    _this._title.y = 100;
+    _this.addChild(_this._title);
 
-        _this.addOption('Main Menu', function (menus) {
+    _this.addOption('Main Menu', function (menus) {
+      (0, _resetContainer.resetContainer)();
+      menus.splice(menus.indexOf(_this));
+      _config2.default.stage.removeChild(_this);
 
-            menus.splice(menus.indexOf(_this));
-            _config2.default.stage.removeChild(_this);
+      var menu = new _MainMenu2.default();
+      _gamestate2.default.menus.push(menu);
+      _config2.default.stage.addChild(menu);
 
-            var menu = new _MainMenu2.default();
-            _gamestate2.default.menus.push(menu);
-            _config2.default.stage.addChild(menu);
+      return { done: true };
+    });
+    return _this;
+  }
 
-            return { done: true };
-        });
-        return _this;
-    }
-
-    return ScoreBoard;
+  return ScoreBoard;
 })(_Menu3.default);
 
 exports.default = ScoreBoard;
 
-},{"../config.js":8,"../gamestate":15,"./MainMenu.js":20,"./Menu.js":21}],24:[function(require,module,exports){
+},{"../config.js":8,"../gamestate":15,"../resetContainer.js":25,"./MainMenu.js":20,"./Menu.js":21}],24:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
