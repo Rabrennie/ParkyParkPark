@@ -34,6 +34,7 @@ export default class Car extends Entity {
   constructor(opts = {}) {
     // fix so wheels show
     defaults.wheelTexture = resources.wheel.texture;
+    defaults.container = config.container;
     opts = _.defaults(opts, defaults);
     super(opts)
 

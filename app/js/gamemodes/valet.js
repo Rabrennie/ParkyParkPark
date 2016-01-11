@@ -3,6 +3,7 @@ import config from '../config';
 import gamestate from '../gamestate';
 import * as Cars from '../entities/Vehicles.js';
 import ScoreBoard from '../menus/ScoreBoard.js'
+import { resetContainer } from '../resetContainer.js'
 
 import _ from 'lodash';
 
@@ -116,7 +117,7 @@ export default class Valet extends GameMode {
 
         // reset everything
         config.world.off('beginContact', parkingSpaceCheck)
-
+        resetContainer()
         config.stage.removeChild(this.carsLeft)
         config.world.clear();
         config.world.gravity = [0,0];

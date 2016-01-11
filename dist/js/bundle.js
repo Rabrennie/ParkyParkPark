@@ -185,7 +185,7 @@ function bindKey(name, code) {
 // TODO: Add gamepad support
 function gamepad() {}
 
-},{"lodash":28}],4:[function(require,module,exports){
+},{"lodash":29}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -296,7 +296,7 @@ var ParkingSpace = exports.ParkingSpace = (function () {
   return ParkingSpace;
 })();
 
-},{"./config.js":8,"./loader.js":17,"lodash":28}],5:[function(require,module,exports){
+},{"./config.js":8,"./loader.js":17,"lodash":29}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -340,7 +340,7 @@ function shakeUpdate() {
   }
 }
 
-},{"./config.js":8,"random-js":29}],6:[function(require,module,exports){
+},{"./config.js":8,"random-js":30}],6:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -645,6 +645,7 @@ var Car = (function (_Entity) {
 
     // fix so wheels show
     defaults.wheelTexture = _loader2.default.wheel.texture;
+    defaults.container = _config2.default.container;
     opts = _.defaults(opts, defaults);
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Car).call(this, opts));
@@ -764,7 +765,7 @@ var Car = (function (_Entity) {
 
 exports.default = Car;
 
-},{"../Input.js":3,"../ScreenShake.js":5,"../config.js":8,"../loader.js":17,"./Entity.js":10,"lodash":28}],10:[function(require,module,exports){
+},{"../Input.js":3,"../ScreenShake.js":5,"../config.js":8,"../loader.js":17,"./Entity.js":10,"lodash":29}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -844,7 +845,7 @@ var Entity = (function () {
 
 exports.default = Entity;
 
-},{"../config.js":8,"lodash":28}],11:[function(require,module,exports){
+},{"../config.js":8,"lodash":29}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -970,7 +971,7 @@ var Truck = (function (_Car) {
 
 exports.default = Truck;
 
-},{"../Explosion.js":2,"../ScreenShake.js":5,"../config.js":8,"../loader.js":17,"./Car.js":9,"lodash":28}],12:[function(require,module,exports){
+},{"../Explosion.js":2,"../ScreenShake.js":5,"../config.js":8,"../loader.js":17,"./Car.js":9,"lodash":29}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1090,7 +1091,7 @@ var OrangeTruck = exports.OrangeTruck = (function (_Truck) {
   return OrangeTruck;
 })(_Truck3.default);
 
-},{"../loader.js":17,"./Car.js":9,"./Truck.js":11,"lodash":28}],13:[function(require,module,exports){
+},{"../loader.js":17,"./Car.js":9,"./Truck.js":11,"lodash":29}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -1149,6 +1150,8 @@ var Cars = _interopRequireWildcard(_Vehicles);
 var _ScoreBoard = require('../menus/ScoreBoard.js');
 
 var _ScoreBoard2 = _interopRequireDefault(_ScoreBoard);
+
+var _resetContainer = require('../resetContainer.js');
 
 var _lodash = require('lodash');
 
@@ -1285,7 +1288,7 @@ var Valet = (function (_GameMode) {
 
             // reset everything
             _config2.default.world.off('beginContact', parkingSpaceCheck);
-
+            (0, _resetContainer.resetContainer)();
             _config2.default.stage.removeChild(_this2.carsLeft);
             _config2.default.world.clear();
             _config2.default.world.gravity = [0, 0];
@@ -1328,7 +1331,7 @@ var Valet = (function (_GameMode) {
 
 exports.default = Valet;
 
-},{"../config":8,"../entities/Vehicles.js":12,"../gamestate":15,"../menus/ScoreBoard.js":23,"./_gamemode":13,"lodash":28}],15:[function(require,module,exports){
+},{"../config":8,"../entities/Vehicles.js":12,"../gamestate":15,"../menus/ScoreBoard.js":23,"../resetContainer.js":25,"./_gamemode":13,"lodash":29}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1500,7 +1503,7 @@ var Another = exports.Another = (function (_Level2) {
   return Another;
 })(Level);
 
-},{"./ParkingSpace.js":4,"./Wall.js":6,"./config.js":8,"./loader.js":17,"random-js":29}],17:[function(require,module,exports){
+},{"./ParkingSpace.js":4,"./Wall.js":6,"./config.js":8,"./loader.js":17,"random-js":30}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1640,7 +1643,7 @@ var KeyMapMenu = (function (_Menu) {
 
 exports.default = KeyMapMenu;
 
-},{"../Input.js":3,"../config.js":8,"./Menu.js":21,"keycode":27}],20:[function(require,module,exports){
+},{"../Input.js":3,"../config.js":8,"./Menu.js":21,"keycode":28}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -1648,7 +1651,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _config = require('../config.js');
@@ -1688,83 +1691,83 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var MainMenu = (function (_Menu) {
-  _inherits(MainMenu, _Menu);
+    _inherits(MainMenu, _Menu);
 
-  function MainMenu() {
-    _classCallCheck(this, MainMenu);
+    function MainMenu() {
+        _classCallCheck(this, MainMenu);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainMenu).call(this, { optsOffset: 300 }));
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainMenu).call(this, { optsOffset: 300 }));
 
-    var renderer = _config2.default.renderer;
+        var renderer = _config2.default.renderer;
 
-    _this._options = [];
-    _this.selectedOption = 0;
+        _this._options = [];
+        _this.selectedOption = 0;
 
-    _this.addOption('Play', function (menus) {
-      menus.splice(menus.indexOf(_this));
-      _config2.default.stage.removeChild(_this);
-      _gamestate2.default.mode = new _valet2.default(4);
-      return { _playing: true, _level: new _variants2.default.level() };
-    });
+        _this.addOption('Play', function (menus) {
+            menus.splice(menus.indexOf(_this));
+            _config2.default.stage.removeChild(_this);
+            _gamestate2.default.mode = new _valet2.default(4);
+            return { _playing: true, _level: new _variants2.default.level() };
+        });
 
-    _this.addOption('Change Variants', function (menus) {
+        _this.addOption('Change Variants', function (menus) {
 
-      var newMenu = new _VariantMenu2.default();
-      menus.push(newMenu);
-      _config2.default.stage.addChild(newMenu);
+            var newMenu = new _VariantMenu2.default();
+            menus.push(newMenu);
+            _config2.default.stage.addChild(newMenu);
 
-      return;
-    });
+            return;
+        });
 
-    _this.addOption('Options', function (menus) {
+        _this.addOption('Options', function (menus) {
 
-      var newMenu = new _OptionsMenu2.default();
-      menus.push(newMenu);
-      _config2.default.stage.addChild(newMenu);
+            var newMenu = new _OptionsMenu2.default();
+            menus.push(newMenu);
+            _config2.default.stage.addChild(newMenu);
 
-      return;
-    });
+            return;
+        });
 
-    _this._title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-    _this._title.x = renderer.width / 2 - _this._title.width / 2;
-    _this._title.y = 200;
-    _this.addChild(_this._title);
+        _this._title = new PIXI.Text('Parky Park Park', { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+        _this._title.x = renderer.width / 2 - _this._title.width / 2;
+        _this._title.y = 200;
+        _this.addChild(_this._title);
 
-    _this._splash = new PIXI.Text('Wow', { font: '30px Arial', fill: 0xFFFF00, align: 'center' });
-    _this._splash.x = _this._title.x + _this._title.width - _this._splash.width / 2;
-    _this._splash.y = _this._title.y + _this._title.height;
-    _this._splash.rotation = 100;
-    _this.addChild(_this._splash);
-    return _this;
-  }
-
-  _createClass(MainMenu, [{
-    key: 'update',
-    value: function update(now, delta) {
-      _get(Object.getPrototypeOf(MainMenu.prototype), 'update', this).call(this, now, delta);
-      this._title.x = _config2.default.renderer.width / 2 - this._title.width / 2;
-      this._title.y = 200 * _config2.default.scaleFactorY;
-      this._title.style = { font: 24 * _config2.default.scaleFactorX + 'px Arial', fill: 0xFFFFFF, align: 'center' };
-
-      this._splash.x = this._title.x + this._title.width - this._splash.width / 2;
-      this._splash.y = this._title.y + this._title.height;
-
-      if (now / 2000 % 1 <= 0.5) {
-        this._splash.scale.x = 1.5 - now / 2000 % 1;
-        this._splash.scale.y = 1.5 - now / 2000 % 1;
-      } else {
-        this._splash.scale.x = 0.5 + now / 2000 % 1;
-        this._splash.scale.y = 0.5 + now / 2000 % 1;
-      }
+        _this._splash = new PIXI.Text('Wow', { font: '30px Arial', fill: 0xFFFF00, align: 'center' });
+        _this._splash.x = _this._title.x + _this._title.width - _this._splash.width / 2;
+        _this._splash.y = _this._title.y + _this._title.height;
+        _this._splash.rotation = 100;
+        _this.addChild(_this._splash);
+        return _this;
     }
-  }]);
 
-  return MainMenu;
+    _createClass(MainMenu, [{
+        key: 'update',
+        value: function update(now, delta) {
+            _get(Object.getPrototypeOf(MainMenu.prototype), 'update', this).call(this, now, delta);
+            this._title.x = _config2.default.renderer.width / 2 - this._title.width / 2;
+            this._title.y = 200 * _config2.default.scaleFactorY;
+            this._title.style = { font: 24 * _config2.default.scaleFactorX + 'px Arial', fill: 0xFFFFFF, align: 'center' };
+
+            this._splash.x = this._title.x + this._title.width - this._splash.width / 2;
+            this._splash.y = this._title.y + this._title.height;
+
+            if (now / 2000 % 1 <= 0.5) {
+                this._splash.scale.x = 1.5 - now / 2000 % 1;
+                this._splash.scale.y = 1.5 - now / 2000 % 1;
+            } else {
+                this._splash.scale.x = 0.5 + now / 2000 % 1;
+                this._splash.scale.y = 0.5 + now / 2000 % 1;
+            }
+        }
+    }]);
+
+    return MainMenu;
 })(_Menu3.default);
 
 exports.default = MainMenu;
 
-},{"../config.js":8,"../gamemodes/valet.js":14,"../gamestate.js":15,"../variants.js":26,"./Menu.js":21,"./OptionsMenu.js":22,"./VariantMenu.js":24}],21:[function(require,module,exports){
+},{"../config.js":8,"../gamemodes/valet.js":14,"../gamestate.js":15,"../variants.js":27,"./Menu.js":21,"./OptionsMenu.js":22,"./VariantMenu.js":24}],21:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -2129,11 +2132,11 @@ var OptionsMenu = (function (_Menu) {
 
 exports.default = OptionsMenu;
 
-},{"../Input.js":3,"../ScreenShake.js":5,"../config.js":8,"../resizeGame.js":25,"./KeyMapMenu.js":19,"./Menu.js":21}],23:[function(require,module,exports){
+},{"../Input.js":3,"../ScreenShake.js":5,"../config.js":8,"../resizeGame.js":26,"./KeyMapMenu.js":19,"./Menu.js":21}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _config = require('../config.js');
@@ -2161,38 +2164,38 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var ScoreBoard = (function (_Menu) {
-  _inherits(ScoreBoard, _Menu);
+    _inherits(ScoreBoard, _Menu);
 
-  function ScoreBoard() {
-    _classCallCheck(this, ScoreBoard);
+    function ScoreBoard() {
+        _classCallCheck(this, ScoreBoard);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ScoreBoard).call(this));
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ScoreBoard).call(this));
 
-    _this._background.alpha = 0.48;
-    _this.removeChild(_this._text);
+        _this._background.alpha = 0.48;
+        _this.removeChild(_this._text);
 
-    var renderer = _config2.default.renderer;
+        var renderer = _config2.default.renderer;
 
-    _this._title = new PIXI.Text('Score: ' + _gamestate2.default.score, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
-    _this._title.x = renderer.width / 2 - _this._title.width / 2;
-    _this._title.y = 100;
-    _this.addChild(_this._title);
+        _this._title = new PIXI.Text('Score: ' + _gamestate2.default.score, { font: '24px Arial', fill: 0xFFFFFF, align: 'center' });
+        _this._title.x = renderer.width / 2 - _this._title.width / 2;
+        _this._title.y = 100;
+        _this.addChild(_this._title);
 
-    _this.addOption('Main Menu', function (menus) {
+        _this.addOption('Main Menu', function (menus) {
 
-      menus.splice(menus.indexOf(_this));
-      _config2.default.stage.removeChild(_this);
+            menus.splice(menus.indexOf(_this));
+            _config2.default.stage.removeChild(_this);
 
-      var menu = new _MainMenu2.default();
-      _gamestate2.default.menus.push(menu);
-      _config2.default.stage.addChild(menu);
+            var menu = new _MainMenu2.default();
+            _gamestate2.default.menus.push(menu);
+            _config2.default.stage.addChild(menu);
 
-      return { done: true };
-    });
-    return _this;
-  }
+            return { done: true };
+        });
+        return _this;
+    }
 
-  return ScoreBoard;
+    return ScoreBoard;
 })(_Menu3.default);
 
 exports.default = ScoreBoard;
@@ -2313,7 +2316,36 @@ var VariantMenu = (function (_Menu) {
 
 exports.default = VariantMenu;
 
-},{"../Input.js":3,"../config.js":8,"../levels.js":16,"../variants.js":26,"./Menu.js":21,"lodash":28}],25:[function(require,module,exports){
+},{"../Input.js":3,"../config.js":8,"../levels.js":16,"../variants.js":27,"./Menu.js":21,"lodash":29}],25:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.resetContainer = resetContainer;
+
+var _config = require('./config');
+
+var _config2 = _interopRequireDefault(_config);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function resetContainer() {
+  if (_config2.default.container.parent) {
+    _config2.default.stage.removeChild(_config2.default.container);
+  }
+
+  _config2.default.container = new PIXI.Container();
+
+  _config2.default.stage.addChild(_config2.default.container);
+
+  _config2.default.container.position.x = 0;
+  _config2.default.container.position.y = 0;
+  _config2.default.container.scale.x = _config2.default.zoom;
+  _config2.default.container.scale.y = -_config2.default.zoom;
+}
+
+},{"./config":8}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2339,7 +2371,7 @@ function resizeGame(W) {
   _config2.default.container.scale.y = -_config2.default.zoom;
 }
 
-},{"./config.js":8}],26:[function(require,module,exports){
+},{"./config.js":8}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2356,7 +2388,7 @@ exports.default = {
   level: levels.Test
 };
 
-},{"./levels.js":16}],27:[function(require,module,exports){
+},{"./levels.js":16}],28:[function(require,module,exports){
 // Source: http://jsfiddle.net/vWx8V/
 // http://stackoverflow.com/questions/5603195/full-list-of-javascript-keycodes
 
@@ -2505,7 +2537,7 @@ for (var alias in aliases) {
   codes[alias] = aliases[alias]
 }
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -14861,7 +14893,7 @@ for (var alias in aliases) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /*jshint eqnull:true*/
 (function (root) {
   "use strict";
