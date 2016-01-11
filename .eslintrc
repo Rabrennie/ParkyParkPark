@@ -12,7 +12,9 @@
   },
   "globals": {
     "PIXI": true,
-    "p2": true
+    "p2": true,
+    "electron": true,
+    "inBrowser": true
   },
   "rules": {
     "semi": 0,

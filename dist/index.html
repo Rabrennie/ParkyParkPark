@@ -5,9 +5,17 @@
     <meta charset="utf-8">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.8/pixi.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p2.js/0.7.1/p2.min.js"></script>
+    <link rel="stylesheet" href="./css/style.css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
 
+    <script type="text/javascript">
+      var inBrowser = true;
+      if(window && window.process && window.process.type){
+        var electron = require('electron')
+        inBrowser = false;
+      }
+    </script>
     <script src="js/bundle.js"></script>
 </body>
 </html>

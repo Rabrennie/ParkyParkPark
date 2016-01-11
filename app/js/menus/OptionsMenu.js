@@ -79,14 +79,15 @@ export default class OptionsMenu extends Menu {
     this.addOption(`Resolution ${config.W + 'x' + config.H}`, {
       state: {
         accumulator: 0,
-        sizes: [800, 1024, 1200],
+        sizes: [800, 1024, 1200, 1920],
         curr: 1
       },
       update(now, delta) {
         this.state.accumulator += delta
         if (this.state.accumulator < 50) return
         this.state.accumulator = 0
-
+        config.lastW = config.W;
+        config.lastH = config.H;
         this.textObj.text = `Resolution ${config.W + 'x' + config.H}`;
         if (key('left')) {
           if(this.state.curr===0) {
@@ -106,8 +107,30 @@ export default class OptionsMenu extends Menu {
             resizeGame(this.state.sizes[this.state.curr]);
           }
         }
+
       }
     })
+    if(!inBrowser) {
+      this.addOption(`Fullscreen: ${config.fullscreen}`, {
+        state: {
+          fullscreen: config.fullscreen,
+        },
+        onInputChange() {
+
+          if(key('right') || key('left')) {
+            config.fullscreen = !config.fullscreen;
+            console.log(config.fullscreen)
+            this.textObj.text = `Fullscreen: ${config.fullscreen}`;
+            if(config.fullscreen) {
+              const width = electron.screen.getPrimaryDisplay().workAreaSize.width;
+              resizeGame(width, true)
+            } else {
+              resizeGame(config.lastW, false)
+            }
+          }
+        }
+      })
+    }
 
     this.addOption('Key Mapping', (menus) => {
       const newMenu = new KeyMapMenu()

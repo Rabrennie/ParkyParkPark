@@ -555,11 +555,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 var W = 940;
 var H = W / 16 * 9;
+var win = null;
+
+if (!inBrowser) {
+  win = electron.remote.getCurrentWindow();
+}
 
 exports.default = {
   zoom: 0.05 * W,
   W: W,
   H: H,
+  lastW: W,
+  lastH: H,
   SCORE: Math.pow(2, 0),
   PLAYER: Math.pow(2, 1),
   CAR: Math.pow(2, 2),
@@ -578,7 +585,9 @@ exports.default = {
   scaleFactorY: H / 600,
   // user options
   screenShake: 1,
-  masterVolume: 1
+  masterVolume: 1,
+  curWin: win,
+  fullscreen: false
 };
 
 },{}],9:[function(require,module,exports){
@@ -2068,14 +2077,15 @@ var OptionsMenu = (function (_Menu) {
     _this.addOption('Resolution ' + (_config2.default.W + 'x' + _config2.default.H), {
       state: {
         accumulator: 0,
-        sizes: [800, 1024, 1200],
+        sizes: [800, 1024, 1200, 1920],
         curr: 1
       },
       update: function update(now, delta) {
         this.state.accumulator += delta;
         if (this.state.accumulator < 50) return;
         this.state.accumulator = 0;
-
+        _config2.default.lastW = _config2.default.W;
+        _config2.default.lastH = _config2.default.H;
         this.textObj.text = 'Resolution ' + (_config2.default.W + 'x' + _config2.default.H);
         if ((0, _Input.key)('left')) {
           if (this.state.curr === 0) {
@@ -2097,6 +2107,27 @@ var OptionsMenu = (function (_Menu) {
         }
       }
     });
+    if (!inBrowser) {
+      _this.addOption('Fullscreen: ' + _config2.default.fullscreen, {
+        state: {
+          fullscreen: _config2.default.fullscreen
+        },
+        onInputChange: function onInputChange() {
+
+          if ((0, _Input.key)('right') || (0, _Input.key)('left')) {
+            _config2.default.fullscreen = !_config2.default.fullscreen;
+            console.log(_config2.default.fullscreen);
+            this.textObj.text = 'Fullscreen: ' + _config2.default.fullscreen;
+            if (_config2.default.fullscreen) {
+              var width = electron.screen.getPrimaryDisplay().workAreaSize.width;
+              (0, _resizeGame.resizeGame)(width, true);
+            } else {
+              (0, _resizeGame.resizeGame)(_config2.default.lastW, false);
+            }
+          }
+        }
+      });
+    }
 
     _this.addOption('Key Mapping', function (menus) {
       var newMenu = new _KeyMapMenu2.default();
@@ -2358,7 +2389,7 @@ var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function resizeGame(W) {
+function resizeGame(W, fullscreen) {
   var H = W / 16 * 9;
   _config2.default.renderer.resize(W, H);
   _config2.default.zoom = 0.05 * W;
@@ -2368,6 +2399,17 @@ function resizeGame(W) {
   _config2.default.scaleFactorY = H / 600;
   _config2.default.container.scale.x = _config2.default.zoom; // zoom in
   _config2.default.container.scale.y = -_config2.default.zoom;
+
+  if (!inBrowser) {
+
+    if (fullscreen) {
+      _config2.default.curWin.setFullScreen(true);
+    } else {
+      _config2.default.curWin.setFullScreen(false);
+      _config2.default.curWin.setContentSize(W, H);
+      _config2.default.curWin.center();
+    }
+  }
 }
 
 },{"./config.js":8}],27:[function(require,module,exports){
@@ -14891,7 +14933,6 @@ for (var alias in aliases) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],30:[function(require,module,exports){
 /*jshint eqnull:true*/
 (function (root) {
@@ -15609,5 +15650,4 @@ for (var alias in aliases) {
     root[GLOBAL_KEY] = Random;
   }
 }(this));
-},{}]},{},[7])
-//# sourceMappingURL=bundle.js.map
+},{}]},{},[7]);
