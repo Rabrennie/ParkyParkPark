@@ -53,8 +53,8 @@ export default class Menu extends PIXI.Container {
     // Load pointer
     if (i === 0) {
       this._pointer.visible = true
-      this._pointer.x = this._options[0].textObj.x - 20
-      this.menuSpriteY = this._pointer.y = this._options[0].textObj.y + 5
+      this._pointer.x = this._options[0].textObj.x - 20*config.scaleFactorX
+      this._pointer.y = this._options[0].textObj.y + 5*config.scaleFactorY
     }
   }
 
@@ -69,7 +69,7 @@ export default class Menu extends PIXI.Container {
   // XXX(Fishrock123) onInputChange MUST be a *regular* function so it can inherit scope
   onInputChange(menus) {
 
-    let option = this._options[this.selectedOption]
+    const option = this._options[this.selectedOption]
     // if option.onInputChange returns true then the rest of the input change stuff doesn't get run. Used for keybinding
     if (option.onInputChange) {
       this.overrideDefaults = option.onInputChange()
@@ -96,10 +96,6 @@ export default class Menu extends PIXI.Container {
         return option.callback(menus);
       }
     }
-    option = this._options[this.selectedOption]
-    this._pointer.x = option.textObj.x - 20
-    this.menuSpriteY = this._pointer.y = option.textObj.y + 5
-
     return
   }
 
@@ -124,12 +120,16 @@ export default class Menu extends PIXI.Container {
     const menuSpriteThing = (now / 25) % 28
 
     if (menuSpriteThing < 14) {
-      this._pointer.height = 16 - menuSpriteThing
-      this._pointer.y = this.menuSpriteY + menuSpriteThing / 2
+      this._pointer.height = (16 - menuSpriteThing)*config.scaleFactorY;
+      this._pointer.y = option.textObj.y + 5*config.scaleFactorY + menuSpriteThing / 2;
     } else {
-      this._pointer.height = 2 + menuSpriteThing - 14
-      this._pointer.y = this.menuSpriteY + 14 - menuSpriteThing / 2
+      this._pointer.height = (2 + menuSpriteThing - 14)*config.scaleFactorY;
+      this._pointer.y = option.textObj.y + 5*config.scaleFactorY + 14 - menuSpriteThing / 2
     }
+
+
+    this._pointer.width = 16*config.scaleFactorX;
+    this._pointer.x = option.textObj.x - 20*config.scaleFactorX;
   }
 }
 

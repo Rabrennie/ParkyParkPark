@@ -1864,8 +1864,8 @@ var Menu = (function (_PIXI$Container) {
       // Load pointer
       if (i === 0) {
         this._pointer.visible = true;
-        this._pointer.x = this._options[0].textObj.x - 20;
-        this.menuSpriteY = this._pointer.y = this._options[0].textObj.y + 5;
+        this._pointer.x = this._options[0].textObj.x - 20 * _config2.default.scaleFactorX;
+        this._pointer.y = this._options[0].textObj.y + 5 * _config2.default.scaleFactorY;
       }
     }
 
@@ -1910,10 +1910,6 @@ var Menu = (function (_PIXI$Container) {
           return _option.callback(menus);
         }
       }
-      option = this._options[this.selectedOption];
-      this._pointer.x = option.textObj.x - 20;
-      this.menuSpriteY = this._pointer.y = option.textObj.y + 5;
-
       return;
     }
   }, {
@@ -1939,12 +1935,15 @@ var Menu = (function (_PIXI$Container) {
       var menuSpriteThing = now / 25 % 28;
 
       if (menuSpriteThing < 14) {
-        this._pointer.height = 16 - menuSpriteThing;
-        this._pointer.y = this.menuSpriteY + menuSpriteThing / 2;
+        this._pointer.height = (16 - menuSpriteThing) * _config2.default.scaleFactorY;
+        this._pointer.y = option.textObj.y + 5 * _config2.default.scaleFactorY + menuSpriteThing / 2;
       } else {
-        this._pointer.height = 2 + menuSpriteThing - 14;
-        this._pointer.y = this.menuSpriteY + 14 - menuSpriteThing / 2;
+        this._pointer.height = (2 + menuSpriteThing - 14) * _config2.default.scaleFactorY;
+        this._pointer.y = option.textObj.y + 5 * _config2.default.scaleFactorY + 14 - menuSpriteThing / 2;
       }
+
+      this._pointer.width = 16 * _config2.default.scaleFactorX;
+      this._pointer.x = option.textObj.x - 20 * _config2.default.scaleFactorX;
     }
   }]);
 
