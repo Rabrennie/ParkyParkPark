@@ -112,7 +112,7 @@ export default class Menu extends PIXI.Container {
       } else { // i.e. 'center'
         this._options[i].textObj.x = config.renderer.width/2 - this._options[i].textObj.width/2;
       }
-      this._options[i].textObj.y = this.optsOffset + (50*config.scaleFactorY)*i;
+      this._options[i].textObj.y = (this.optsOffset*config.scaleFactorY) + (50*config.scaleFactorY)*i;
 
     }
 

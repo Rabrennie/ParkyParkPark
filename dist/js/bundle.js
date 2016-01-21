@@ -1928,7 +1928,7 @@ var Menu = (function (_PIXI$Container) {
           // i.e. 'center'
           this._options[i].textObj.x = _config2.default.renderer.width / 2 - this._options[i].textObj.width / 2;
         }
-        this._options[i].textObj.y = this.optsOffset + 50 * _config2.default.scaleFactorY * i;
+        this._options[i].textObj.y = this.optsOffset * _config2.default.scaleFactorY + 50 * _config2.default.scaleFactorY * i;
       }
 
       var option = this._options[this.selectedOption];
@@ -14933,6 +14933,7 @@ for (var alias in aliases) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
 },{}],30:[function(require,module,exports){
 /*jshint eqnull:true*/
 (function (root) {
@@ -15650,4 +15651,5 @@ for (var alias in aliases) {
     root[GLOBAL_KEY] = Random;
   }
 }(this));
-},{}]},{},[7]);
+},{}]},{},[7])
+//# sourceMappingURL=bundle.js.map
