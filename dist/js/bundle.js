@@ -229,7 +229,7 @@ var ParkingSpace = exports.ParkingSpace = (function () {
     };
     this.opts = _.defaults(opts, defaults);
     this.body = new p2.Body({
-      position: [opts.x / _config2.default.zoom, opts.y / _config2.default.zoom],
+      position: [_config2.default.scaleFactorX * opts.x / _config2.default.zoom, _config2.default.scaleFactorY * opts.y / _config2.default.zoom],
       mass: 0,
       angle: opts.angle,
       sensor: true
@@ -1258,7 +1258,7 @@ var Valet = (function (_GameMode) {
 
               // some wild math suggested by schteppe (p2.js Author)
               // This doesn't strictly check for overlap, but rather which body has
-              // the deepest penetration. i.e. Has the point on a shape the farthest
+              // the deepest penetration ;). i.e. Has the point on a shape the farthest
               // from the farthest point on the other shape.
               var contactEq = payload.contactEquations[0];
               var penetrationVec = contactEq.penetrationVec;
@@ -1476,8 +1476,10 @@ var Test = exports.Test = (function (_Level) {
 
     _this.sprite = new PIXI.Sprite(_loader2.default.ParkingSpace.texture);
 
-    var psOffsetY = _this.sprite.height / 2;
-    var psOffsetX = _this.sprite.width / 2;
+    var psOffsetY = _this.sprite.height / 1.76; // MAGIC NUMBER DO NOT TOUCH
+    var psOffsetX = _this.sprite.width / 1.76; // MAGIC NUMBER DO NOT TOUCH
+
+    console.log(_config2.default.scaleFactorX * 2);
 
     for (var i = 0; i < 8; i++) {
       _this.addParkingSpace(psOffsetX * i + 360, -150, down);

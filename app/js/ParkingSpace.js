@@ -19,7 +19,7 @@ export class ParkingSpace {
     }
     this.opts = _.defaults(opts, defaults);
     this.body = new p2.Body({
-      position: [opts.x/config.zoom,opts.y/config.zoom],
+      position: [config.scaleFactorX * opts.x/config.zoom,config.scaleFactorY * opts.y/config.zoom],
       mass: 0,
       angle: opts.angle,
       sensor:true

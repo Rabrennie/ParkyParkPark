@@ -79,7 +79,7 @@ export default class Valet extends GameMode {
 
           // some wild math suggested by schteppe (p2.js Author)
           // This doesn't strictly check for overlap, but rather which body has
-          // the deepest penetration. i.e. Has the point on a shape the farthest
+          // the deepest penetration ;). i.e. Has the point on a shape the farthest
           // from the farthest point on the other shape.
           const contactEq = payload.contactEquations[0]
           const penetrationVec = contactEq.penetrationVec

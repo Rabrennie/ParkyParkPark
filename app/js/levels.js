@@ -75,8 +75,10 @@ export class Test extends Level {
 
     this.sprite = new PIXI.Sprite(resources.ParkingSpace.texture);
 
-    var psOffsetY = this.sprite.height / 2
-    var psOffsetX = this.sprite.width / 2
+    var psOffsetY = this.sprite.height / 1.76 // MAGIC NUMBER DO NOT TOUCH
+    var psOffsetX = this.sprite.width / 1.76 // MAGIC NUMBER DO NOT TOUCH
+
+    console.log((config.scaleFactorX*2))
 
     for (let i = 0; i < 8; i++) {
       this.addParkingSpace((psOffsetX * i + 360), -150, down)
