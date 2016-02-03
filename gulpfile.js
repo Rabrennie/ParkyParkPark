@@ -107,7 +107,7 @@ gulp.task('copy:assets', function() {
 });
 
 gulp.task('deploy', function() {
-  return gulp.src(`dist/**/*`, { base: 'dist' })
+  return gulp.src('dist/**/*', { base: 'dist' })
     .pipe(ghPages());
 });
 
